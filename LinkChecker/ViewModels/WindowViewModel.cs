@@ -10,6 +10,7 @@ using Link11Checker.Core;
 using Link11Checker.ViewModels.Base;
 using System.Windows.Input;
 using System.Windows.Forms;
+using Logger;
 
 namespace Link11Checker.ViewModels
 {
@@ -81,7 +82,7 @@ namespace Link11Checker.ViewModels
 
         private SeanseManager seanseManager;
 
-
+        private ILogger logger;
 
         private string seanseToAdd;
 
@@ -112,15 +113,12 @@ namespace Link11Checker.ViewModels
 
         #region Ctor
 
-        public WindowViewModel()
-        {              
+        public WindowViewModel(ILogger logger)
+        {
+            this.logger = logger;
             Seanses = new ObservableCollection<Seanse>();
 
-            SeanseManager = new SeanseManager();
-
-            Seanse test = new Seanse(@"d:\Bespalov\logs\4548.7__10_50_12\");
-            Seanses.Add(test);
-            SeanseManager.AddSeanse(test);   
+            SeanseManager = new SeanseManager("", logger);
 
             UpdateTimerOn = false;
 
@@ -151,14 +149,14 @@ namespace Link11Checker.ViewModels
                     DialogResult result = fbd.ShowDialog();
                     if (result == DialogResult.OK && fbd.SelectedPath != null)
                     {
-                        Seanse s = new Seanse(fbd.SelectedPath + '\\');
+                        Seanse s = new Seanse(fbd.SelectedPath + '\\', logger);
                         Seanses.Add(s);
                         SeanseManager.AddSeanse(s);
                     }
                     lastSelectedPathWithLinks = fbd.SelectedPath;
                 }
                 catch (Exception e) {
-                    System.Windows.MessageBox.Show(e.Message, "Ошибка при добавлении сеанса.");
+                    logger.LogMessage(e.Message, LogLevel.Error);
                 }
             });
 
@@ -166,12 +164,12 @@ namespace Link11Checker.ViewModels
             {
                 if (SelectedSeanse != null)
                 {
+                    SeanseManager.RemoveSeanse(SelectedSeanse);
                     Seanses.Remove(SelectedSeanse);
-                    SeanseManager.Seanses.Remove(SelectedSeanse);
                 }
                 else
                 {
-                    System.Windows.MessageBox.Show("Выберите сеанс для удаления.", "Ошибка");
+                    System.Windows.MessageBox.Show("Выбирете сеанс", "Ошибка");
                 }
             });
 
@@ -184,7 +182,7 @@ namespace Link11Checker.ViewModels
                 }
                 catch (Exception e)
                 {
-                    System.Windows.MessageBox.Show(e.Message, "Ошибка при копировании сеансов");
+                    logger.LogMessage(e.Message, LogLevel.Error);
                 }
             });
 
@@ -196,7 +194,7 @@ namespace Link11Checker.ViewModels
                 }
                 catch (Exception e)
                 {
-                    System.Windows.MessageBox.Show(e.Message, "Ошибка при обновлении сеансов");
+                    logger.LogMessage(e.Message, LogLevel.Error);
                 }
             });
 
@@ -225,7 +223,7 @@ namespace Link11Checker.ViewModels
                 }
                 catch (Exception e)
                 {
-                    System.Windows.MessageBox.Show(e.Message, "Ошибка в таймере");
+                    logger.LogMessage(e.Message, LogLevel.Error);
                 }
             });
             updateWorker.Start();

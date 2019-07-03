@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Collections.ObjectModel;
+using Logger;
 
 namespace Link11Checker.Core
 {
@@ -18,19 +19,18 @@ namespace Link11Checker.Core
         #endregion
 
         #region Fields
-
-
+    
+        private ILogger logger;
 
         #endregion
 
         #region Ctor
 
-        public SeanseManager() : this("") { }
-
-        public SeanseManager(string destPath)
+        public SeanseManager(string destPath, ILogger logger)
         {
             DestinationPath = destPath;
             Seanses = new List<Seanse>();
+            this.logger = logger;
         }
 
         #endregion

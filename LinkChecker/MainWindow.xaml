@@ -30,21 +30,24 @@
                 <DataGridTextColumn Header="Средн." Binding="{Binding AverageSize}"></DataGridTextColumn>
                 <DataGridTextColumn Header="Последн. раб." Binding="{Binding LastWorkingTime}"></DataGridTextColumn>
                 <DataGridTextColumn Header="Последн. акт." Binding="{Binding LastActiveTime}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Корреспонденты" Binding="{Binding AbonentsCount}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Интервалы" Binding="{Binding Intervals}" Width="75"></DataGridTextColumn>
                 <DataGridTextColumn Header="Координаты" Binding="{Binding Coordinates}"></DataGridTextColumn>
                 <DataGridTextColumn Header="Место определения" Binding="{Binding Position}"></DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <TabControl Margin="10,0,175,10" Height="231" VerticalAlignment="Bottom">
+        <TabControl DataContext="{Binding SelectedSeanse}" Margin="10,0,175,10" Height="231" VerticalAlignment="Bottom">
             <TabItem Header="Log.txt">
-                <Grid Background="#FFE5E5E5">
-                    <Grid.ColumnDefinitions>
-
-                    </Grid.ColumnDefinitions>
-                    <TextBox TextWrapping="NoWrap" Text="{Binding SelectdedSeanse.Log}" VerticalAlignment="Stretch" Height="Auto" IsReadOnly="True" Margin="0"/>
-                </Grid>
+                <TextBox ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                         TextWrapping="NoWrap" Text="{Binding Log, Mode=OneWay}"
+                         VerticalAlignment="Stretch" Height="Auto" IsReadOnly="True"
+                         Margin="0" IsManipulationEnabled="True" 
+                         IsInactiveSelectionHighlightEnabled="True" IsReadOnlyCaretVisible="True"/>
             </TabItem>
             <TabItem Header="График расстройки">
-                <Grid Background="#FFE5E5E5"/>
+                <Grid Background="#FFE5E5E5">
+                </Grid>
             </TabItem>
             <TabItem Header="График работы">
                 <Grid Background="#FFE5E5E5"/>

@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Link11Checker.ViewModels;
+using Logger;
 
 namespace Link11Checker
 {
@@ -24,7 +25,7 @@ namespace Link11Checker
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new WindowViewModel();
+            DataContext = new WindowViewModel(new PrimitiveLogger("log.txt", LogLevel.Error));
         }
     }
 }

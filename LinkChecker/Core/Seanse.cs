@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Link11Core;
 using System.IO;
 using Link11Checker.ViewModels.Base;
+using Logger;
 
 namespace Link11Checker.Core
 {
@@ -77,6 +78,15 @@ namespace Link11Checker.Core
                 OnPropertyChanged("AverageSize");
             } }
 
+        public int AbonentsCount
+        {
+            get { return abonentsCount; }
+            set {
+                abonentsCount = value;
+                OnPropertyChanged("AbonentsCount");
+            }
+        }
+
         #endregion
 
         #region fields
@@ -90,16 +100,19 @@ namespace Link11Checker.Core
         private Mode mode;
         private int maxSize;
         private float averageSize;
+        private int abonentsCount;
         private int edge;
         private List<SignalEntry> activeEntries;
+        private ILogger logger;
 
         #endregion
 
         #region Ctor
 
-        public Seanse(string directory) 
+        public Seanse(string directory, ILogger logger) 
         {
             Directory = directory;
+            this.logger = logger;
             activeEntries = new List<SignalEntry>();
             signal = new Signal(new Parser(), new Configuration { AbonentsK = 0.1, IntervalsK = 0.05 });
             Update();
@@ -113,23 +126,31 @@ namespace Link11Checker.Core
         {
             signal.LoadSignal(Directory + "log.txt");
             string allLog;
-            using (StreamReader fs = new StreamReader(Directory + "all_log.txt"))
+            try
             {
-                allLog = fs.ReadToEnd();
-            }
-            string mode = allLog.Substring(11, 4);
-            if (mode == "CLEW") {
-                Mode = Mode.Clew;
-                edge = 200;
-            }
-            else if (mode == "SLEW") {
-                Mode = Mode.Slew;
-                edge = 400;
-            }
-            string freq = allLog.Substring(25, 6).Replace('.', ',');
+                using (StreamReader fs = new StreamReader(Directory + "all_log.txt"))
+                {
+                    allLog = fs.ReadToEnd();
+                }
+                string mode = allLog.Substring(11, 4);
+                if (mode == "CLEW")
+                {
+                    Mode = Mode.Clew;
+                    edge = 200;
+                }
+                else if (mode == "SLEW")
+                {
+                    Mode = Mode.Slew;
+                    edge = 400;
+                }
+                string freq = allLog.Substring(25, 6).Replace('.', ',');
 
-            Freq = float.Parse(freq);
-
+                Freq = float.Parse(freq);
+            }
+            catch (Exception e)
+            {
+                logger.LogMessage(e.Message, LogLevel.Error);
+            }
             MaxSize = signal.GetMaxInFrames();
 
             AverageSize = signal.GetAverageSizeInFrames();
@@ -141,6 +162,8 @@ namespace Link11Checker.Core
             activeEntries = signal.SignalEntries.Where(x => x.Type != EntryType.Error && (x.Size - x.Errors) > edge).ToList();
             if (activeEntries.Count != 0)
                 LastActiveTime = activeEntries.Last().Time.ToString();
+
+            AbonentsCount = signal.GetAbonents().Count;
         }
         public void Copy(DirectoryInfo destination)
         {
@@ -150,14 +173,23 @@ namespace Link11Checker.Core
                 destination.Create();
             DirectoryInfo dest = new DirectoryInfo(destination.ToString() + '\\' + di.Name);
             dest.Create();
-            foreach (FileInfo file in files)
+            try
             {
-                file.CopyTo(dest.FullName + '\\' + file.Name, true);
+                foreach (FileInfo file in files)
+                {
+                    file.CopyTo(dest.FullName + '\\' + file.Name, true);
+                }
+            }
+            catch (Exception e)
+            {
+                logger.LogMessage(e.Message, LogLevel.Error);
             }
         }
 
         public bool IsActive()
         {
+            if (signal.SignalEntries.Count == 0)
+                return false;
             return IsActive(signal.SignalEntries.First().Time, signal.SignalEntries.Last().Time);
         }
 
@@ -194,6 +226,8 @@ namespace Link11Checker.Core
 
         public bool IsWorking()
         {
+            if (signal.SignalEntries.Count == 0)
+                return false;
             return IsWorking(signal.SignalEntries.First().Time, signal.SignalEntries.Last().Time);
         }
 
