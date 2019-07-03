@@ -1,0 +1,54 @@
+﻿<Window x:Class="Link11Checker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="500" Width="800">
+    <Grid>
+        <Menu VerticalAlignment="Top" Height="32">
+            <MenuItem Header="Сеанс">
+                <MenuItem Header="Выбор папки для накопления" Command="{Binding SelectDestinationPath}"></MenuItem>
+                <MenuItem Header="Добавить сеанс" Command="{Binding AddSeanse}"></MenuItem>
+                <MenuItem Header="Удалить Сеанс" Command="{Binding RemoveSeanse}"></MenuItem>
+                <MenuItem Header="Копировать сеансы" Command="{Binding CopySeanses}" IsEnabled="{Binding DestPathSelected}"></MenuItem>
+                <MenuItem Header="Обновить сеансы" Command="{Binding UpdateSeanses}" ></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Таймер">
+                <MenuItem Header="Установить таймер на обновление сеансов" Command="{Binding SetUpdateTimer}" IsCheckable="True" IsChecked="{Binding UpdateTimerOn}"></MenuItem>
+                <MenuItem Header="Установить таймер на копирование сеансов" Command="{Binding SetCopyTimer}" IsCheckable="True" IsChecked="{Binding CopyTimerOn}" IsEnabled="{Binding DestPathSelected}"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Уведомления">
+                <MenuItem Header="Начало работы" IsCheckable="True" IsEnabled="False"></MenuItem>
+                <MenuItem Header="Окончание работы" IsCheckable="True" IsEnabled="False"></MenuItem>
+                <MenuItem Header="Переход в активный режим" IsCheckable="True" IsEnabled="False"></MenuItem>
+                <MenuItem Header="Выход из активного режима" IsCheckable="True" IsEnabled="False"></MenuItem>
+            </MenuItem>
+        </Menu>
+        <DataGrid ItemsSource="{Binding Seanses}" SelectedItem ="{Binding SelectedSeanse}" AutoGenerateColumns="False" Margin="10,31,175,246" CanUserAddRows="False" CanUserDeleteRows="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Частота" Binding="{Binding Freq}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Режим" Binding="{Binding Mode}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Макс." Binding="{Binding MaxSize}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Средн." Binding="{Binding AverageSize}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Последн. раб." Binding="{Binding LastWorkingTime}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Последн. акт." Binding="{Binding LastActiveTime}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Координаты" Binding="{Binding Coordinates}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Место определения" Binding="{Binding Position}"></DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <TabControl Margin="10,0,175,10" Height="231" VerticalAlignment="Bottom">
+            <TabItem Header="Log.txt">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+
+                    </Grid.ColumnDefinitions>
+                    <TextBox TextWrapping="NoWrap" Text="{Binding SelectdedSeanse.Log}" VerticalAlignment="Stretch" Height="Auto" IsReadOnly="True" Margin="0"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="График расстройки">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+            <TabItem Header="График работы">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
