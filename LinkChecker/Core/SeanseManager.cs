@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Logger;
 
 namespace Link11Checker.Core
@@ -13,7 +14,7 @@ namespace Link11Checker.Core
     {
         #region Properties
 
-        public List<Seanse> Seanses { get; private set; }
+        public ObservableCollection<Seanse> Seanses { get; private set; }
         public string DestinationPath { get; set; }
 
         #endregion
@@ -28,8 +29,8 @@ namespace Link11Checker.Core
 
         public SeanseManager(string destPath, ILogger logger)
         {
-            DestinationPath = destPath;
-            Seanses = new List<Seanse>();
+            this.DestinationPath = destPath;
+            this.Seanses = new ObservableCollection<Seanse>();
             this.logger = logger;
         }
 
@@ -40,11 +41,13 @@ namespace Link11Checker.Core
         public void AddSeanse(Seanse seanse)
         {
             Seanses.Add(seanse);
+            SaveDirectories();
         }
 
         public void RemoveSeanse(Seanse seanse)
         {
             Seanses.Remove(seanse);
+            SaveDirectories();
         }
 
         public void CopySeanses()
@@ -56,7 +59,18 @@ namespace Link11Checker.Core
         public void UpdateSeanses()
         {
             foreach (Seanse seanse in Seanses)
+            {
                 seanse.Update();
+            }
+        }
+
+        private void SaveDirectories()
+        {
+            File.Delete("seanses.txt");
+            foreach (Seanse s in Seanses)
+            {
+                File.AppendAllText("seanses.txt", s.Directory + Environment.NewLine);
+            }
         }
 
         public List<Seanse> GetActiveSeanses()

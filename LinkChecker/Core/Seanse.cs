@@ -21,33 +21,7 @@ namespace Link11Checker.Core
         #region Properties
         public Signal Signal { get { return signal; } }
         public string Directory { get; private set; }
-        public string LastActiveTime
-        {
-            get { return lastActiveTime.ToShortTimeString(); }
-            private set
-            {
-                lastActiveTime = DateTime.Parse(value);
-                OnPropertyChanged("LastActiveTime");
-            }
-        }
-        public string LastWorkingTime
-        {
-            get { return lastWorkingTime.ToShortTimeString(); }
-            private set
-            {
-                lastWorkingTime = DateTime.Parse(value);
-                OnPropertyChanged("LastWorkingTime");
-            }
-        }
-        public string Position {
-            get { return position; }
-            private set
-            {
-                position = value;
-                OnPropertyChanged("Position");
-            }
-        }
-        public string Coordinates { get; set; }
+        
         public float Freq {
             get { return freq; }
             private set
@@ -63,28 +37,58 @@ namespace Link11Checker.Core
                 OnPropertyChanged("Mode");
             } }
 
-        public int MaxSize {
-            get { return maxSize; }
-            set {
-                maxSize = value;
-                OnPropertyChanged("MaxSize");
-            } }
-
-        public float AverageSize {
-            get { return (float)Math.Round(averageSize, 2); }
-            set
-            {
-                averageSize = value;
-                OnPropertyChanged("AverageSize");
-            } }
-
-        public int AbonentsCount
+        public string LastWorkingTime
         {
-            get { return abonentsCount; }
-            set {
-                abonentsCount = value;
-                OnPropertyChanged("AbonentsCount");
+            get {
+                if (Signal.SignalEntries.Count == 0)
+                    return "";
+                return Signal.SignalEntries.Where(x => x.Type != EntryType.Error).Last().Time.ToShortTimeString();
             }
+        }
+        public string LastActiveTime
+        {
+            get { 
+                IEnumerable<SignalEntry> active = Signal.SignalEntries.Where(x => x.Type != EntryType.Error && ((x.Size > 200 && Mode == Mode.Clew) ||  (x.Size > 400 && Mode == Mode.Slew)));
+                if (active.Count() == 0)
+                    return "";
+                return active.Last().Time.ToShortTimeString();
+            }
+        }
+
+        public int AbonentsCount {
+            get { return Signal.GetAbonents().Count; }
+        }
+
+        public string Intervals {
+            get { return Signal.GetIntervals(); }
+        }
+        public string Position
+        {
+            get { return position; }
+            private set
+            {
+                position = value;
+                OnPropertyChanged("Position");
+            }
+        }
+        public string Coordinates
+        {
+            get { return coordinates; }
+            private set
+            {
+                coordinates = value;
+                OnPropertyChanged("Coordinates");
+            }
+        }
+
+        public int MaxSize
+        {
+            get { return Signal.GetMaxInFrames(); }
+        }
+
+        public float AverageSize
+        {
+            get { return (float)Math.Round(Signal.GetAverageSizeInFrames(), 1); }
         }
 
         #endregion
@@ -92,17 +96,11 @@ namespace Link11Checker.Core
         #region fields
 
         private readonly Signal signal;
-        private DateTime lastActiveTime;
-        private DateTime lastWorkingTime;
-        private string position;
-        private string coordinates;
         private float freq;
         private Mode mode;
-        private int maxSize;
-        private float averageSize;
-        private int abonentsCount;
+        private string position;
+        private string coordinates;
         private int edge;
-        private List<SignalEntry> activeEntries;
         private ILogger logger;
 
         #endregion
@@ -111,10 +109,10 @@ namespace Link11Checker.Core
 
         public Seanse(string directory, ILogger logger) 
         {
-            Directory = directory;
+            this.Directory = directory;
+            this.signal = new Signal(new Parser(), new Configuration { AbonentsK = 0.1, IntervalsK = 0.05 });
+            this.edge = 0;
             this.logger = logger;
-            activeEntries = new List<SignalEntry>();
-            signal = new Signal(new Parser(), new Configuration { AbonentsK = 0.1, IntervalsK = 0.05 });
             Update();
         }
 
@@ -124,10 +122,14 @@ namespace Link11Checker.Core
 
         public void Update()
         {
+            logger.LogMessage(" UPDATING " + Directory, LogLevel.Info);
+
             signal.LoadSignal(Directory + "log.txt");
-            string allLog;
+
             try
             {
+                string allLog;
+            
                 using (StreamReader fs = new StreamReader(Directory + "all_log.txt"))
                 {
                     allLog = fs.ReadToEnd();
@@ -146,44 +148,48 @@ namespace Link11Checker.Core
                 string freq = allLog.Substring(25, 6).Replace('.', ',');
 
                 Freq = float.Parse(freq);
+                OnPropertyChanged("LastWorkingTime");
+                OnPropertyChanged("LastActiveTime");
+                OnPropertyChanged("LastWorkingTime");
+                OnPropertyChanged("AbonentsCount");
+                OnPropertyChanged("Intervals");
+                OnPropertyChanged("MaxSize");
+                OnPropertyChanged("AverageSize");
+                
             }
             catch (Exception e)
             {
-                logger.LogMessage(e.Message, LogLevel.Error);
+                logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
             }
-            MaxSize = signal.GetMaxInFrames();
-
-            AverageSize = signal.GetAverageSizeInFrames();
-
-            if (signal.SignalEntries.Count != 0)
-                LastWorkingTime = signal.SignalEntries.Where(x => x.Type != EntryType.Error).Last().Time.ToString();
-
-
-            activeEntries = signal.SignalEntries.Where(x => x.Type != EntryType.Error && (x.Size - x.Errors) > edge).ToList();
-            if (activeEntries.Count != 0)
-                LastActiveTime = activeEntries.Last().Time.ToString();
-
-            AbonentsCount = signal.GetAbonents().Count;
         }
         public void Copy(DirectoryInfo destination)
         {
+            logger.LogMessage(" COPYING " + Directory + " TO " + destination, LogLevel.Info);
+
             DirectoryInfo di = new DirectoryInfo(Directory);
+            if (!di.Exists)
+            {
+                logger.LogMessage("Copying directory " + di.FullName + " impossible. This directory does'n exists.", LogLevel.Warning);
+                return;
+            }
             FileInfo[] files = di.GetFiles();
             if (!destination.Exists)
                 destination.Create();
             DirectoryInfo dest = new DirectoryInfo(destination.ToString() + '\\' + di.Name);
             dest.Create();
-            try
+            foreach (FileInfo file in files)
             {
-                foreach (FileInfo file in files)
-                {
+                try
+                {                 
                     file.CopyTo(dest.FullName + '\\' + file.Name, true);
+                    logger.LogMessage("     COPYING FILE" + file.FullName, LogLevel.Info);
+                }  
+                catch (Exception e)
+                {
+                    logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
                 }
             }
-            catch (Exception e)
-            {
-                logger.LogMessage(e.Message, LogLevel.Error);
-            }
+            
         }
 
         public bool IsActive()

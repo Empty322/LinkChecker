@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logger", "..\46report\Logge
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Link11Core.Tests", "Tests\Link11Core.Tests.csproj", "{C62E2B9E-F7F4-441D-9074-1F1A76D2461E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication1", "ConsoleApplication1\ConsoleApplication1.csproj", "{EBE76CBF-A744-4F9D-AFE9-0A0EE79DA101}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +33,6 @@ Global
 		{C62E2B9E-F7F4-441D-9074-1F1A76D2461E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C62E2B9E-F7F4-441D-9074-1F1A76D2461E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C62E2B9E-F7F4-441D-9074-1F1A76D2461E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EBE76CBF-A744-4F9D-AFE9-0A0EE79DA101}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EBE76CBF-A744-4F9D-AFE9-0A0EE79DA101}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EBE76CBF-A744-4F9D-AFE9-0A0EE79DA101}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EBE76CBF-A744-4F9D-AFE9-0A0EE79DA101}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -113,12 +113,21 @@ namespace Link11Checker.ViewModels
 
         #region Ctor
 
-        public WindowViewModel(ILogger logger)
+        public WindowViewModel(SeanseManager sm, ILogger logger)
         {
+            
             this.logger = logger;
-            Seanses = new ObservableCollection<Seanse>();
 
-            SeanseManager = new SeanseManager("", logger);
+            SeanseManager = sm;
+
+            Seanses = sm.Seanses;
+
+            if (File.Exists("seanses.txt"))
+            {
+                string[] dirs = File.ReadAllLines("seanses.txt");
+                foreach (string dir in dirs)
+                    seanseManager.AddSeanse(new Seanse(dir, logger));
+            }
 
             UpdateTimerOn = false;
 
@@ -132,7 +141,7 @@ namespace Link11Checker.ViewModels
             {
                 FolderBrowserDialog fbd = new FolderBrowserDialog();
                 DialogResult result = fbd.ShowDialog();
-                if (result == DialogResult.OK && fbd.SelectedPath != null)
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
                 {
                     SeanseManager.DestinationPath = fbd.SelectedPath;
                     DestPathSelected = true;
@@ -141,23 +150,16 @@ namespace Link11Checker.ViewModels
 
             AddSeanse = new RelayCommand(() =>
             {
-                try
+                FolderBrowserDialog fbd = new FolderBrowserDialog();
+                if (!string.IsNullOrWhiteSpace(lastSelectedPathWithLinks))
+                    fbd.SelectedPath = lastSelectedPathWithLinks;
+                DialogResult result = fbd.ShowDialog();
+                if (result == DialogResult.OK && fbd.SelectedPath != null)
                 {
-                    FolderBrowserDialog fbd = new FolderBrowserDialog();
-                    if (lastSelectedPathWithLinks != null)
-                        fbd.SelectedPath = lastSelectedPathWithLinks;
-                    DialogResult result = fbd.ShowDialog();
-                    if (result == DialogResult.OK && fbd.SelectedPath != null)
-                    {
-                        Seanse s = new Seanse(fbd.SelectedPath + '\\', logger);
-                        Seanses.Add(s);
-                        SeanseManager.AddSeanse(s);
-                    }
-                    lastSelectedPathWithLinks = fbd.SelectedPath;
+                    Seanse s = new Seanse(fbd.SelectedPath + '\\', logger);
+                    SeanseManager.AddSeanse(s);
                 }
-                catch (Exception e) {
-                    logger.LogMessage(e.Message, LogLevel.Error);
-                }
+                lastSelectedPathWithLinks = fbd.SelectedPath;
             });
 
             RemoveSeanse = new RelayCommand(() =>
@@ -165,7 +167,6 @@ namespace Link11Checker.ViewModels
                 if (SelectedSeanse != null)
                 {
                     SeanseManager.RemoveSeanse(SelectedSeanse);
-                    Seanses.Remove(SelectedSeanse);
                 }
                 else
                 {
@@ -175,55 +176,36 @@ namespace Link11Checker.ViewModels
 
             CopySeanses = new RelayCommand(() =>
             {
-                try
-                {
-                    if (SeanseManager.DestinationPath != null)
-                        SeanseManager.CopySeanses();
-                }
-                catch (Exception e)
-                {
-                    logger.LogMessage(e.Message, LogLevel.Error);
-                }
+                if (!string.IsNullOrWhiteSpace(SeanseManager.DestinationPath))
+                    SeanseManager.CopySeanses();
             });
 
             UpdateSeanses = new RelayCommand(() =>
             {
-                try
-                {
-                    SeanseManager.UpdateSeanses();
-                }
-                catch (Exception e)
-                {
-                    logger.LogMessage(e.Message, LogLevel.Error);
-                }
+                SeanseManager.UpdateSeanses();
             });
 
             Thread updateWorker = new Thread(() =>
             {
                 int updateCounter = 0;
                 int copyCounter = 0;
-                try {
-                    while (true)
-                    {
-                        if (UpdateTimerOn && updateCounter == updateCounterLimit)
-                        {
-                            SeanseManager.UpdateSeanses();
-                            updateCounter = 0;
-                        }
-                        if (CopyTimerOn && copyCounter == copyCounterLimit)
-                        {
-                            if (SeanseManager.DestinationPath != null)
-                                SeanseManager.CopySeanses();
-                            copyCounter = 0;
-                        }
-                        updateCounter++;
-                        copyCounter++;
-                        Thread.Sleep(5000);                    
-                    }
-                }
-                catch (Exception e)
+                while (true)
                 {
-                    logger.LogMessage(e.Message, LogLevel.Error);
+                    if (UpdateTimerOn && updateCounter >= updateCounterLimit)
+                    {
+                        SeanseManager.UpdateSeanses();
+                        updateCounter = 0;
+                    }
+                    if (CopyTimerOn && copyCounter >= copyCounterLimit)
+                    {
+                        if (string.IsNullOrWhiteSpace(SeanseManager.DestinationPath))
+                            SeanseManager.CopySeanses();
+                        copyCounter = 0;
+                    }
+                    updateCounter++;
+                    copyCounter++;
+                    Thread.Sleep(5000);
+                    logger.LogMessage("thread is working", LogLevel.Info);
                 }
             });
             updateWorker.Start();
