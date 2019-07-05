@@ -1,7 +1,0 @@
-03.07.2019 4:05:45Error	Could not find file 'D:\1\all_log.txt'.
-03.07.2019 4:06:29Error	Could not find file 'C:\all_log.txt'.
-03.07.2019 4:07:01Error	Could not find file 'C:\Users\User\Desktop\all_log.txt'.
-03.07.2019 4:08:56Error	Could not find file 'D:\all_log.txt'.
-03.07.2019 4:09:22Error	Could not find file 'C:\all_log.txt'.
-03.07.2019 4:09:27Error	Could not find file 'D:\all_log.txt'.
-03.07.2019 4:13:03Error	Could not find file 'D:\all_log.txt'.

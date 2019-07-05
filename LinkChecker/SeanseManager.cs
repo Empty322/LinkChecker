@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
+using Link11.Core.Interfaces;
+using Link11.Core;
 using Logger;
 
 namespace Link11Checker.Core
@@ -27,7 +28,9 @@ namespace Link11Checker.Core
 
         #region Ctor
 
-        public SeanseManager(string destPath, ILogger logger)
+        public SeanseManager(string destPath) : this(destPath, new Configuration { AbonentsK = 0.15, IntervalsK = 0.2 }, new Parser(), new PrimitiveLogger(LogLevel.Error)) { }
+
+        public SeanseManager(string destPath, Configuration config, IParser parser, ILogger logger)
         {
             this.DestinationPath = destPath;
             this.Seanses = new ObservableCollection<Seanse>();

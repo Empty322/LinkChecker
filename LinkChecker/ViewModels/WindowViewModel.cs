@@ -10,6 +10,7 @@ using Link11Checker.Core;
 using Link11Checker.ViewModels.Base;
 using System.Windows.Input;
 using System.Windows.Forms;
+using Link11.Core;
 using Logger;
 
 namespace Link11Checker.ViewModels

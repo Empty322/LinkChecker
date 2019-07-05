@@ -57,6 +57,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="SeanseManager.cs" />
     <Compile Include="ViewModels\Base\BaseViewModel.cs" />
     <Compile Include="ViewModels\Base\RelayCommand.cs" />
     <Compile Include="ViewModels\WindowViewModel.cs" />
@@ -68,8 +69,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Core\Seanse.cs" />
-    <Compile Include="Core\SeanseManager.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -103,13 +102,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\46report\Link11Core\Link11Core.csproj">
-      <Project>{00088677-3662-4186-94b7-37beced7bf1c}</Project>
-      <Name>Link11Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\46report\Logger\Logger.csproj">
       <Project>{550ed7cb-cb96-42ac-aaa3-9c2b0716dae1}</Project>
       <Name>Logger</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Link11.Core\Link11.Core.csproj">
+      <Project>{f4afc6e5-9d48-4221-88f3-a9794749a6de}</Project>
+      <Name>Link11.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
