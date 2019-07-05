@@ -220,7 +220,6 @@ namespace Link11Checker.ViewModels
                     updateCounter++;
                     copyCounter++;
                     Thread.Sleep(5000);
-                    logger.LogMessage("thread is working", LogLevel.Info);
                 }
             });
             updateWorker.Start();

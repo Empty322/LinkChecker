@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Link11.Core.Enums
 {
-    enum SeanseState
+    public enum SeanseState
     {
         WorkingLevel0,
         WorkingLevel1,

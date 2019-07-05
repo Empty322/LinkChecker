@@ -101,6 +101,23 @@ namespace Link11.Core
             get { return (float)Math.Round(GetAverageSizeInFrames(), 1); }
         }
 
+        //public SeanseState State
+        //{
+        //    get
+        //    {
+        //        TimeSpan minets = DateTime.Now - new DateTime(1, 1, 1, 0, 5, 0);
+        //        List<SignalEntry> lastEntries = signalEntries.Where(x => new TimeSpan(x.Time.Hour, x.Time.Minute, x.Time.Second) > minets).ToList();
+        //        if (lastEntries.Count > 50)
+        //            return SeanseState.WorkingLevel5;
+        //        return SeanseState.Active;
+        //    }
+        //}
+
+        private long DelayInTicks
+        {
+            get { return signalEntries.Last().Time.Ticks - lastModified.Ticks; }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
 
         #endregion
@@ -112,11 +129,11 @@ namespace Link11.Core
         private Mode mode;
         private string position;
         private string coordinates;
+        private DateTime lastModified;
 
         private ILogger logger;   
         private Configuration config;
         private IParser parser;
-        private long logSize;
         private int edge;
 
         #endregion
@@ -136,7 +153,6 @@ namespace Link11.Core
             this.logger = logger;
             this.config = config;
             this.edge = 0;
-            this.logSize = 0;
             Update();
         }
 
@@ -176,12 +192,13 @@ namespace Link11.Core
                 Type df = this.GetType();
                 foreach (PropertyInfo pi in df.GetProperties())
                     OnPropertyChanged(pi.Name);
-                
             }
             catch (Exception e)
             {
                 logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
             }
+
+            //SeanseState s = State;
         }
         public void Copy(DirectoryInfo destination)
         {
@@ -290,7 +307,7 @@ namespace Link11.Core
             try
             {
                 FileInfo fi = new FileInfo(file);
-                if (logSize != fi.Length)
+                if (lastModified != fi.LastWriteTime)
                 {
                     if (File.Exists(fi.DirectoryName + "\\temp.txt"))
                         File.Delete(fi.DirectoryName + "\\temp.txt");
@@ -304,7 +321,7 @@ namespace Link11.Core
                                                                                                              
                     File.Delete(fi.DirectoryName + "\\temp.txt");
                     LoadSignal(lines);
-                    logSize = fi.Length;
+                    lastModified = fi.LastWriteTime;
 
                     logger.LogMessage(fi.FullName + " Successfully loaded", LogLevel.Info);
                 }
