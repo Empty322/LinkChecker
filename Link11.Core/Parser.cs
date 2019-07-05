@@ -25,6 +25,7 @@ namespace Link11.Core
                 int errors = 0;
                 int nInterval = 0;
                 int kInterval = 0;
+                int tuning = 0;
 
                 // Номер
                 if (Int32.TryParse(lineData[0], out num))
@@ -99,6 +100,10 @@ namespace Link11.Core
                         // Скорость/Длина
 
                         // Расстройка
+                        if (Int32.TryParse(lineData[10], out tuning))
+                        {
+                            se.Tuning = tuning;
+                        }
 
                         // Уровень
 

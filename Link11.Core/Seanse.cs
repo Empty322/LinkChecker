@@ -101,11 +101,13 @@ namespace Link11.Core
             get { return (float)Math.Round(GetAverageSizeInFrames(), 1); }
         }
 
+        public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
+
         #endregion
 
         #region Fields
 
-        private List<SignalEntry> signalEntries;
+        public List<SignalEntry> signalEntries;
         private float freq;
         private Mode mode;
         private string position;
@@ -461,11 +463,13 @@ namespace Link11.Core
 
         #endregion
 
-        public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
+        #region Events
 
         public void OnPropertyChanged(string name)
         {
             PropertyChanged(this, new PropertyChangedEventArgs(name));
         }
+
+        #endregion        
     }
 }

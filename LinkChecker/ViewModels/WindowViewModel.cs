@@ -10,6 +10,8 @@ using Link11Checker.Core;
 using Link11Checker.ViewModels.Base;
 using System.Windows.Input;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
+using System.Diagnostics;
 using Link11.Core;
 using Logger;
 
@@ -109,6 +111,8 @@ namespace Link11Checker.ViewModels
         public ICommand UpdateSeanses { get; set; }
         public ICommand SetUpdateTimer { get; set; }
         public ICommand SetCopyTimer { get; set; }
+        public ICommand LoadTuningGraph { get; set; }
+        public ICommand OpenLog { get; set; }
 
         #endregion
 
@@ -184,6 +188,16 @@ namespace Link11Checker.ViewModels
             UpdateSeanses = new RelayCommand(() =>
             {
                 SeanseManager.UpdateSeanses();
+            });
+
+            OpenLog = new RelayCommand(() =>
+            {
+                if (SelectedSeanse != null)
+                {
+                    Process p = new Process();
+                    p.StartInfo = new ProcessStartInfo("notepad.exe", SelectedSeanse.Directory + "\\log.txt");
+                    p.Start();
+                }
             });
 
             Thread updateWorker = new Thread(() =>

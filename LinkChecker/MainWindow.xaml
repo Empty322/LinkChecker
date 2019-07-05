@@ -1,9 +1,21 @@
 ﻿<Window x:Class="Link11Checker.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="LinkChecker" Height="500" Width="800">
+        xmlns:wfi="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
+        xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+        xmlns:dvc="clr-namespace:System.Windows.Forms.DataVisualization.Charting;assembly=System.Windows.Forms.DataVisualization"
+        Title="LinkChecker" MinHeight="500" MinWidth="800">
     <Grid>
-        <Menu VerticalAlignment="Top" Height="32">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80*"></ColumnDefinition>
+            <ColumnDefinition Width="20*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32"></RowDefinition>
+            <RowDefinition Height=".5*"></RowDefinition>
+            <RowDefinition Height=".5*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Menu VerticalAlignment="Top" Grid.Row="0" Grid.ColumnSpan="2">
             <MenuItem Header="Сеанс">
                 <MenuItem Header="Выбор папки для накопления" Command="{Binding SelectDestinationPath}"></MenuItem>
                 <MenuItem Header="Добавить сеанс" Command="{Binding AddSeanse}"></MenuItem>
@@ -22,7 +34,7 @@
                 <MenuItem Header="Выход из активного режима" IsCheckable="True" IsEnabled="False"></MenuItem>
             </MenuItem>
         </Menu>
-        <DataGrid ItemsSource="{Binding Seanses}" SelectedItem ="{Binding SelectedSeanse}" AutoGenerateColumns="False" Margin="10,31,175,246" CanUserAddRows="False" CanUserDeleteRows="False">
+        <DataGrid ItemsSource="{Binding Seanses}" Grid.Row="1" SelectedItem ="{Binding SelectedSeanse}" AutoGenerateColumns="False" Margin="5" CanUserAddRows="False" CanUserDeleteRows="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Частота" Binding="{Binding Freq, Mode=OneWay}"></DataGridTextColumn>
                 <DataGridTextColumn Header="Режим" Binding="{Binding Mode, Mode=OneWay}"></DataGridTextColumn>
@@ -30,27 +42,27 @@
                 <DataGridTextColumn Header="Средн." Binding="{Binding AverageSize, Mode=OneWay}"></DataGridTextColumn>
                 <DataGridTextColumn Header="Последн. раб." Binding="{Binding LastWorkingTime, Mode=OneWay}" Width="60"></DataGridTextColumn>
                 <DataGridTextColumn Header="Последн. акт." Binding="{Binding LastActiveTime, Mode=OneWay}" Width="60"></DataGridTextColumn>
-                <DataGridTextColumn Header="Кол. корреспондентов" Binding="{Binding AbonentsCount, Mode=OneWay}" Width="60"></DataGridTextColumn>                
+                <DataGridTextColumn Header="Кол. корреспондентов" Binding="{Binding AbonentsCount, Mode=OneWay}" Width="60"></DataGridTextColumn>
                 <DataGridTextColumn Header="Интервалы" Binding="{Binding Intervals, Mode=OneWay}"></DataGridTextColumn>
                 <DataGridTextColumn Header="Координаты" Binding="{Binding Coordinates}"></DataGridTextColumn>
                 <DataGridTextColumn Header="Место определения" Binding="{Binding Position}"></DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <TabControl Margin="10,0,175,10" Height="231" VerticalAlignment="Bottom">
-            <TabItem Header="Log.txt">
+        <TabControl DataContext="{Binding SelectedSeanse}" Grid.Row="2" Margin="5" VerticalAlignment="Top">
+            <TabItem Header="График расстройки">
                 <Grid Background="#FFE5E5E5">
                     <Grid.ColumnDefinitions>
-
+                        <ColumnDefinition Width="47*"/>
+                        <ColumnDefinition Width="152*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox TextWrapping="NoWrap" Text="{Binding SelectdedSeanse.Log}" VerticalAlignment="Stretch" Height="Auto" IsReadOnly="True" Margin="0"/>
                 </Grid>
-            </TabItem>
-            <TabItem Header="График расстройки">
-                <Grid Background="#FFE5E5E5"/>
             </TabItem>
             <TabItem Header="График работы">
                 <Grid Background="#FFE5E5E5"/>
             </TabItem>
         </TabControl>
+        <StackPanel Grid.Column="1" Grid.Row="1">
+            <Button Command="{Binding OpenLog}">Открыть log.txt</Button>
+        </StackPanel>
     </Grid>
 </Window>
