@@ -8,6 +8,7 @@ namespace Link11.Core.Enums
 {
     public enum EntryType
     {
+        None,
         Call,
         Answer,
         Message,

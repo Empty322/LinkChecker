@@ -5,11 +5,22 @@ using System.Text;
 using System.Threading.Tasks;
 using Link11.Core.Interfaces;
 using Link11.Core.Enums;
+using Logger;
 
 namespace Link11.Core
 {
     public class Parser : IParser
     {
+
+        private ILogger logger;
+
+        public Parser() : this(new PrimitiveLogger("log.txt", LogLevel.Error)) { }
+
+        public Parser(ILogger logger)
+        {
+            this.logger = logger;
+        }
+
         public List<SignalEntry> Parse(List<string> lines)
         {
             List<SignalEntry> signal = new List<SignalEntry>();
@@ -60,6 +71,8 @@ namespace Link11.Core
                                     se.Type = EntryType.Message;
                                     break;
                                 default:
+                                    se.Type = EntryType.None;
+                                    logger.LogMessage("ОШИБКА ПАРСЕРА: не удалось определить тип вхождения.", LogLevel.Error);
                                     break;
                             }
                         }                        

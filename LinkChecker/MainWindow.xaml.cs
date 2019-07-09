@@ -25,9 +25,9 @@ namespace Link11Checker
     {
         public MainWindow()
         {
-            InitializeComponent();
             ILogger logger = new PrimitiveLogger("log.txt", LogLevel.Error);
-            DataContext = new WindowViewModel(new SeanseManager(""), logger);
+            InitializeComponent();
+            DataContext = new WindowViewModel(new SeanseManager(""), "0.4.0", logger);
         }
     }
 }

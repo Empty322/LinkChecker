@@ -10,17 +10,19 @@ using Link11Checker.Core;
 using Link11Checker.ViewModels.Base;
 using System.Windows.Input;
 using System.Windows.Forms;
-using System.Windows.Forms.DataVisualization.Charting;
 using System.Diagnostics;
 using Link11.Core;
+using Link11.Core.Enums;
 using Logger;
+using Newtonsoft.Json;
 
 namespace Link11Checker.ViewModels
 {
     public class WindowViewModel : BaseViewModel
     {
-
+        
         #region Properties
+
         public ObservableCollection<Seanse> Seanses { 
             get { return seanses; } 
             private set {
@@ -32,6 +34,7 @@ namespace Link11Checker.ViewModels
             get { return selectedSeanse; } 
             set {
                 selectedSeanse = value;
+                OnPropertyChanged("IsSeanceSelected");
                 OnPropertyChanged("SelectedSeanse");
             } }
 
@@ -40,13 +43,6 @@ namespace Link11Checker.ViewModels
             set {
                 seanseManager = value;
                 OnPropertyChanged("SeanseManager");
-            } }
-
-        public string SeanseToAdd { 
-            get { return seanseToAdd; } 
-            set {
-                seanseToAdd = value;
-                OnPropertyChanged("SeanseToAdd"); 
             } }
 
         public bool UpdateTimerOn {
@@ -75,6 +71,46 @@ namespace Link11Checker.ViewModels
                 OnPropertyChanged("DestPathSelected");
             } }
 
+        public bool IsSeanseSelected
+        {
+            get { return selectedSeanse == null ? false : true; }
+        }
+
+        public bool NotifyWhenStartWorking
+        {
+            get
+            {
+                return notifyWhenStartWorking;
+            }
+            set
+            {
+                notifyWhenStartWorking = value;
+                OnPropertyChanged("NotifyWhenStartWorking");
+            }
+        }
+
+        public bool NotifyWhenStartActive
+        {
+            get
+            {
+                return notifyWhenStartActive;
+            }
+            set
+            {
+                notifyWhenStartActive = value;
+                OnPropertyChanged("NotifyWhenStartActive");
+            }
+        }
+
+        #region StatusBarProps
+
+        public string Version { get { return version; } }
+        public int ActiveCount { get { return Seanses.Where(x => x.State == SeanseState.Active).Count(); } }
+
+        public int WorkingCount { get { return Seanses.Where(x => x.State != SeanseState.WorkingLevel0).Count(); } }
+
+        #endregion
+
         #endregion
 
         #region Fields
@@ -87,30 +123,39 @@ namespace Link11Checker.ViewModels
 
         private ILogger logger;
 
-        private string seanseToAdd;
+        private bool destPathSelected;
+
+        private string lastSelectedPathWithLinks;
+
+        private bool notifyWhenStartWorking;
+
+        private bool notifyWhenStartActive;
+
+        private string version;
+
+        private Settings settings;
+
+        #region TimerFields
 
         private bool updateTimerOn;
 
         private bool copyTimerOn;
-
-        private bool destPathSelected;
-
-        private string lastSelectedPathWithLinks;
 
         private const int updateCounterLimit = 0;
 
         private const int copyCounterLimit = 180;
 
         #endregion
+                                    
+        #endregion
         
         #region Commands
         public ICommand SelectDestinationPath { get; set; }
         public ICommand AddSeanse { get; set; }
+        public ICommand AddAllSeanses { get; set; }
         public ICommand RemoveSeanse { get; set; }
         public ICommand CopySeanses { get; set; }
         public ICommand UpdateSeanses { get; set; }
-        public ICommand SetUpdateTimer { get; set; }
-        public ICommand SetCopyTimer { get; set; }
         public ICommand LoadTuningGraph { get; set; }
         public ICommand OpenLog { get; set; }
 
@@ -118,20 +163,51 @@ namespace Link11Checker.ViewModels
 
         #region Ctor
 
-        public WindowViewModel(SeanseManager sm, ILogger logger)
+        public WindowViewModel(SeanseManager sm, string version, ILogger logger)
         {
-            
+            #region Inisialization
+
             this.logger = logger;
 
-            SeanseManager = sm;
+            this.seanseManager = sm;
 
-            Seanses = sm.Seanses;
+            this.seanses = sm.Seanses;
 
-            if (File.Exists("seanses.txt"))
+            this.version = version;
+
+            this.notifyWhenStartActive = false;
+
+            this.notifyWhenStartActive = false;
+
+            if (!File.Exists("settings.json"))
+                throw new FileNotFoundException();
+            string settingsFile = File.ReadAllText("settings.json", Encoding.Default);
+            this.settings.Configuration = JsonConvert.DeserializeObject<Configuration>(settingsFile);
+
+            if (File.Exists("seanses.json"))
             {
-                string[] dirs = File.ReadAllLines("seanses.txt");
+                string jsonFile = "";
+                try
+                {
+                    jsonFile = File.ReadAllText("seanses.json", Encoding.Default);
+                }
+                catch (Exception e)
+                {
+                    logger.LogMessage(e.Message, LogLevel.Error);
+                }
+                List<String> dirs = JsonConvert.DeserializeObject< List<string> >(jsonFile);
                 foreach (string dir in dirs)
-                    seanseManager.AddSeanse(new Seanse(dir, logger));
+                {
+                    try
+                    {
+                        seanseManager.AddSeanse(new Seanse(dir, logger));
+                    }
+                    catch (DirectoryNotFoundException e)
+                    {
+                        logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
+                        MessageBox.Show("Сеанс не найден: \n" + dir, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
             }
 
             UpdateTimerOn = false;
@@ -141,6 +217,10 @@ namespace Link11Checker.ViewModels
             destPathSelected = false;
 
             lastSelectedPathWithLinks = "";
+
+            #endregion
+
+            #region SetCommands
 
             SelectDestinationPath = new RelayCommand(() =>
             {
@@ -162,21 +242,27 @@ namespace Link11Checker.ViewModels
                 if (result == DialogResult.OK && fbd.SelectedPath != null)
                 {
                     Seanse s = new Seanse(fbd.SelectedPath + '\\', logger);
+                    s.ActiveStart += OnActiveStart;
+                    s.WorkingStart += OnWorkingStart;
                     SeanseManager.AddSeanse(s);
                 }
                 lastSelectedPathWithLinks = fbd.SelectedPath;
             });
 
+            AddAllSeanses = new RelayCommand(() =>
+            {
+                FolderBrowserDialog fbd = new FolderBrowserDialog();
+                DialogResult result = fbd.ShowDialog();
+                if (result == DialogResult.OK && fbd.SelectedPath != null)
+                    throw new NotImplementedException();
+            });
+
             RemoveSeanse = new RelayCommand(() =>
             {
                 if (SelectedSeanse != null)
-                {
                     SeanseManager.RemoveSeanse(SelectedSeanse);
-                }
                 else
-                {
                     System.Windows.MessageBox.Show("Выбирете сеанс", "Ошибка");
-                }
             });
 
             CopySeanses = new RelayCommand(() =>
@@ -195,42 +281,72 @@ namespace Link11Checker.ViewModels
                 if (SelectedSeanse != null)
                 {
                     Process p = new Process();
-                    p.StartInfo = new ProcessStartInfo("notepad.exe", SelectedSeanse.Directory + "\\log.txt");
+                    p.StartInfo = new ProcessStartInfo("excel.exe", "\"" + SelectedSeanse.Directory + "\\log.txt\"");
                     p.Start();
                 }
             });
+
+            #endregion
+
+            #region SetTimer
 
             Thread updateWorker = new Thread(() =>
             {
                 int updateCounter = 0;
                 int copyCounter = 0;
-                while (true)
+                try
                 {
-                    if (UpdateTimerOn && updateCounter >= updateCounterLimit)
+                    while (true)
                     {
-                        SeanseManager.UpdateSeanses();
-                        updateCounter = 0;
+                        if (UpdateTimerOn && updateCounter >= updateCounterLimit)
+                        {
+                            SeanseManager.UpdateSeanses();
+
+                            updateCounter = 0;
+                        }
+                        if (CopyTimerOn && copyCounter >= copyCounterLimit)
+                        {
+                            if (!string.IsNullOrWhiteSpace(SeanseManager.DestinationPath))
+                                SeanseManager.CopySeanses();
+                            copyCounter = 0;
+                        }
+                        updateCounter++;
+                        copyCounter++;
+                        Thread.Sleep(5000);
                     }
-                    if (CopyTimerOn && copyCounter >= copyCounterLimit)
-                    {
-                        if (string.IsNullOrWhiteSpace(SeanseManager.DestinationPath))
-                            SeanseManager.CopySeanses();
-                        copyCounter = 0;
-                    }
-                    updateCounter++;
-                    copyCounter++;
-                    Thread.Sleep(5000);
+                }
+                catch (Exception e)
+                {
+                    System.Windows.Forms.MessageBox.Show(e.ToString() + " " + e.Message);
                 }
             });
             updateWorker.Start();
-            updateWorker.IsBackground = true;
+            updateWorker.IsBackground = true;    
+            
+            #endregion
         }
 
         #endregion
 
-        #region Methods
+        #region EventHandlers
 
+        private void OnActiveStart(object sender, EventArgs args)
+        {
+            if (NotifyWhenStartActive)
+            {
+                Seanse seanse = (Seanse)sender;
+                MessageBox.Show(string.Format("Линк {0} {1} преходит в активный режим.", seanse.Freq, seanse.Mode), "Переход в активный");
+            }
+        }
 
+        private void OnWorkingStart(object sender, EventArgs args)
+        {
+            if (NotifyWhenStartWorking)
+            {
+                Seanse seanse = (Seanse)sender;
+                MessageBox.Show(string.Format("Линк {0} {1} начинает свою работу.", seanse.Freq, seanse.Mode), "Начало работы");
+            }
+        }
 
         #endregion
     }

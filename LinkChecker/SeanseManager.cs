@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using Link11.Core.Interfaces;
 using Link11.Core;
 using Logger;
+using Newtonsoft.Json;
 
 namespace Link11Checker.Core
 {
@@ -69,21 +70,23 @@ namespace Link11Checker.Core
 
         private void SaveDirectories()
         {
-            File.Delete("seanses.txt");
+            List<string> seansesToSave = new List<string>();
             foreach (Seanse s in Seanses)
             {
-                File.AppendAllText("seanses.txt", s.Directory + Environment.NewLine);
-            }
+                seansesToSave.Add(s.Directory);
+            };
+            string json = JsonConvert.SerializeObject(seansesToSave);
+            File.WriteAllText("seanses.json", json, Encoding.Default);
         }
 
-        public List<Seanse> GetActiveSeanses()
-        {
-            List<Seanse> active = new List<Seanse>();
-            foreach (Seanse seanse in Seanses)
-                if (seanse.IsActive())
-                    active.Add(seanse);
-            return active;
-        }
+        //public List<Seanse> GetActiveSeanses()
+        //{
+        //    List<Seanse> active = new List<Seanse>();
+        //    foreach (Seanse seanse in Seanses)
+        //        if (seanse.IsActive())
+        //            active.Add(seanse);
+        //    return active;
+        //}
 
         #endregion
     }

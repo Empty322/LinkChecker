@@ -10,6 +10,7 @@ using Link11.Core.Interfaces;
 using Link11.Core.Enums;
 using Link11.Core;
 using Logger;
+using Newtonsoft.Json;
 
 
 namespace Link11.Core
@@ -20,7 +21,7 @@ namespace Link11.Core
         Slew
     }
 
-    public class Configuration
+    public struct Configuration
     {
         public double AbonentsK { get; set; }
         public double IntervalsK { get; set; }
@@ -28,8 +29,16 @@ namespace Link11.Core
 
     public class Seanse : INotifyPropertyChanged
     {
+        #region Events
+
+        public Action<object, EventArgs> ActiveStart;
+
+        public Action<object, EventArgs> WorkingStart;
+
+        #endregion
+
         #region Properties
-                         
+
         public string Directory { get; private set; }
         
         public float Freq {
@@ -46,6 +55,16 @@ namespace Link11.Core
                 mode = value;
                 OnPropertyChanged("Mode");
             } }
+
+        public string StartWorkingTime
+        {
+            get {
+                if (signalEntries.Count != 0)
+                    return signalEntries.First().Time.ToShortTimeString();
+                else
+                    return "";
+            }
+        }
 
         public string LastWorkingTime
         {
@@ -96,27 +115,70 @@ namespace Link11.Core
             get { return GetMaxInFrames(); }
         }
 
+        public float MaxSizeInBytes
+        {
+            get { return (float)Math.Round(MaxSize * 3.75, 2); }
+        }
+
         public float AverageSize
         {
-            get { return (float)Math.Round(GetAverageSizeInFrames(), 1); }
+            get { return (float)Math.Round(GetAverageSizeInFrames()); }
         }
 
-        //public SeanseState State
-        //{
-        //    get
-        //    {
-        //        TimeSpan minets = DateTime.Now - new DateTime(1, 1, 1, 0, 5, 0);
-        //        List<SignalEntry> lastEntries = signalEntries.Where(x => new TimeSpan(x.Time.Hour, x.Time.Minute, x.Time.Second) > minets).ToList();
-        //        if (lastEntries.Count > 50)
-        //            return SeanseState.WorkingLevel5;
-        //        return SeanseState.Active;
-        //    }
-        //}
-
-        private long DelayInTicks
+        public SeanseState State
         {
-            get { return signalEntries.Last().Time.Ticks - lastModified.Ticks; }
+            get
+            {
+                SeanseState result;
+                if (signalEntries.Count != 0)
+                {
+                    DateTime lastEntryTime = signalEntries.Last().Time;
+                    TimeSpan delay = lastModified - lastEntryTime;
+                    DateTime timeWithoutDelay = DateTime.Now - delay;
+
+                    result = SeanseState.WorkingLevel0;
+                    List<SignalEntry> lastEntries = signalEntries.Where(x => x.Time > timeWithoutDelay - new TimeSpan(0, 3, 0) && x.Time < DateTime.Now - delay).ToList();
+                    if (lastEntries.Where(x =>
+                        x.Type != EntryType.Error &&
+                        (
+                            (Mode == Mode.Clew && (x.Size - x.Errors > 200)) ||
+                            (Mode == Mode.Clew && (x.Size - x.Errors > 200))
+                        )).Count() > 0)
+                        result = SeanseState.Active;
+                    else if (lastEntries.Count >= countForWorkingLevel5)
+                        result = SeanseState.WorkingLevel5;
+                    else if (lastEntries.Count >= countForWorkingLevel4)
+                        result = SeanseState.WorkingLevel4;
+                    else if (lastEntries.Count >= countForWorkingLevel3)
+                        result = SeanseState.WorkingLevel3;
+                    else if (lastEntries.Count >= countForWorkingLevel2)
+                        result = SeanseState.WorkingLevel2;
+                    else if (lastEntries.Count >= countForWorkingLevel1)
+                        result = SeanseState.WorkingLevel1;
+                    else if (lastEntries.Count == 0)
+                        result = SeanseState.WorkingLevel0;
+                }
+                else
+                {
+                    result = SeanseState.WorkingLevel0;
+                }
+                return result;
+            }
         }
+
+        public string LastCopy { 
+            get {
+                return lastCopy.ToShortTimeString();
+            }
+        }
+        public string LastUpdate
+        {
+            get
+            {
+                return lastUpdate.ToShortTimeString();
+            }
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
 
@@ -130,18 +192,27 @@ namespace Link11.Core
         private string position;
         private string coordinates;
         private DateTime lastModified;
+        private DateTime lastCopy;
+        private DateTime lastUpdate;
 
         private ILogger logger;   
         private Configuration config;
         private IParser parser;
         private int edge;
 
+        private const int countForWorkingLevel5 = 200;
+        private const int countForWorkingLevel4 = 100;
+        private const int countForWorkingLevel3 = 40;
+        private const int countForWorkingLevel2 = 10;
+        private const int countForWorkingLevel1 = 1;
+        
         #endregion
 
         #region Ctor
 
-        public Seanse(string directory, ILogger logger)
-            : this(directory, new Configuration { AbonentsK = 0.15, IntervalsK = 0.2}, new Parser(), new PrimitiveLogger(LogLevel.Error)) { }
+        public Seanse(string directory) : this(directory, new PrimitiveLogger("log.txt", LogLevel.Error)) { }
+
+        public Seanse(string directory, ILogger logger) : this(directory, new Configuration{ AbonentsK = 0.15, IntervalsK = 0.2}, new Parser(), logger) { }
 
         public Seanse(string directory, Configuration config, IParser parser, ILogger logger) 
         {
@@ -164,12 +235,14 @@ namespace Link11.Core
         {
             logger.LogMessage(" UPDATING " + Directory, LogLevel.Info);
 
+            SeanseState prevState = State;
+
             LoadSignal(Directory + "log.txt");
 
             try
             {
                 string allLog;
-            
+
                 using (StreamReader fs = new StreamReader(Directory + "all_log.txt"))
                 {
                     allLog = fs.ReadToEnd();
@@ -189,109 +262,118 @@ namespace Link11.Core
 
                 Freq = float.Parse(freq);
 
+
+
                 Type df = this.GetType();
                 foreach (PropertyInfo pi in df.GetProperties())
                     OnPropertyChanged(pi.Name);
+
+                if (prevState != SeanseState.Active && State == SeanseState.Active)
+                    ActiveStart.Invoke(this, new EventArgs());
+                if (prevState == SeanseState.WorkingLevel0 && State != SeanseState.WorkingLevel0)
+                    WorkingStart.Invoke(this, new EventArgs());
             }
             catch (Exception e)
             {
                 logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
             }
-
-            //SeanseState s = State;
         }
         public void Copy(DirectoryInfo destination)
         {
-            logger.LogMessage(" COPYING " + Directory + " TO " + destination, LogLevel.Info);
+            if (signalEntries.Count != 0)
+            {
+                logger.LogMessage(" COPYING " + Directory + " TO " + destination, LogLevel.Info);
 
-            DirectoryInfo di = new DirectoryInfo(Directory);
-            if (!di.Exists)
-            {
-                logger.LogMessage("Copying directory " + di.FullName + " impossible. This directory does'n exists.", LogLevel.Warning);
-                return;
-            }
-            FileInfo[] files = di.GetFiles();
-            if (!destination.Exists)
-                destination.Create();
-            DirectoryInfo dest = new DirectoryInfo(destination.ToString() + '\\' + di.Name);
-            dest.Create();
-            foreach (FileInfo file in files)
-            {
-                try
-                {                 
-                    file.CopyTo(dest.FullName + '\\' + file.Name, true);
-                    logger.LogMessage("     COPYING FILE" + file.FullName, LogLevel.Info);
-                }  
-                catch (Exception e)
+                DirectoryInfo di = new DirectoryInfo(Directory);
+                if (!di.Exists)
                 {
-                    logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
+                    logger.LogMessage("Copying directory " + di.FullName + " impossible. This directory does'n exists.", LogLevel.Warning);
+                    return;
+                }
+                FileInfo[] files = di.GetFiles();
+                if (!destination.Exists)
+                    destination.Create();
+                DirectoryInfo dest = new DirectoryInfo(destination.ToString() + '\\' + di.Name);
+                dest.Create();
+                foreach (FileInfo file in files)
+                {
+                    try
+                    {
+                        file.CopyTo(dest.FullName + '\\' + file.Name, true);
+                        logger.LogMessage("     COPYING FILE: " + file.FullName, LogLevel.Info);
+                        if (file.Name == "log.txt")
+                            lastCopy = DateTime.Now;
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
+                    }
                 }
             }
-            
         }
 
-        public bool IsActive()
-        {
-            if (signalEntries.Count == 0)
-                return false;
-            return IsActive(signalEntries.First().Time, signalEntries.Last().Time);
-        }
+        //public bool IsActive()
+        //{
+        //    if (signalEntries.Count == 0)
+        //        return false;
+        //    return IsActive(signalEntries.First().Time, signalEntries.Last().Time);
+        //}
 
-        public bool IsActive(DateTime start, DateTime end)
-        {
-            if (start > end)
-            {
-                return IsActive(start, DateTime.Parse("23:59:59")) || IsActive(DateTime.Parse("00:00"), end);
-            }
-            List<SignalEntry> messages = signalEntries.Where(x =>
-                x.Time >= start &&
-                x.Time < end &&
-                x.Type != EntryType.Error).ToList();
+        //public bool IsActive(DateTime start, DateTime end)
+        //{
+        //    if (start > end)
+        //    {
+        //        return IsActive(start, DateTime.Parse("23:59:59")) || IsActive(DateTime.Parse("00:00"), end);
+        //    }
+        //    List<SignalEntry> messages = signalEntries.Where(x =>
+        //        x.Time >= start &&
+        //        x.Time < end &&
+        //        x.Type != EntryType.Error).ToList();
 
-            int edge = 0;
-            switch (Mode)
-            {
-                case Mode.Clew:
-                    edge = 200;
-                    break;
-                case Mode.Slew:
-                    edge = 400;
-                    break;
-                default:
-                    break;
-            }
+        //    int edge = 0;
+        //    switch (Mode)
+        //    {
+        //        case Mode.Clew:
+        //            edge = 200;
+        //            break;
+        //        case Mode.Slew:
+        //            edge = 400;
+        //            break;
+        //        default:
+        //            break;
+        //    }
 
-            foreach (SignalEntry message in messages)
-            {
-                if (message.Size - message.Errors > edge)
-                    return true;
-            }
-            return false;
-        }
+        //    foreach (SignalEntry message in messages)
+        //    {
+        //        if (message.Size - message.Errors > edge)
+        //            return true;
+        //    }
+        //    return false;
+        //}
 
-        public bool IsWorking()
-        {
-            if (signalEntries.Count == 0)
-                return false;
-            return IsWorking(signalEntries.First().Time, signalEntries.Last().Time);
-        }
+        //public bool IsWorking()
+        //{
+        //    if (signalEntries.Count == 0)
+        //        return false;
+        //    return IsWorking(signalEntries.First().Time, signalEntries.Last().Time);
+        //}
 
-        public bool IsWorking(DateTime start, DateTime end)
-        {
-            if (end < start)
-            {
-                return IsWorking(start, DateTime.Parse("23:59:59")) || IsWorking(DateTime.Parse("00:00"), end);
-            }
-            else
-            {
-                List<SignalEntry> entries = signalEntries.Where(x => x.Time >= start && x.Time < end).ToList();
+        //public bool IsWorking(DateTime start, DateTime end)
+        //{
+        //    if (end < start)
+        //    {
+        //        return IsWorking(start, DateTime.Parse("23:59:59")) || IsWorking(DateTime.Parse("00:00"), end);
+        //    }
+        //    else
+        //    {
+        //        List<SignalEntry> entries = signalEntries.Where(x => x.Time >= start && x.Time < end).ToList();
 
-                if (entries.Any())
-                    return true;
-                else
-                    return false;
-            }
-        }
+        //        if (entries.Any())
+        //            return true;
+        //        else
+        //            return false;
+        //    }
+        //}
 
         #endregion
 
@@ -324,6 +406,8 @@ namespace Link11.Core
                     lastModified = fi.LastWriteTime;
 
                     logger.LogMessage(fi.FullName + " Successfully loaded", LogLevel.Info);
+
+                    lastUpdate = DateTime.Now;
                 }
             }
             catch (Exception e)
@@ -478,15 +562,11 @@ namespace Link11.Core
             return result;
         }
 
-        #endregion
-
-        #region Events
-
-        public void OnPropertyChanged(string name)
+        private void OnPropertyChanged(string name)
         {
             PropertyChanged(this, new PropertyChangedEventArgs(name));
-        }
+        }  
 
-        #endregion        
+        #endregion   
     }
 }
