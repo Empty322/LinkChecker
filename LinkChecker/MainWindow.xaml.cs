@@ -12,9 +12,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
 using Link11Checker.ViewModels;
 using Logger;
 using Link11Checker.Core;
+using Newtonsoft.Json;
+using Link11.Core;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace Link11Checker
 {
@@ -25,9 +29,33 @@ namespace Link11Checker
     {
         public MainWindow()
         {
+            #region Loading settings
+
+            if (!File.Exists("settings.json"))
+                throw new FileNotFoundException();
+            string settingsFile = File.ReadAllText("settings.json", Encoding.Default);
+            Settings settings = JsonConvert.DeserializeObject<Settings>(settingsFile);
+
+            if (!File.Exists("configuration.json"))
+                throw new FileNotFoundException();
+            string configFile = File.ReadAllText("configuration.json", Encoding.Default);
+            settings.configuration = JsonConvert.DeserializeObject<Configuration>(configFile);
+
+            #endregion
+
             ILogger logger = new PrimitiveLogger("log.txt", LogLevel.Error);
             InitializeComponent();
-            DataContext = new WindowViewModel(new SeanseManager(""), "0.4.0", logger);
+            DataContext = new WindowViewModel(this, new SeanseManager(settings, new Parser(), logger), settings, logger);
+        }
+
+        public Chart GetTuningChart()
+        {
+            return tuningChart;
+        }
+
+        public Chart GetWorkingChart()
+        {
+            return workingChart;
         }
     }
 }

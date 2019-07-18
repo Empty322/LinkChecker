@@ -21,7 +21,7 @@ namespace Link11.Core
             this.logger = logger;
         }
 
-        public List<SignalEntry> Parse(List<string> lines)
+        public List<SignalEntry> ParseLog(List<string> lines)
         {
             List<SignalEntry> signal = new List<SignalEntry>();
             for (int i = 0; i < lines.Count(); i++)
@@ -36,7 +36,7 @@ namespace Link11.Core
                 int errors = 0;
                 int nInterval = 0;
                 int kInterval = 0;
-                int tuning = 0;
+                float tuning = 0;
 
                 // Номер
                 if (Int32.TryParse(lineData[0], out num))
@@ -113,11 +113,15 @@ namespace Link11.Core
                         // Скорость/Длина
 
                         // Расстройка
-                        if (Int32.TryParse(lineData[10], out tuning))
-                        {
-                            se.Tuning = tuning;
+                        if (lineData[10].Count() > 2) {
+                            string value = lineData[10].Substring(1);
+                            if (float.TryParse(value.Replace('.', ','), out tuning))
+                                se.Tuning = tuning;
+                            if (lineData[10][0] == '-')
+                                se.Tuning = -se.Tuning;
                         }
-
+                        
+                        
                         // Уровень
 
                         signal.Add(se);
@@ -125,6 +129,20 @@ namespace Link11.Core
                 }
             }
             return signal;
+        }
+
+        public void ParseAllLog(string content, out float freq, out Mode mode)
+        {
+            // Режим
+            string modeString = content.Substring(11, 4);
+            if (modeString == "CLEW")
+                mode = Mode.Clew;
+            else if (modeString == "SLEW")
+                mode = Mode.Slew;
+            else
+                mode = Mode.Unknown;
+            // Частота
+            freq = float.Parse(content.Substring(25, 6).Replace('.', ','));
         }
     }
 }

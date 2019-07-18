@@ -19,7 +19,7 @@ namespace Link11.Core
         public int Ninterval { get; set; }
         public int Kinterval { get; set; }
         public int Ext { get; set; }
-        public int Tuning { get; set; }
-        public int Level { get; set; }
+        public float Tuning { get; set; }
+        public float Level { get; set; }
     }
 }

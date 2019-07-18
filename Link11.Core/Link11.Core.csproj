@@ -43,7 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Channel.cs" />
+    <Compile Include="Charting\TuningChartUnit.cs" />
+    <Compile Include="Charting\WorkingChartUnit.cs" />
     <Compile Include="Enums\EntryType.cs" />
+    <Compile Include="Enums\Mode.cs" />
     <Compile Include="Enums\SeanseState.cs" />
     <Compile Include="Enums\Source.cs" />
     <Compile Include="Parser.cs" />

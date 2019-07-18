@@ -9,6 +9,11 @@ namespace Link11Checker
 {
     public struct Settings
     {
-        public Configuration Configuration;
+        public Configuration configuration { get; set; }
+        public string InitialSeansesPath { get; set; }
+        public string InitialDestPath { get; set; }
+        public string VenturFile { get; set; }
+        public int UpdateCounterLimit { get; set; }
+        public int CopyCounterLimit { get; set; }
     }
 }

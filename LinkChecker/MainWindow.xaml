@@ -1,27 +1,35 @@
 ﻿<Window x:Class="Link11Checker.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Link11Checker" Height="500" Width="900">
+        xmlns:charting="clr-namespace:System.Windows.Forms.DataVisualization.Charting;assembly=System.Windows.Forms.DataVisualization"
+        Title="Link11Checker" Height="500" Width="900"
+        Icon="Resources/btnSonogr.png">
     <DockPanel>
         <Menu DockPanel.Dock="Top" VerticalAlignment="Top" Grid.Row="0" Grid.ColumnSpan="2">
             <MenuItem Header="Сеанс">
-                <MenuItem Header="Выбор папки для накопления" Command="{Binding SelectDestinationPath}"></MenuItem>
-                <MenuItem Header="Добавить сеанс" Command="{Binding AddSeanse}"></MenuItem>
-                <MenuItem Header="Добавить все сеансы" Command="{Binding AddAllSeanses}" IsEnabled="False"></MenuItem>
-                <MenuItem Header="Удалить Сеанс" Command="{Binding RemoveSeanse}"></MenuItem>
-                <MenuItem Header="Копировать сеансы" Command="{Binding CopySeanses}" IsEnabled="{Binding DestPathSelected}"></MenuItem>
-                <MenuItem Header="Обновить сеансы" Command="{Binding UpdateSeanses}" ></MenuItem>
+                <MenuItem Header="Добавить сеанс" Command="{Binding AddSeanse}" />
+                <MenuItem Header="Добавить сеансы из Вентура" Command="{Binding AddSeansesFromVentur}" />
+                <MenuItem Header="Добавить все сеансы из папки" Command="{Binding AddAllSeanses}" />
+                <MenuItem Header="Удалить cеанс" Command="{Binding RemoveSeanse}" />
+                <MenuItem Header="Удалить все сеансы" Command="{Binding RemoveAllSeanses}" />
+                <Separator />
+                <MenuItem Header="Выбор папки для накопления" Command="{Binding SelectDestinationPath}" />
+                <Separator />
+                <MenuItem Header="Копировать сеансы" Command="{Binding CopySeanses}" IsEnabled="{Binding DestPathSelected}" />
+                <MenuItem Header="Обновить сеансы" Command="{Binding UpdateSeanses}" />
             </MenuItem>
             <MenuItem Header="Таймер">
-                <MenuItem Header="Установить таймер на обновление сеансов" IsCheckable="True" IsChecked="{Binding UpdateTimerOn}"></MenuItem>
-                <MenuItem Header="Установить таймер на копирование сеансов" IsCheckable="True" IsChecked="{Binding CopyTimerOn}" IsEnabled="{Binding DestPathSelected}"></MenuItem>
+                <MenuItem Header="Установить таймер на обновление сеансов" IsCheckable="True" IsChecked="{Binding UpdateTimerOn}" />
+                <MenuItem Header="Установить таймер на копирование сеансов" IsCheckable="True" IsChecked="{Binding CopyTimerOn}" IsEnabled="{Binding DestPathSelected}" />
             </MenuItem>
             <MenuItem Header="Уведомления">
-                <MenuItem Header="Начало работы" IsCheckable="True" IsChecked="{Binding NotifyWhenStartWorking}"></MenuItem>
-                <MenuItem Header="Окончание работы" IsCheckable="True" IsEnabled="False"></MenuItem>
-                <MenuItem Header="Переход в активный режим" IsCheckable="True" IsChecked="{Binding NotifyWhenStartActive}"></MenuItem>
-                <MenuItem Header="Выход из активного режима" IsCheckable="True" IsEnabled="False"></MenuItem>
+                <MenuItem Header="Начало работы" IsCheckable="True" IsChecked="{Binding NotifyWhenStartWorking}" />
+                <MenuItem Header="Окончание работы" IsCheckable="True" IsEnabled="False" />
+                <MenuItem Header="Переход в активный режим" IsCheckable="True" IsChecked="{Binding NotifyWhenStartActive}" />
+                <MenuItem Header="Выход из активного режима" IsCheckable="True" IsEnabled="False" />
             </MenuItem>
+            <MenuItem Header="Настройки" Command="{Binding Settings}" IsEnabled="False" />
+            <MenuItem Header="О программе" Command="{Binding About}" />
         </Menu>
         <StatusBar DockPanel.Dock="Bottom" Margin="0, 5, 0, 0">
             <StatusBarItem>
@@ -37,15 +45,15 @@
         </StatusBar>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="315*"/>
-                <ColumnDefinition Width="106*"/>
+                <ColumnDefinition Width="70*"/>
+                <ColumnDefinition Width="30*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="60*"></RowDefinition>
+                <RowDefinition Height="40*"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <DataGrid SelectionMode="Single" ItemsSource="{Binding Seanses}" Grid.Row="0" Grid.Column="0" SelectedItem ="{Binding SelectedSeanse}" AutoGenerateColumns="False" Margin="5" CanUserAddRows="False" CanUserDeleteRows="False">
+            <DataGrid VirtualizingPanel.IsVirtualizing="True" SelectionMode="Single" ItemsSource="{Binding Seanses}" Grid.Row="0" Grid.Column="0" SelectedItem ="{Binding SelectedSeanse}" AutoGenerateColumns="False" Margin="5" CanUserAddRows="False" CanUserDeleteRows="False">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Частота" Binding="{Binding Freq, Mode=OneWay}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Режим" Binding="{Binding Mode, Mode=OneWay}"></DataGridTextColumn>
@@ -58,25 +66,25 @@
                     <DataGridTextColumn Header="Координаты" Binding="{Binding Coordinates}"></DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>
-            <TabControl DataContext="{Binding SelectedSeanse}" Grid.Row="1" Grid.Column="0" Margin="5,5,5,0" VerticalAlignment="Top" Height="32">
+            <TabControl Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" DataContext="{Binding SelectedSeanse}">
                 <TabItem Header="График расстройки">
-                    <Grid Background="#FFE5E5E5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="47*"/>
-                            <ColumnDefinition Width="152*"/>
-                        </Grid.ColumnDefinitions>
-                    </Grid>
+                    <WindowsFormsHost VerticalAlignment="Stretch">
+                        <charting:Chart x:Name="tuningChart"></charting:Chart>
+                    </WindowsFormsHost>
                 </TabItem>
                 <TabItem Header="График работы">
-                    <Grid Background="#FFE5E5E5"/>
+                    <WindowsFormsHost>
+                        <charting:Chart x:Name="workingChart"></charting:Chart>
+                    </WindowsFormsHost>
                 </TabItem>
             </TabControl>
             <StackPanel Grid.Row="0" Margin="5" Grid.Column="1">
-                <Button Background="{Binding Path=State, Converter={StaticResource StateToColorConverter}}" Margin="0,0,0,10" Command="{Binding OpenLog}" IsEnabled="{Binding IsSeanceSelected}">Открыть log.txt</Button>
+                <Button Margin="0,0,0,10" Command="{Binding OpenLog}" IsEnabled="{Binding IsSeanceSelected}">Открыть log.txt</Button>
                 <TextBlock Text="{Binding SelectedSeanse.LastUpdate, StringFormat=Посл. обновление: {0}}" TextWrapping="Wrap" />
                 <TextBlock Text="{Binding SelectedSeanse.LastCopy, StringFormat=Посл. копирование: {0}}" TextWrapping="Wrap" />
                 <TextBlock Text="{Binding SelectedSeanse.StartWorkingTime, StringFormat=Время начала: {0}}" TextWrapping="Wrap" />
                 <TextBlock Text="{Binding SelectedSeanse.MaxSizeInBytes, StringFormat=Макс. объем в байтах: {0:F2}}" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding SelectedSeanse.Directory, StringFormat=Папка с сеансом: {0:F2}}" TextWrapping="Wrap" />
             </StackPanel>
         </Grid>
     </DockPanel>
