@@ -164,16 +164,16 @@ namespace Link11Checker.ViewModels
             this.settings = settings;
             this.window = wnd;
             this.seanseManager = sm;
-            this.seanses = sm.Seanses;
+            this.seanses = new ObservableCollection<Seanse>();
             this.version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             this.notifyWhenStartActive = false;
             this.notifyWhenStartActive = false;
             this.destPathSelected = false;
             this.lastSelectedPathWithLinks = "";
 
-            seanseManager.SeanseLoaded += SeanseManager_SeanseLoaded;
-            seanseManager.SeansesUpdated += seanseManager_SeanseUpdated;
-            seanseManager.Seanses.CollectionChanged += Seanses_CollectionChanged;
+            seanseManager.SeanseAdded += SeanseManager_SeanseAdded;
+            seanseManager.SeanseRemoved += SeanseManager_SeanseRemoved;
+            seanseManager.SeanseUpdated += SeanseManager_SeanseUpdated;
             
             
             #region Charts initialization
@@ -211,22 +211,9 @@ namespace Link11Checker.ViewModels
                 List<String> dirs = JsonConvert.DeserializeObject< List<string> >(jsonFile);
                 foreach (string dir in dirs)
                 {
-                    try
-                    {
-                        Seanse s = new Seanse(dir, logger);
-                        s.ActiveStart += OnActiveStart;
-                        s.WorkingStart += OnWorkingStart;
-                        seanseManager.AddSeanse(s);
-                    }
-                    catch (DirectoryNotFoundException e)
-                    {
-                        logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
-                        MessageBox.Show("Сеанс не найден: \n" + dir, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    catch (Seanse.LogFileNotFoundException e)
-                    {
-                        logger.LogMessage(e.FileName + " не найден", LogLevel.Warning);
-                    }
+                    if (!seanseManager.AddSeanse(dir))
+                        MessageBox.Show("Не удалось добавить сеанс: \n" + dir, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    
                 }
             }
 
@@ -257,47 +244,25 @@ namespace Link11Checker.ViewModels
                 DialogResult result = fbd.ShowDialog();
                 if (result == DialogResult.OK && fbd.SelectedPath != null)
                 {
-                    try
-                    {
-                        Seanse s = new Seanse(fbd.SelectedPath + '\\', logger);
-                        s.ActiveStart += OnActiveStart;
-                        s.WorkingStart += OnWorkingStart;
-                        SeanseManager.AddSeanse(s);
-                    }
-                    catch (Seanse.LogFileNotFoundException e)
-                    {
-                        logger.LogMessage(e.FileName + " не найден", LogLevel.Warning);
-                    }
+                    if (!SeanseManager.AddSeanse(fbd.SelectedPath))
+                        logger.LogMessage("Не удалось добавить сеанс: \n" + fbd.SelectedPath, LogLevel.Warning);
                 }
                 lastSelectedPathWithLinks = fbd.SelectedPath;
             });
 
             AddSeansesFromVentur = new RelayCommand(async () =>
             {
-                try
-                {
-                    await SeanseManager.GetSeansesFromVentursFileAsync(settings.VenturFile);
-                }
-                catch (DirectoryNotFoundException e)
-                {
-                    MessageBox.Show("Папка с сеансом не найдена: \n" + e.Data["dir"].ToString(), "Ошибка при добавлении сеансов из файла вентура");
-                }
-                catch (Exception e)
-                {
-                    logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
-                }
+                await SeanseManager.AddSeansesFromVentursFileAsync(settings.VenturFile);
             });
 
             AddAllSeanses = new RelayCommand(async () =>
             {
-                Thread t = Thread.CurrentThread;
-
                 FolderBrowserDialog fbd = new FolderBrowserDialog();
                 if (Directory.Exists(settings.InitialDestPath))
                     fbd.SelectedPath = settings.InitialDestPath;
                 DialogResult result = fbd.ShowDialog();
                 if (result == DialogResult.OK && fbd.SelectedPath != null)
-                    await SeanseManager.GetAllSeansesFromFolderAsync(fbd.SelectedPath);
+                    await SeanseManager.AddAllSeansesFromFolderAsync(fbd.SelectedPath);
             });
 
             RemoveSeanse = new RelayCommand(() =>
@@ -334,6 +299,8 @@ namespace Link11Checker.ViewModels
                 {
                     if (!string.IsNullOrWhiteSpace(SeanseManager.DestinationPath))
                         await SeanseManager.CopySeansesAsync();
+                    else
+                        MessageBox.Show("Папка для накопления не выбрана", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 catch (DirectoryNotFoundException e)
                 {
@@ -368,21 +335,32 @@ namespace Link11Checker.ViewModels
             #endregion
         }
 
-        
-
         #endregion
 
         #region EventHandlers
-        
-        private void Seanses_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+
+        private void SeanseManager_SeanseUpdated(object sender, Seanse seanse)
         {
             OnPropertyChanged("ActiveCount");
             OnPropertyChanged("WorkingCount");
         }
-        private void seanseManager_SeanseUpdated(object sender, Seanse seanse)
+
+        private void SeanseManager_SeanseRemoved(object sender, Seanse seanse)
         {
-            OnPropertyChanged("ActiveCount");
-            OnPropertyChanged("WorkingCount");
+            window.Dispatcher.BeginInvoke((ThreadStart)delegate()
+            {
+                Seanses.Remove(seanse);
+            });
+        }
+
+        private void SeanseManager_SeanseAdded(object sender, Seanse newSeanse)
+        {
+            newSeanse.WorkingStart += OnWorkingStart;
+            newSeanse.ActiveStart += OnActiveStart;
+            window.Dispatcher.BeginInvoke((ThreadStart)delegate()
+            {
+                Seanses.Add(newSeanse);
+            });
         }
 
         private void OnActiveStart(object sender, EventArgs args)
@@ -412,16 +390,6 @@ namespace Link11Checker.ViewModels
                 window.GetTuningChart().DataSource = SelectedSeanse.TuningChartUnits;
                 window.GetTuningChart().Invalidate();
             }
-        }
-            
-        private void SeanseManager_SeanseLoaded(object sender, Seanse newSeanse)
-        {
-            window.Dispatcher.BeginInvoke((ThreadStart)delegate()
-            {
-                newSeanse.WorkingStart += OnWorkingStart;
-                newSeanse.ActiveStart += OnActiveStart; 
-                SeanseManager.AddSeanse(newSeanse);
-            });
         }
     }
 }

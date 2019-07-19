@@ -39,7 +39,7 @@ namespace Link11Checker
             if (!File.Exists("configuration.json"))
                 throw new FileNotFoundException();
             string configFile = File.ReadAllText("configuration.json", Encoding.Default);
-            settings.configuration = JsonConvert.DeserializeObject<Configuration>(configFile);
+            settings.Configuration = JsonConvert.DeserializeObject<Configuration>(configFile);
 
             #endregion
 

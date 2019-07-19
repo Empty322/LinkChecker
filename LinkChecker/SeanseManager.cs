@@ -20,13 +20,17 @@ namespace Link11Checker.Core
 
         public event Action<object, Seanse> SeanseLoaded = (sender, seanse) => { };
 
-        public event Action<object, Seanse> SeansesUpdated = (sender, e) => { };
+        public event Action<object, Seanse> SeanseUpdated = (sender, e) => { };
+
+        public event Action<object, Seanse> SeanseAdded = (sender, e) => { };
+
+        public event Action<object, Seanse> SeanseRemoved = (sender, e) => { };
 
         #endregion
 
         #region Properties
 
-        public ObservableCollection<Seanse> Seanses { get; private set; }
+        public List<Seanse> Seanses { get; private set; }
         public string DestinationPath { get; set; }
         public bool UpdateTimerOn { get; set; }
         public bool CopyTimerOn { get; set; }
@@ -44,7 +48,7 @@ namespace Link11Checker.Core
 
         public SeanseManager(Settings settings, IParser parser, ILogger logger)
         {
-            this.Seanses = new ObservableCollection<Seanse>();
+            this.Seanses = new List<Seanse>();
             this.logger = logger;
             this.UpdateTimerOn = false;
             this.CopyTimerOn = false;
@@ -96,16 +100,32 @@ namespace Link11Checker.Core
 
         #region Methods
 
-        public void AddSeanse(Seanse seanse)
+        public bool AddSeanse(string seanseDir)
         {
+            bool result = false;
             lock (Seanses)
             {
-                Seanses.Add(seanse);
-                SaveDirectories();
+                try
+                {
+                    Seanse newSeanse = new Seanse(seanseDir, settings.Configuration);
+                    Seanses.Add(newSeanse);
+                    SeanseAdded.Invoke(this, newSeanse);
+                    SaveDirectories();
+                    result = true;
+                }
+                catch (DirectoryNotFoundException e)
+                {
+                    logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
+                }
+                catch (Seanse.LogFileNotFoundException e)
+                {
+                    logger.LogMessage(e.FileName + " не найден", LogLevel.Warning);
+                }
             }
+            return result;
         }
 
-        public List<Seanse> GetSeansesFromVentursFile(string file)
+        public void AddSeansesFromVentursFile(string file)
         {
             List<Seanse> newSeanses = new List<Seanse>();
             lock (Seanses) {
@@ -117,72 +137,81 @@ namespace Link11Checker.Core
                     using (StringReader sr = new StringReader(channels[i]))
                     {
                         ch channel = (ch)ser.Deserialize(sr);
-                        if (!Seanses.Select(x => x.Directory).Contains(channel.Directory) && (channel.Trakt == "slew" || channel.Trakt == "link11"))
+                        if (!Seanses.Select(x => x.Directory.ToLower()).Contains(channel.Directory.ToLower()) && (channel.Trakt == "slew" || channel.Trakt == "link11"))
                         {
                             try
                             {
-                                Seanse newSeanse = new Seanse(channel.Directory);
-                                SeanseLoaded.Invoke(this, newSeanse);
-                                newSeanses.Add(newSeanse);
-                                SaveDirectories();
+                                Seanse newSeanse = new Seanse(channel.Directory, settings.Configuration);
+                                Seanses.Add(newSeanse);
+                                SeanseAdded.Invoke(this, newSeanse);
                             }
                             catch (Seanse.LogFileNotFoundException e)
                             {
                                 logger.LogMessage(e.FileName + " не найден", LogLevel.Warning);
-                            }                              
+                            }
+                            catch (Exception e)
+                            {
+                                logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
+                            }
                         }
                     }
                 }
+                SaveDirectories();
             }
-            return newSeanses;
-        }
-        public async Task<List<Seanse>> GetSeansesFromVentursFileAsync(string file)
-        {
-            Task<List<Seanse>> addingTask = Task.Run<List<Seanse>>(() => GetSeansesFromVentursFile(file));
-            return await addingTask;
         }
 
-        public List<Seanse> GetAllSeansesFromFolder(string path)
+        public async Task AddSeansesFromVentursFileAsync(string file)
+        {
+            Task addingTask = Task.Run(() => AddSeansesFromVentursFile(file));
+            await addingTask;
+        }
+
+        public void AddAllSeansesFromFolder(string path)
         {
             lock (Seanses)
             {
-                List<Seanse> newSeanses = new List<Seanse>();
                 DirectoryInfo di = new DirectoryInfo(path);
                 DirectoryInfo[] childDirs = di.GetDirectories();
 
-                Thread t = Thread.CurrentThread;
-
+                List<string> dirsInStock = Seanses.Select(x => x.Directory.ToLower()).ToList();
                 foreach (DirectoryInfo directory in childDirs)
                 {
-                    if (Seanses.Select(x => x.Directory).Contains(directory.FullName))
+                    if (dirsInStock.Contains(directory.FullName.ToLower()))
                         continue;
                     try
                     {
-                        Seanse newSeanse = new Seanse(directory.FullName);
-                        newSeanses.Add(newSeanse);
-                        SeanseLoaded.Invoke(this, newSeanse);
+                        Seanse newSeanse = new Seanse(directory.FullName, settings.Configuration);
+                        Seanses.Add(newSeanse);
+                        SeanseAdded.Invoke(this, newSeanse);
                     }
                     catch (Seanse.LogFileNotFoundException e)
                     {
                         logger.LogMessage(e.FileName + " не найден", LogLevel.Warning);
                     }
+                    catch (Exception e)
+                    {
+                        logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
+                    }
                 }
-                return newSeanses;
+                SaveDirectories();
             }
         }
 
-        public async Task<List<Seanse>> GetAllSeansesFromFolderAsync(string path)
+        public async Task AddAllSeansesFromFolderAsync(string path)
         {
-            Task<List<Seanse>> addingTask = Task.Run<List<Seanse>>(() => GetAllSeansesFromFolder(path));
-            return await addingTask;
+            Task addingTask = Task.Run(() => AddAllSeansesFromFolder(path));
+            await addingTask;
         }    
 
         public void RemoveSeanse(Seanse seanse)
         {
             lock (Seanses)
             {
-                Seanses.Remove(seanse);
-                SaveDirectories();
+                if (Seanses.Remove(seanse))
+                {
+                    SeanseRemoved(this, seanse);
+                    SaveDirectories();
+                }
             }
         }
 
@@ -190,7 +219,12 @@ namespace Link11Checker.Core
         {
             lock (Seanses)
             {
-                Seanses.Clear();
+                while (Seanses.Count > 0)
+                {
+                    Seanse removedSeanse = Seanses[0];
+                    Seanses.RemoveAt(0);
+                    SeanseRemoved(this, removedSeanse);
+                }
                 SaveDirectories();
             }
         }
@@ -219,7 +253,7 @@ namespace Link11Checker.Core
                     try
                     {
                         seanse.Update();
-                        SeansesUpdated.Invoke(this, seanse);
+                        SeanseUpdated.Invoke(this, seanse);
                     }
                     catch (Seanse.LogFileNotFoundException e)
                     {

@@ -9,7 +9,7 @@ namespace Link11Checker
 {
     public struct Settings
     {
-        public Configuration configuration { get; set; }
+        public Configuration Configuration { get; set; }
         public string InitialSeansesPath { get; set; }
         public string InitialDestPath { get; set; }
         public string VenturFile { get; set; }

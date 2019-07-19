@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logger", "..\46report\Logge
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Link11.Core", "Link11.Core\Link11.Core.csproj", "{F4AFC6E5-9D48-4221-88F3-A9794749A6DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApplication1", "WindowsFormsApplication1\WindowsFormsApplication1.csproj", "{4AA34B9D-B598-4059-9F37-21E218E95A2A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{F4AFC6E5-9D48-4221-88F3-A9794749A6DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4AFC6E5-9D48-4221-88F3-A9794749A6DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4AFC6E5-9D48-4221-88F3-A9794749A6DE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4AA34B9D-B598-4059-9F37-21E218E95A2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4AA34B9D-B598-4059-9F37-21E218E95A2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4AA34B9D-B598-4059-9F37-21E218E95A2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4AA34B9D-B598-4059-9F37-21E218E95A2A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

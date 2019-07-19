@@ -46,6 +46,7 @@
     <Compile Include="Channel.cs" />
     <Compile Include="Charting\TuningChartUnit.cs" />
     <Compile Include="Charting\WorkingChartUnit.cs" />
+    <Compile Include="Configuration.cs" />
     <Compile Include="Enums\EntryType.cs" />
     <Compile Include="Enums\Mode.cs" />
     <Compile Include="Enums\SeanseState.cs" />

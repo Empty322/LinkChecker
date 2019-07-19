@@ -16,12 +16,6 @@ using Newtonsoft.Json;
 
 namespace Link11.Core
 {
-    public struct Configuration
-    {
-        public double AbonentsK { get; set; }
-        public double IntervalsK { get; set; }
-    }
-
     public class Seanse : INotifyPropertyChanged
     {
         #region Events
@@ -178,9 +172,7 @@ namespace Link11.Core
 
         #region Ctor
 
-        public Seanse(string directory) : this(directory, new PrimitiveLogger("log.txt", LogLevel.Error)) { }
-
-        public Seanse(string directory, ILogger logger) : this(directory, new Configuration{ AbonentsK = 0.15, IntervalsK = 0.2}, new Parser(), logger) { }
+        public Seanse(string directory, Configuration config) : this(directory, config, new Parser(), new PrimitiveLogger("log.txt", LogLevel.Error)) { }
 
         public Seanse(string directory, Configuration config, IParser parser, ILogger logger) 
         {
@@ -271,7 +263,7 @@ namespace Link11.Core
                 if (state != SeanseState.WorkingLevel0 && lastModified < (DateTime.Now - new TimeSpan(0, 30, 0)))
                     WorkingStart.Invoke(this, new EventArgs());
 
-                TuningChartUnits = GetTuningChartUnits();
+                TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
 
                 prevState = state;
                 lastUpdate = DateTime.Now;
@@ -336,7 +328,7 @@ namespace Link11.Core
                 {
                     File.Copy(fi.FullName, fi.DirectoryName + "\\temp.txt");
                 }
-                catch (FileNotFoundException e)
+                catch (FileNotFoundException)
                 {
                     throw new LogFileNotFoundException();
                 }
@@ -556,19 +548,32 @@ namespace Link11.Core
             return result;
         }
 
-        public List<TuningChartUnit> GetTuningChartUnits()
+        public List<TuningChartUnit> GetTuningChartUnits(int counterMax)
         {
             List<TuningChartUnit> units = new List<TuningChartUnit>();
             if (signalEntries.Count != 0)
-            {
-                float avg = signalEntries.Select(x => x.Tuning).Average();
-                foreach (SignalEntry se in signalEntries)
+            {                
+                List<SignalEntry>.Enumerator enumerator = signalEntries.GetEnumerator();
+                List<SignalEntry> valuesToSmooth = new List<SignalEntry>();
+                int counter = 0;
+                while (enumerator.MoveNext())
                 {
-                    TuningChartUnit unit = new TuningChartUnit();
-                    unit.Time = se.Time;
-                    unit.Tuning = se.Tuning;
-                    units.Add(unit);
+                    if (counter < counterMax){
+                        valuesToSmooth.Add(enumerator.Current);
+                        counter++;
+                    }
+                    else if (counter >= counterMax)
+                    {
+                        TuningChartUnit unit = new TuningChartUnit();
+                        unit.Tuning = valuesToSmooth.Select(x => x.Tuning).Average();
+                        unit.Time = valuesToSmooth.First().Time;
+                        units.Add(unit);
+                        valuesToSmooth.Clear();
+                        counter = 0;
+                    }                    
                 }
+
+                enumerator.Dispose();
             }
             return units;
         }
