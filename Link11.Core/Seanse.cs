@@ -127,6 +127,7 @@ namespace Link11.Core
                 return state;
             }
         }
+        public List<string> ActiveEntries { get; set; }
         public string LastCopy { 
             get {
                 return lastCopy.ToShortTimeString();
@@ -139,7 +140,6 @@ namespace Link11.Core
                 return lastUpdate.ToShortTimeString();
             }
         }
-
         public List<TuningChartUnit> TuningChartUnits { get; set; }
 
         #endregion
@@ -185,6 +185,8 @@ namespace Link11.Core
             this.mode = Mode.Unknown;
             this.prevState = SeanseState.WorkingLevel0;
             this.state = SeanseState.WorkingLevel0;
+            if (!DirectoryExists)
+                throw new LogFileNotFoundException();
             Update();
         }
 
@@ -263,7 +265,17 @@ namespace Link11.Core
                 if (state != SeanseState.WorkingLevel0 && lastModified < (DateTime.Now - new TimeSpan(0, 30, 0)))
                     WorkingStart.Invoke(this, new EventArgs());
 
+                // Получить данные для графика расстройки
                 TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
+
+                // Получить вхождения с объемом, превышающим норму
+                if (signalEntries.Count != 0)
+                {
+                    ActiveEntries = signalEntries
+                        .Where(x => x.Type != EntryType.Error && ((x.Size - x.Errors) > (int)Mode))
+                        .Select(x => x.Time.ToShortTimeString() + '\t' + (x.Size - x.Errors))
+                        .ToList();
+                }
 
                 prevState = state;
                 lastUpdate = DateTime.Now;

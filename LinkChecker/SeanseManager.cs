@@ -19,12 +19,14 @@ namespace Link11Checker.Core
         #region
 
         public event Action<object, Seanse> SeanseLoaded = (sender, seanse) => { };
-
         public event Action<object, Seanse> SeanseUpdated = (sender, e) => { };
-
         public event Action<object, Seanse> SeanseAdded = (sender, e) => { };
-
         public event Action<object, Seanse> SeanseRemoved = (sender, e) => { };
+        public event Action<object> StartCopying = (sender) => { };
+        public event Action<object> EndCopying = (sender) => { };
+        public event Action<object> StartUpdating = (sender) => { };
+        public event Action<object> EndUpdating = (sender) => { };
+        
 
         #endregion
 
@@ -234,7 +236,16 @@ namespace Link11Checker.Core
             lock (Seanses)
             {
                 foreach (Seanse seanse in Seanses)
-                    seanse.Copy(new DirectoryInfo(DestinationPath));
+                {
+                    try
+                    {
+                        seanse.Copy(new DirectoryInfo(DestinationPath));
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
+                    }
+                }
             }
         }
 
@@ -270,13 +281,16 @@ namespace Link11Checker.Core
 
         private void SaveDirectories()
         {
-            List<string> seansesToSave = new List<string>();
-            foreach (Seanse s in Seanses)
+            lock (Seanses)
             {
-                seansesToSave.Add(s.Directory);
-            };
-            string json = JsonConvert.SerializeObject(seansesToSave);
-            File.WriteAllText("seanses.json", json, Encoding.Default);
+                List<string> seansesToSave = new List<string>();
+                foreach (Seanse s in Seanses)
+                {
+                    seansesToSave.Add(s.Directory);
+                };
+                string json = JsonConvert.SerializeObject(seansesToSave);
+                File.WriteAllText("seanses.json", json, Encoding.Default);
+            }
         }
 
         #endregion

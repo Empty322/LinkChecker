@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:charting="clr-namespace:System.Windows.Forms.DataVisualization.Charting;assembly=System.Windows.Forms.DataVisualization"
-        Title="Link11Checker" Height="500" Width="900"
+        Title="Link11Checker" Height="600" Width="900"
         Icon="Resources/btnSonogr.png">
     <DockPanel>
         <Menu DockPanel.Dock="Top" VerticalAlignment="Top" Grid.Row="0" Grid.ColumnSpan="2">
@@ -39,9 +39,15 @@
             <StatusBarItem>
                 <TextBlock Text="{Binding ActiveCount, StringFormat=Активных: {0}}" />
             </StatusBarItem>
+            <Separator></Separator>
+            <StatusBarItem HorizontalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding SelectedSeanse.Directory, StringFormat=Папка с сеансом: {0:F2}}" TextWrapping="Wrap" />
+                </StackPanel>
+            </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
                 <TextBlock Text="{Binding Version, StringFormat=Версия: {0}}" />
-            </StatusBarItem>
+            </StatusBarItem>                   
         </StatusBar>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -49,11 +55,20 @@
                 <ColumnDefinition Width="30*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="60*"></RowDefinition>
+                <RowDefinition Height="30*"></RowDefinition>
+                <RowDefinition Height="30*"></RowDefinition>
                 <RowDefinition Height="40*"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <DataGrid VirtualizingPanel.IsVirtualizing="True" SelectionMode="Single" ItemsSource="{Binding Seanses}" Grid.Row="0" Grid.Column="0" SelectedItem ="{Binding SelectedSeanse}" AutoGenerateColumns="False" Margin="5" CanUserAddRows="False" CanUserDeleteRows="False">
+            <DataGrid VirtualizingPanel.IsVirtualizing="True" 
+                      VirtualizingPanel.CacheLength="99" 
+                      SelectionMode="Single" 
+                      ItemsSource="{Binding Seanses}" 
+                      Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
+                      SelectedItem ="{Binding SelectedSeanse}" 
+                      AutoGenerateColumns="False" 
+                      Margin="5" 
+                      CanUserAddRows="False" CanUserDeleteRows="False">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Частота" Binding="{Binding Freq, Mode=OneWay}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Режим" Binding="{Binding Mode, Mode=OneWay}"></DataGridTextColumn>
@@ -66,7 +81,7 @@
                     <DataGridTextColumn Header="Координаты" Binding="{Binding Coordinates}"></DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>
-            <TabControl Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" DataContext="{Binding SelectedSeanse}">
+            <TabControl Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5" DataContext="{Binding SelectedSeanse}">
                 <TabItem Header="График расстройки">
                     <WindowsFormsHost VerticalAlignment="Stretch">
                         <charting:Chart x:Name="tuningChart"></charting:Chart>
@@ -78,13 +93,11 @@
                     </WindowsFormsHost>
                 </TabItem>
             </TabControl>
-            <StackPanel Grid.Row="0" Margin="5" Grid.Column="1">
+            <ListBox Grid.Column="2" Margin="5" ItemsSource="{Binding SelectedSeanse.ActiveEntries}"></ListBox>
+            <StackPanel Grid.Row="1" Margin="5" Grid.Column="1">
                 <Button Margin="0,0,0,10" Command="{Binding OpenLog}" IsEnabled="{Binding IsSeanceSelected}">Открыть log.txt</Button>
-                <TextBlock Text="{Binding SelectedSeanse.LastUpdate, StringFormat=Посл. обновление: {0}}" TextWrapping="Wrap" />
-                <TextBlock Text="{Binding SelectedSeanse.LastCopy, StringFormat=Посл. копирование: {0}}" TextWrapping="Wrap" />
-                <TextBlock Text="{Binding SelectedSeanse.StartWorkingTime, StringFormat=Время начала: {0}}" TextWrapping="Wrap" />
                 <TextBlock Text="{Binding SelectedSeanse.MaxSizeInBytes, StringFormat=Макс. объем в байтах: {0:F2}}" TextWrapping="Wrap" />
-                <TextBlock Text="{Binding SelectedSeanse.Directory, StringFormat=Папка с сеансом: {0:F2}}" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding SelectedSeanse.LastCopy, StringFormat=Посл. копирование: {0}}" TextWrapping="Wrap" />
             </StackPanel>
         </Grid>
     </DockPanel>

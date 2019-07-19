@@ -112,7 +112,6 @@ namespace Link11Checker.ViewModels
             }
         }
 
-
         #region StatusBarProps
 
         public string Version { get { return version; } }
@@ -212,8 +211,7 @@ namespace Link11Checker.ViewModels
                 foreach (string dir in dirs)
                 {
                     if (!seanseManager.AddSeanse(dir))
-                        MessageBox.Show("Не удалось добавить сеанс: \n" + dir, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    
+                        MessageBox.Show("Не удалось добавить сеанс: \n" + dir, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);                    
                 }
             }
 
@@ -272,7 +270,7 @@ namespace Link11Checker.ViewModels
                     if (SelectedSeanse != null)
                         SeanseManager.RemoveSeanse(SelectedSeanse);
                     else
-                        System.Windows.MessageBox.Show("Выбирете сеанс", "Ошибка");
+                        MessageBox.Show("Выбирете сеанс", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
                 catch (Exception e)
                 {
@@ -295,21 +293,10 @@ namespace Link11Checker.ViewModels
 
             CopySeanses = new RelayCommand(async () =>
             {
-                try
-                {
                     if (!string.IsNullOrWhiteSpace(SeanseManager.DestinationPath))
                         await SeanseManager.CopySeansesAsync();
                     else
                         MessageBox.Show("Папка для накопления не выбрана", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                catch (DirectoryNotFoundException e)
-                {
-                    MessageBox.Show("Папка с сеансом не найдена: \n" + e.Data["dir"].ToString(), "Ошибка при копировании");
-                }
-                catch (Exception e)
-                {
-                    logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
-                }
             });
 
             UpdateSeanses = new RelayCommand(async () =>
