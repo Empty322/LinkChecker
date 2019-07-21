@@ -7,11 +7,12 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top" VerticalAlignment="Top" Grid.Row="0" Grid.ColumnSpan="2">
             <MenuItem Header="Сеанс">
-                <MenuItem Header="Добавить сеанс" Command="{Binding AddSeanse}" />
-                <MenuItem Header="Добавить сеансы из Вентура" Command="{Binding AddSeansesFromVentur}" />
-                <MenuItem Header="Добавить все сеансы из папки" Command="{Binding AddAllSeanses}" />
-                <MenuItem Header="Удалить cеанс" Command="{Binding RemoveSeanse}" />
-                <MenuItem Header="Удалить все сеансы" Command="{Binding RemoveAllSeanses}" />
+                <MenuItem Header="Добавить сеанс" Command="{Binding AddSeanse}" IsEnabled="{Binding CanEditCollection}"/>
+                <MenuItem Header="Добавить сеансы из Вентура" Command="{Binding AddSeansesFromVentur}" IsEnabled="{Binding CanEditCollection}"/>
+                <MenuItem Header="Добавить все сеансы из папки" Command="{Binding AddAllSeanses}" IsEnabled="{Binding CanEditCollection}"/>
+                <MenuItem Header="Удалить cеанс" Command="{Binding RemoveSeanse}" IsEnabled="{Binding CanEditCollection}"/>
+                <MenuItem Header="Удалить все сеансы" Command="{Binding RemoveAllSeanses}" IsEnabled="{Binding CanEditCollection}"/>
+                <MenuItem Header="Синхронизация с вентуром" IsChecked="{Binding SynchronyzeWithVenturOn}" IsCheckable="True" />
                 <Separator />
                 <MenuItem Header="Выбор папки для накопления" Command="{Binding SelectDestinationPath}" />
                 <Separator />
@@ -70,6 +71,7 @@
                       Margin="5" 
                       CanUserAddRows="False" CanUserDeleteRows="False">
                 <DataGrid.Columns>
+                    <DataGridCheckBoxColumn Header="Существует ли директория" Width="20" Binding="{Binding DirectoryExists, Mode=OneWay}"></DataGridCheckBoxColumn>
                     <DataGridTextColumn Header="Частота" Binding="{Binding Freq, Mode=OneWay}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Режим" Binding="{Binding Mode, Mode=OneWay}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Макс." Binding="{Binding MaxSize, Mode=OneWay}"></DataGridTextColumn>
@@ -81,15 +83,15 @@
                     <DataGridTextColumn Header="Координаты" Binding="{Binding Coordinates}"></DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>
-            <TabControl Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5" DataContext="{Binding SelectedSeanse}">
+            <TabControl x:Name="tc" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5" DataContext="{Binding SelectedSeanse}">
                 <TabItem Header="График расстройки">
                     <WindowsFormsHost VerticalAlignment="Stretch">
-                        <charting:Chart x:Name="tuningChart"></charting:Chart>
+                        <charting:Chart x:Name="tuningChart" Dock="Fill"></charting:Chart>
                     </WindowsFormsHost>
                 </TabItem>
                 <TabItem Header="График работы">
                     <WindowsFormsHost>
-                        <charting:Chart x:Name="workingChart"></charting:Chart>
+                        <charting:Chart x:Name="workingChart" Dock="Fill"></charting:Chart>
                     </WindowsFormsHost>
                 </TabItem>
             </TabControl>

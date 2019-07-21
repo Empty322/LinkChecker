@@ -141,6 +141,7 @@ namespace Link11.Core
             }
         }
         public List<TuningChartUnit> TuningChartUnits { get; set; }
+        public List<WorkingChartUnit> WorkingChartUnits { get; set; }
 
         #endregion
 
@@ -162,12 +163,18 @@ namespace Link11.Core
         private SeanseState prevState;
         private SeanseState state;
 
+        // Исправить
         private const int countForWorkingLevel5 = 200;
         private const int countForWorkingLevel4 = 100;
         private const int countForWorkingLevel3 = 40;
         private const int countForWorkingLevel2 = 10;
         private const int countForWorkingLevel1 = 1;
-        
+        private const int kForWorkingChartWorkingLevel5 = 10002000;
+        private const int kForWorkingChartWorkingLevel4 = 20004000;
+        private const int kForWorkingChartWorkingLevel3 = 40008000;
+        private const int kForWorkingChartWorkingLevel2 = 80016000;
+        private const int kForWorkingChartWorkingLevel1 = 160032000;
+                
         #endregion
 
         #region Ctor
@@ -177,7 +184,12 @@ namespace Link11.Core
         public Seanse(string directory, Configuration config, IParser parser, ILogger logger) 
         {
             this.Directory = directory;
-            this.DirectoryExists = new DirectoryInfo(directory).Exists;
+            this.DirectoryExists = System.IO.Directory.Exists(Directory);
+            if (!DirectoryExists)
+                throw new LogFileNotFoundException();
+            TuningChartUnits = new List<TuningChartUnit>();
+            WorkingChartUnits = new List<WorkingChartUnit>();
+            this.lastModified = new DateTime();
             this.logger = logger;
             this.signalEntries = new List<SignalEntry>();
             this.parser = parser;
@@ -185,14 +197,70 @@ namespace Link11.Core
             this.mode = Mode.Unknown;
             this.prevState = SeanseState.WorkingLevel0;
             this.state = SeanseState.WorkingLevel0;
-            if (!DirectoryExists)
-                throw new LogFileNotFoundException();
             Update();
         }
 
         #endregion
 
         #region Public Methods
+
+        public void Update()
+        {
+            DirectoryInfo di = new DirectoryInfo(Directory);
+            // Если директория существует
+            if (di.Exists)
+            {
+                DirectoryExists = true;
+
+                // Загрузить log.txt
+                LoadAllLog();
+                
+                // Загрузить allLog.txt
+                LoadLog();
+
+                // Если это пустой сеанс, выйти
+                if (!signalEntries.Any())
+                    return;
+
+                // Узнать состояние сеанса
+                state = GetState();
+
+                // Eсли перешел в активный
+                if (prevState != SeanseState.Active && state == SeanseState.Active)
+                    ActiveStart.Invoke(this, new EventArgs());
+
+                // Если начал работу
+                if (prevState == SeanseState.WorkingLevel0 && state != SeanseState.WorkingLevel0)
+                    WorkingStart.Invoke(this, new EventArgs());
+
+                // Получить данные для графика расстройки
+                TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
+
+                // Получить данные для графика работы
+                WorkingChartUnits = GetWorkingChartUnits(new TimeSpan(0,1,0));
+
+                // Получить вхождения с объемом, превышающим норму
+                if (signalEntries.Any())
+                {
+                    ActiveEntries = signalEntries
+                        .Where(x => x.Type != EntryType.Error && ((x.Size - x.Errors) > (int)Mode))
+                        .Select(x => x.Time.ToShortTimeString() + '\t' + (x.Size - x.Errors))
+                        .ToList();
+                }
+
+                prevState = state;
+                lastModified = File.GetLastWriteTime(Directory + "\\log.txt");
+                lastUpdate = DateTime.Now;
+
+                Type df = this.GetType();
+                foreach (PropertyInfo pi in df.GetProperties())
+                    OnPropertyChanged(pi.Name);
+            }
+            else
+            {
+                DirectoryExists = false;
+            }            
+        }
 
         public void Copy(DirectoryInfo destination)
         {
@@ -236,59 +304,7 @@ namespace Link11.Core
                 {
                     directoryExists = false;
                 }
-
-                
             }
-        }
-
-        public void Update()
-        {
-            DirectoryInfo di = new DirectoryInfo(Directory);
-            // Если директория существует
-            if (di.Exists)
-            {
-                DirectoryExists = true;
-
-                // Загрузить log.txt
-                LoadAllLog();
-                // Загрузить allLog.txt
-                LoadLog();
-
-                // Узнать состояние сеанса
-                state = GetState();
-
-                // Eсли перешел в активный
-                if (prevState != SeanseState.Active && state == SeanseState.Active)
-                    ActiveStart.Invoke(this, new EventArgs());
-
-                // Если начал работу
-                if (state != SeanseState.WorkingLevel0 && lastModified < (DateTime.Now - new TimeSpan(0, 30, 0)))
-                    WorkingStart.Invoke(this, new EventArgs());
-
-                // Получить данные для графика расстройки
-                TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
-
-                // Получить вхождения с объемом, превышающим норму
-                if (signalEntries.Count != 0)
-                {
-                    ActiveEntries = signalEntries
-                        .Where(x => x.Type != EntryType.Error && ((x.Size - x.Errors) > (int)Mode))
-                        .Select(x => x.Time.ToShortTimeString() + '\t' + (x.Size - x.Errors))
-                        .ToList();
-                }
-
-                prevState = state;
-                lastUpdate = DateTime.Now;
-                lastModified = File.GetLastWriteTime(Directory + "\\log.txt");
-
-                Type df = this.GetType();
-                foreach (PropertyInfo pi in df.GetProperties())
-                    OnPropertyChanged(pi.Name);
-            }
-            else
-            {
-                DirectoryExists = false;
-            }            
         }
 
         #endregion
@@ -537,13 +553,14 @@ namespace Link11.Core
 
         private SeanseState GetState() {
             SeanseState result = SeanseState.WorkingLevel0;
+
             if (signalEntries.Count != 0)
             {
                 DateTime lastEntryTime = signalEntries.Last().Time;
                 TimeSpan delay = lastModified - lastEntryTime;
-                DateTime timeWithoutDelay = DateTime.Now - delay;
+                DateTime serverTime = DateTime.Now - delay;
 
-                List<SignalEntry> lastEntries = signalEntries.Where(x => x.Time > timeWithoutDelay - new TimeSpan(0, 3, 0) && x.Time < DateTime.Now - delay).ToList();
+                List<SignalEntry> lastEntries = signalEntries.Where(x => x.Time > serverTime - new TimeSpan(0, 3, 0) && x.Time < serverTime).ToList();
                 if (lastEntries.Where(x => x.Type != EntryType.Error && ((x.Size - x.Errors) > (int)Mode)).Count() > 0)
                     result = SeanseState.Active;
                 else if (lastEntries.Count >= countForWorkingLevel5)
@@ -564,13 +581,14 @@ namespace Link11.Core
         {
             List<TuningChartUnit> units = new List<TuningChartUnit>();
             if (signalEntries.Count != 0)
-            {                
+            {
                 List<SignalEntry>.Enumerator enumerator = signalEntries.GetEnumerator();
                 List<SignalEntry> valuesToSmooth = new List<SignalEntry>();
                 int counter = 0;
                 while (enumerator.MoveNext())
                 {
-                    if (counter < counterMax){
+                    if (counter < counterMax)
+                    {
                         valuesToSmooth.Add(enumerator.Current);
                         counter++;
                     }
@@ -582,10 +600,41 @@ namespace Link11.Core
                         units.Add(unit);
                         valuesToSmooth.Clear();
                         counter = 0;
-                    }                    
+                    }
                 }
 
                 enumerator.Dispose();
+            }
+            return units;
+        }
+
+        public List<WorkingChartUnit> GetWorkingChartUnits(TimeSpan smoothTime)
+        {
+            List<WorkingChartUnit> units = new List<WorkingChartUnit>();
+            List<SignalEntry> valuesToUnite = new List<SignalEntry>();
+            if (signalEntries.Any())
+            {
+                DateTime currentTime = signalEntries.First().Time;
+                do
+                {
+                    valuesToUnite = signalEntries.Where(x => x.Time > currentTime && x.Time < (currentTime + smoothTime)).ToList();
+                    if (valuesToUnite.Where(x => x.Type != EntryType.Error && (x.Size - x.Errors) > (int)Mode).Count() > 0)
+                        units.Add(new WorkingChartUnit { Time = currentTime, State = 2 });
+                    else if (valuesToUnite.Count > smoothTime.Ticks / kForWorkingChartWorkingLevel5)
+                        units.Add(new WorkingChartUnit { Time = currentTime, State = 1 });
+                    else if (valuesToUnite.Count > smoothTime.Ticks / kForWorkingChartWorkingLevel4)
+                        units.Add(new WorkingChartUnit { Time = currentTime, State = 1 });
+                    else if (valuesToUnite.Count >= smoothTime.Ticks / kForWorkingChartWorkingLevel3)
+                        units.Add(new WorkingChartUnit { Time = currentTime, State = 1 });
+                    else if (valuesToUnite.Count >= smoothTime.Ticks / kForWorkingChartWorkingLevel2)
+                        units.Add(new WorkingChartUnit { Time = currentTime, State = 1 });
+                    else if (valuesToUnite.Count >= smoothTime.Ticks / kForWorkingChartWorkingLevel1)
+                        units.Add(new WorkingChartUnit { Time = currentTime, State = 1 });
+                    else
+                        units.Add(new WorkingChartUnit { Time = currentTime, State = 0 });
+                    currentTime += smoothTime;
+                }
+                while (currentTime < signalEntries.Last().Time);
             }
             return units;
         }

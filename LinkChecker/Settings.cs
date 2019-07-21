@@ -15,5 +15,7 @@ namespace Link11Checker
         public string VenturFile { get; set; }
         public int UpdateCounterLimit { get; set; }
         public int CopyCounterLimit { get; set; }
+        public int SynchronizeCounterLimit { get; set; }
+        public int WorkingChartInterval { get; set; }
     }
 }

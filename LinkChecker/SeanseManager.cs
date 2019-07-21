@@ -36,6 +36,7 @@ namespace Link11Checker.Core
         public string DestinationPath { get; set; }
         public bool UpdateTimerOn { get; set; }
         public bool CopyTimerOn { get; set; }
+        public bool SynchronyzeWithVenturOn { get; set; }
 
         #endregion
 
@@ -62,32 +63,48 @@ namespace Link11Checker.Core
             {
                 int updateCounter = 0;
                 int copyCounter = 0;
+                int synchronizeCounter = 0;
                 while (true)
                 {
-                    try
+                    if (UpdateTimerOn && updateCounter >= settings.UpdateCounterLimit)
                     {
-                        if (UpdateTimerOn && updateCounter >= settings.UpdateCounterLimit)
+                        try
                         {
                             UpdateSeanses();
-                            updateCounter = 0;
                         }
-                        if (CopyTimerOn && copyCounter >= settings.CopyCounterLimit)
+                        catch (Exception e)
                         {
-                            if (!string.IsNullOrWhiteSpace(DestinationPath))
-                                CopySeanses();
-                            copyCounter = 0;
+                            logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
                         }
-                        updateCounter++;
-                        copyCounter++;
+                        updateCounter = 0;
                     }
-                    catch (DirectoryNotFoundException e)
+                    if (CopyTimerOn && copyCounter >= settings.CopyCounterLimit)
                     {
-                        logger.LogMessage("Ошибка при копировании/обновлении. Папка с сеансом не найдена: \n" + e.Data["dir"].ToString(), LogLevel.Warning);
+                        if (!string.IsNullOrWhiteSpace(DestinationPath))
+                        try
+                        {
+                            CopySeanses();
+                        }
+                        catch (Exception e)
+                        {
+                            logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
+                        }
+                        copyCounter = 0;
                     }
-                    catch (Exception e)
+                    if (SynchronyzeWithVenturOn && synchronizeCounter >= settings.SynchronizeCounterLimit)
                     {
-                        logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
+                        try
+                        {
+                            AddSeansesFromVentursFile(settings.VenturFile);
+                            RemoveExcessSeanses();
+                        }
+                        catch (Exception e)
+                        {
+                            logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
+                        }
                     }
+                    updateCounter++;
+                    copyCounter++;
                     Thread.Sleep(5000);
                 }
             });
@@ -129,32 +146,25 @@ namespace Link11Checker.Core
 
         public void AddSeansesFromVentursFile(string file)
         {
-            List<Seanse> newSeanses = new List<Seanse>();
             lock (Seanses) {
-                XmlSerializer ser = new XmlSerializer(typeof(ch));
-
-                string[] channels = File.ReadAllLines(file, Encoding.Default);
-                for (int i = 1; i < channels.Count(); i++)
+                List<ch> channels = GetChannelsFromVentursFile(file);
+                foreach (ch channel in channels)
                 {
-                    using (StringReader sr = new StringReader(channels[i]))
+                    if (!Seanses.Select(x => x.Directory.ToLower()).Contains(channel.Directory.ToLower()) && (channel.Trakt == "slew" || channel.Trakt == "link11"))
                     {
-                        ch channel = (ch)ser.Deserialize(sr);
-                        if (!Seanses.Select(x => x.Directory.ToLower()).Contains(channel.Directory.ToLower()) && (channel.Trakt == "slew" || channel.Trakt == "link11"))
+                        try
                         {
-                            try
-                            {
-                                Seanse newSeanse = new Seanse(channel.Directory, settings.Configuration);
-                                Seanses.Add(newSeanse);
-                                SeanseAdded.Invoke(this, newSeanse);
-                            }
-                            catch (Seanse.LogFileNotFoundException e)
-                            {
-                                logger.LogMessage(e.FileName + " не найден", LogLevel.Warning);
-                            }
-                            catch (Exception e)
-                            {
-                                logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
-                            }
+                            Seanse newSeanse = new Seanse(channel.Directory, settings.Configuration);
+                            Seanses.Add(newSeanse);
+                            SeanseAdded.Invoke(this, newSeanse);
+                        }
+                        catch (Seanse.LogFileNotFoundException e)
+                        {
+                            logger.LogMessage(e.FileName + " не найден", LogLevel.Warning);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
                         }
                     }
                 }
@@ -221,13 +231,35 @@ namespace Link11Checker.Core
         {
             lock (Seanses)
             {
-                while (Seanses.Count > 0)
+                while (Seanses.Any())
                 {
                     Seanse removedSeanse = Seanses[0];
                     Seanses.RemoveAt(0);
                     SeanseRemoved(this, removedSeanse);
                 }
                 SaveDirectories();
+            }
+        }
+
+        private void RemoveExcessSeanses()
+        {
+            lock (Seanses)
+            {
+                List<ch> channels = GetChannelsFromVentursFile(settings.VenturFile);
+                string[] ventursDirs = channels.Where(x => x.Trakt == "slew" || x.Trakt == "link11").Select(x => x.Directory.ToLower()).ToArray();
+                List<Seanse> seansesToRemove = new List<Seanse>();
+                foreach (Seanse seanse in Seanses)
+                {
+                    if (!ventursDirs.Contains(seanse.Directory.ToLower()))
+                    {
+                        seansesToRemove.Add(seanse);
+                    }
+                }
+                foreach (Seanse seanseToRemove in seansesToRemove)
+                {
+                    if (Seanses.Remove(seanseToRemove))
+                        SeanseRemoved.Invoke(this, seanseToRemove);
+                }
             }
         }
 
@@ -291,6 +323,29 @@ namespace Link11Checker.Core
                 string json = JsonConvert.SerializeObject(seansesToSave);
                 File.WriteAllText("seanses.json", json, Encoding.Default);
             }
+        }
+
+        private List<ch> GetChannelsFromVentursFile(string file)
+        {
+            List<ch> result = new List<ch>();
+            XmlSerializer ser = new XmlSerializer(typeof(ch));
+            try
+            {
+                string[] channels = File.ReadAllLines(file, Encoding.Default);
+            
+                for (int i = 1; i < channels.Count(); i++)
+                {
+                    using (StringReader sr = new StringReader(channels[i]))
+                    {                
+                        result.Add((ch)ser.Deserialize(sr));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                logger.LogMessage(e.ToString() + ' ' + e.Message, LogLevel.Error);
+            }
+            return result;
         }
 
         #endregion

@@ -37,6 +37,7 @@ namespace Link11Checker.ViewModels
             set {
                 selectedSeanse = value;
                 UpdateTuningChart();
+                UpdateWorkingChart();
                 OnPropertyChanged("IsSeanceSelected");
                 OnPropertyChanged("SelectedSeanse");
             } } 
@@ -61,6 +62,22 @@ namespace Link11Checker.ViewModels
             {
                 seanseManager.CopyTimerOn = value;
                 OnPropertyChanged("CopyTimerOn");
+                OnPropertyChanged("CanEditCollection");
+            }
+        }
+        public bool SynchronyzeWithVenturOn
+        {
+            get { return seanseManager.SynchronyzeWithVenturOn; }                
+            set
+            {
+                seanseManager.SynchronyzeWithVenturOn = value;
+                OnPropertyChanged("SynchronyzeWithVenturOn");
+                OnPropertyChanged("CanEditCollection");
+            }
+        }
+        public bool CanEditCollection { 
+            get {
+                return !(CopyTimerOn || SynchronyzeWithVenturOn);
             }
         }
         public bool DestPathSelected {
@@ -181,16 +198,33 @@ namespace Link11Checker.ViewModels
             ChartArea tuningArea = new ChartArea("TuningArea");
             tuningChart.ChartAreas.Add(tuningArea);
 
-
             Series tuningSeries = new Series("Tuning");
             tuningSeries.IsXValueIndexed = true;
             tuningSeries.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             tuningSeries.XValueType = ChartValueType.Time;
             tuningSeries.XValueMember = "Time";
             tuningSeries.YValueMembers = "Tuning";
-            tuningSeries.Color = System.Drawing.Color.Black;
+            tuningSeries.Color = System.Drawing.Color.Blue;
             tuningSeries.BorderWidth = 1;
             tuningChart.Series.Add(tuningSeries);
+
+
+            Chart workingChart = window.GetWorkingChart();
+            ChartArea workingArea = new ChartArea("WorkingArea");
+            workingArea.AxisX.IntervalType = DateTimeIntervalType.Minutes;
+            workingArea.AxisX.Interval = settings.WorkingChartInterval;
+            workingArea.AxisY.Interval = 1;
+            workingChart.ChartAreas.Add(workingArea);
+            
+            Series workingSeries = new Series("Working");
+            workingSeries.IsXValueIndexed = true;
+            workingSeries.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.StepLine;
+            workingSeries.XValueType = ChartValueType.Time;
+            workingSeries.XValueMember = "Time";
+            workingSeries.YValueMembers = "State";
+            workingSeries.Color = System.Drawing.Color.Blue;
+            workingSeries.BorderWidth = 2;
+            workingChart.Series.Add(workingSeries);
 
             #endregion
 
@@ -217,7 +251,7 @@ namespace Link11Checker.ViewModels
 
             #endregion
 
-            #region SetCommands
+            #region SettingCommands
 
             SelectDestinationPath = new RelayCommand(() =>
             {
@@ -347,6 +381,7 @@ namespace Link11Checker.ViewModels
             window.Dispatcher.BeginInvoke((ThreadStart)delegate()
             {
                 Seanses.Add(newSeanse);
+                SelectedSeanse = newSeanse;
             });
         }
 
@@ -376,6 +411,15 @@ namespace Link11Checker.ViewModels
             {
                 window.GetTuningChart().DataSource = SelectedSeanse.TuningChartUnits;
                 window.GetTuningChart().Invalidate();
+            }
+        }
+
+        private void UpdateWorkingChart()
+        {
+            if (SelectedSeanse != null)
+            {
+                window.GetWorkingChart().DataSource = SelectedSeanse.WorkingChartUnits;
+                window.GetWorkingChart().Invalidate();
             }
         }
     }
