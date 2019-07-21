@@ -561,7 +561,7 @@ namespace Link11.Core
                 DateTime serverTime = DateTime.Now - delay;
 
                 List<SignalEntry> lastEntries = signalEntries.Where(x => x.Time > serverTime - new TimeSpan(0, 3, 0) && x.Time < serverTime).ToList();
-                if (lastEntries.Where(x => x.Type != EntryType.Error && ((x.Size - x.Errors) > (int)Mode)).Count() > 0)
+                if (lastEntries.Where(x => x.Type != EntryType.Error && ((x.Size - x.Errors) > (int)Mode)).Any())
                     result = SeanseState.Active;
                 else if (lastEntries.Count >= countForWorkingLevel5)
                     result = SeanseState.WorkingLevel5;
@@ -571,7 +571,9 @@ namespace Link11.Core
                     result = SeanseState.WorkingLevel3;
                 else if (lastEntries.Count >= countForWorkingLevel2)
                     result = SeanseState.WorkingLevel2;
-                else if (lastEntries.Count >= countForWorkingLevel1)
+                else if (prevState == SeanseState.WorkingLevel0 && lastEntries.Where(x => x.Type != EntryType.Error).Count() > config.EntriesCountToStartSignal)
+                    result = SeanseState.WorkingLevel1;
+                else if (prevState != SeanseState.WorkingLevel0 && lastEntries.Count >= countForWorkingLevel1)
                     result = SeanseState.WorkingLevel1;
             }
             return result;

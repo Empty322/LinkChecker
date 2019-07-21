@@ -31,15 +31,8 @@ namespace Link11Checker
         {
             #region Loading settings
 
-            if (!File.Exists("settings.json"))
-                throw new FileNotFoundException();
             string settingsFile = File.ReadAllText("settings.json", Encoding.Default);
             Settings settings = JsonConvert.DeserializeObject<Settings>(settingsFile);
-
-            if (!File.Exists("configuration.json"))
-                throw new FileNotFoundException();
-            string configFile = File.ReadAllText("configuration.json", Encoding.Default);
-            settings.Configuration = JsonConvert.DeserializeObject<Configuration>(configFile);
 
             #endregion
 

@@ -11,5 +11,6 @@ namespace Link11.Core
         public double AbonentsK { get; set; }
         public double IntervalsK { get; set; }
         public int SmoothValue { get; set; }
+        public int EntriesCountToStartSignal { get; set; }
     }
 }

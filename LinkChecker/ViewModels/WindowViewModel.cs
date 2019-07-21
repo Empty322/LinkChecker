@@ -18,6 +18,7 @@ using Logger;
 using Newtonsoft.Json;
 using Link11.Core.Charting;
 using System.Windows.Forms;
+using System.Media;
 
 namespace Link11Checker.ViewModels
 {
@@ -166,7 +167,7 @@ namespace Link11Checker.ViewModels
         public ICommand RemoveAllSeanses { get; set; }
         public ICommand CopySeanses { get; set; }
         public ICommand UpdateSeanses { get; set; }
-        public ICommand Settings { get; set; }
+        public ICommand OpenSettings { get; set; }
         public ICommand About { get; set; }
         public ICommand OpenLog { get; set; }
 
@@ -338,6 +339,14 @@ namespace Link11Checker.ViewModels
                 await SeanseManager.UpdateSeansesAsync();
             });
 
+            OpenSettings = new RelayCommand(() =>
+            {
+                SettingsForm sf = new SettingsForm(settings, logger);
+                sf.ShowDialog();
+                window.GetWorkingChart().ChartAreas[0].AxisX.Interval = settings.WorkingChartInterval;
+                window.GetWorkingChart().Invalidate();
+            });
+
             About = new RelayCommand(() => {
                 AboutBox about = new AboutBox();
                 about.ShowDialog();
@@ -390,6 +399,7 @@ namespace Link11Checker.ViewModels
             if (NotifyWhenStartActive)
             {
                 Seanse seanse = (Seanse)sender;
+                SystemSounds.Exclamation.Play();
                 MessageBox.Show(string.Format("Линк {0} {1} преходит в активный режим.", seanse.Freq, seanse.Mode), "Переход в активный", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -399,6 +409,7 @@ namespace Link11Checker.ViewModels
             if (NotifyWhenStartWorking)
             {
                 Seanse seanse = (Seanse)sender;
+                SystemSounds.Exclamation.Play();
                 MessageBox.Show(string.Format("Линк {0} {1} начинает свою работу.", seanse.Freq, seanse.Mode), "Начало работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
