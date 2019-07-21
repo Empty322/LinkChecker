@@ -212,7 +212,7 @@ namespace Link11Checker.ViewModels
 
             Chart workingChart = window.GetWorkingChart();
             ChartArea workingArea = new ChartArea("WorkingArea");
-            workingArea.AxisX.IntervalType = DateTimeIntervalType.Minutes;
+            workingArea.AxisX.IntervalType = DateTimeIntervalType.Auto;
             workingArea.AxisX.Interval = settings.WorkingChartInterval;
             workingArea.AxisY.Interval = 1;
             workingChart.ChartAreas.Add(workingArea);

@@ -21,8 +21,11 @@ namespace Link11.Core
         #region Events
 
         public event Action<object, EventArgs> ActiveStart = (sender, e) => { };
+        public event Action<object, EventArgs> ActiveEnd = (sender, e) => { };
 
         public event Action<object, EventArgs> WorkingStart = (sender, e) => { };
+        public event Action<object, EventArgs> WorkingEnd = (sender, e) => { };
+
 
         public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
 
@@ -587,14 +590,14 @@ namespace Link11.Core
                 List<SignalEntry>.Enumerator enumerator = signalEntries.GetEnumerator();
                 List<SignalEntry> valuesToSmooth = new List<SignalEntry>();
                 int counter = 0;
-                while (enumerator.MoveNext())
+                while (enumerator.MoveNext() || valuesToSmooth.Any())
                 {
                     if (counter < counterMax)
                     {
                         valuesToSmooth.Add(enumerator.Current);
                         counter++;
                     }
-                    else if (counter >= counterMax)
+                    else if (counter >= counterMax || !enumerator.MoveNext())
                     {
                         TuningChartUnit unit = new TuningChartUnit();
                         unit.Tuning = valuesToSmooth.Select(x => x.Tuning).Average();
@@ -604,7 +607,6 @@ namespace Link11.Core
                         counter = 0;
                     }
                 }
-
                 enumerator.Dispose();
             }
             return units;
@@ -616,27 +618,32 @@ namespace Link11.Core
             List<SignalEntry> valuesToUnite = new List<SignalEntry>();
             if (signalEntries.Any())
             {
+                DateTime end = signalEntries.Last().Time;
+                if (signalEntries.First().Time.Hour > signalEntries.Last().Time.Hour)
+                    end = end.AddDays(1);
                 DateTime currentTime = signalEntries.First().Time;
                 do
                 {
                     valuesToUnite = signalEntries.Where(x => x.Time > currentTime && x.Time < (currentTime + smoothTime)).ToList();
-                    if (valuesToUnite.Where(x => x.Type != EntryType.Error && (x.Size - x.Errors) > (int)Mode).Count() > 0)
-                        units.Add(new WorkingChartUnit { Time = currentTime, State = 2 });
-                    else if (valuesToUnite.Count > smoothTime.Ticks / kForWorkingChartWorkingLevel5)
-                        units.Add(new WorkingChartUnit { Time = currentTime, State = 1 });
-                    else if (valuesToUnite.Count > smoothTime.Ticks / kForWorkingChartWorkingLevel4)
-                        units.Add(new WorkingChartUnit { Time = currentTime, State = 1 });
-                    else if (valuesToUnite.Count >= smoothTime.Ticks / kForWorkingChartWorkingLevel3)
-                        units.Add(new WorkingChartUnit { Time = currentTime, State = 1 });
-                    else if (valuesToUnite.Count >= smoothTime.Ticks / kForWorkingChartWorkingLevel2)
-                        units.Add(new WorkingChartUnit { Time = currentTime, State = 1 });
-                    else if (valuesToUnite.Count >= smoothTime.Ticks / kForWorkingChartWorkingLevel1)
-                        units.Add(new WorkingChartUnit { Time = currentTime, State = 1 });
-                    else
-                        units.Add(new WorkingChartUnit { Time = currentTime, State = 0 });
+                    WorkingChartUnit newUnit = new WorkingChartUnit();
+                    if (valuesToUnite.Where(x => x.Type != EntryType.Error && (x.Size - x.Errors) > (int)Mode).Count() > 0) {
+                        newUnit.Time = currentTime;
+                        newUnit.State = 2;
+                    }
+                    else if (valuesToUnite.Count >= 1) {
+                        newUnit.Time = currentTime;
+                        newUnit.State = 1;
+                    }
+                    else {
+                        newUnit.Time = currentTime;
+                        newUnit.State = 0;
+                    }
                     currentTime += smoothTime;
+                    if (currentTime.Hour < signalEntries.First().Time.Hour)
+                        newUnit.Time.AddDays(1);
+                    units.Add(newUnit);
                 }
-                while (currentTime < signalEntries.Last().Time);
+                while (currentTime < end);
             }
             return units;
         }
