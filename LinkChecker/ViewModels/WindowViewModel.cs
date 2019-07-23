@@ -103,6 +103,16 @@ namespace Link11Checker.ViewModels
                 OnPropertyChanged("NotifyWhenStartWorking");
             }
         }
+        public bool NotifyWhenEndWorking { get
+            {
+                return notifyWhenEndWorking;
+            }
+            set
+            {
+                notifyWhenEndWorking = value;
+                OnPropertyChanged("NotifyWhenEndWorking");
+            }
+        }
         public bool NotifyWhenStartActive
         {
             get
@@ -149,6 +159,7 @@ namespace Link11Checker.ViewModels
         private bool destPathSelected;
         private string lastSelectedPathWithLinks;
         private bool notifyWhenStartWorking;
+        private bool notifyWhenEndWorking;
         private bool notifyWhenStartActive;
         private string version;
         private Settings settings;
@@ -234,19 +245,19 @@ namespace Link11Checker.ViewModels
             if (File.Exists("seanses.json"))
             {
                 string jsonFile = "";
+                List<String> dirs = new List<string>();
                 try
                 {
                     jsonFile = File.ReadAllText("seanses.json", Encoding.Default);
+                    dirs = JsonConvert.DeserializeObject<List<string>>(jsonFile);
                 }
                 catch (Exception e)
                 {
                     logger.LogMessage(e.Message, LogLevel.Error);
                 }
-                List<String> dirs = JsonConvert.DeserializeObject< List<string> >(jsonFile);
                 foreach (string dir in dirs)
                 {
-                    if (!seanseManager.AddSeanse(dir))
-                        MessageBox.Show("Не удалось добавить сеанс: \n" + dir, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);                    
+                    seanseManager.AddSeanse(dir);
                 }
             }
 
@@ -385,8 +396,10 @@ namespace Link11Checker.ViewModels
 
         private void SeanseManager_SeanseAdded(object sender, Seanse newSeanse)
         {
-            newSeanse.WorkingStart += OnWorkingStart;
-            newSeanse.ActiveStart += OnActiveStart;
+
+            newSeanse.WorkingStart += Seanse_WorkingStart;
+            newSeanse.ActiveStart += Seanse_ActiveStart;
+            newSeanse.WorkingEnd += Seanse_WorkingEnd;
             window.Dispatcher.BeginInvoke((ThreadStart)delegate()
             {
                 Seanses.Add(newSeanse);
@@ -394,23 +407,27 @@ namespace Link11Checker.ViewModels
             });
         }
 
-        private void OnActiveStart(object sender, EventArgs args)
+        private void Seanse_ActiveStart(Seanse seanse, EventArgs args)
         {
             if (NotifyWhenStartActive)
             {
-                Seanse seanse = (Seanse)sender;
-                SystemSounds.Exclamation.Play();
                 MessageBox.Show(string.Format("Линк {0} {1} преходит в активный режим.", seanse.Freq, seanse.Mode), "Переход в активный", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
-        private void OnWorkingStart(object sender, EventArgs args)
+        private void Seanse_WorkingStart(Seanse seanse, EventArgs args)
         {
             if (NotifyWhenStartWorking)
             {
-                Seanse seanse = (Seanse)sender;
-                SystemSounds.Exclamation.Play();
                 MessageBox.Show(string.Format("Линк {0} {1} начинает свою работу.", seanse.Freq, seanse.Mode), "Начало работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void Seanse_WorkingEnd(Seanse seanse, EventArgs arg2)
+        {
+            if (NotifyWhenEndWorking)
+            {
+                MessageBox.Show(string.Format("Линк {0} {1} окончил свою работу " + settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode), "Окончание работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
         

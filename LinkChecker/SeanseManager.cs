@@ -61,9 +61,9 @@ namespace Link11Checker.Core
 
             Thread timer = new Thread(() =>
             {
-                int updateCounter = 0;
-                int copyCounter = 0;
-                int synchronizeCounter = 0;
+                int updateCounter = 1;
+                int copyCounter = 1;
+                int synchronizeCounter = 1;
                 while (true)
                 {
                     if (UpdateTimerOn && updateCounter >= settings.UpdateCounterLimit)
@@ -102,9 +102,11 @@ namespace Link11Checker.Core
                         {
                             logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
                         }
+                        synchronizeCounter = 0;
                     }
                     updateCounter++;
                     copyCounter++;
+                    synchronizeCounter++;
                     Thread.Sleep(5000);
                 }
             });
@@ -200,10 +202,10 @@ namespace Link11Checker.Core
                     {
                         logger.LogMessage(e.FileName + " не найден", LogLevel.Warning);
                     }
-                    catch (Exception e)
-                    {
-                        logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
-                    }
+                    //catch (Exception e)
+                    //{
+                    //    logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
+                    //}
                 }
                 SaveDirectories();
             }

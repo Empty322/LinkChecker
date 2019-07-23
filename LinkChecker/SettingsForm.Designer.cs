@@ -32,8 +32,8 @@
             this.OkBtn = new System.Windows.Forms.Button();
             this.CanselBtn = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.EntriesCountToStartSignalTextBox = new System.Windows.Forms.TextBox();
-            this.EntriesCountToStartSignal = new System.Windows.Forms.Label();
+            this.MinutesToAwaitAfterEndTextBox = new System.Windows.Forms.TextBox();
+            this.MinetsToAwaitAfterEnd = new System.Windows.Forms.Label();
             this.SmoothValueTextBox = new System.Windows.Forms.TextBox();
             this.SmoothValue = new System.Windows.Forms.Label();
             this.IntervalsKTextBox = new System.Windows.Forms.TextBox();
@@ -58,13 +58,14 @@
             this.InitialDestPath = new System.Windows.Forms.Label();
             this.InitialSeansesPathTextBox = new System.Windows.Forms.TextBox();
             this.InitialSeansesPath = new System.Windows.Forms.Label();
+            this.HideEmptySeanses = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // OkBtn
             // 
-            this.OkBtn.Location = new System.Drawing.Point(716, 326);
+            this.OkBtn.Location = new System.Drawing.Point(716, 379);
             this.OkBtn.Name = "OkBtn";
             this.OkBtn.Size = new System.Drawing.Size(75, 23);
             this.OkBtn.TabIndex = 0;
@@ -74,7 +75,7 @@
             // 
             // CanselBtn
             // 
-            this.CanselBtn.Location = new System.Drawing.Point(797, 326);
+            this.CanselBtn.Location = new System.Drawing.Point(797, 379);
             this.CanselBtn.Name = "CanselBtn";
             this.CanselBtn.Size = new System.Drawing.Size(75, 23);
             this.CanselBtn.TabIndex = 1;
@@ -84,8 +85,8 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.EntriesCountToStartSignalTextBox);
-            this.groupBox1.Controls.Add(this.EntriesCountToStartSignal);
+            this.groupBox1.Controls.Add(this.MinutesToAwaitAfterEndTextBox);
+            this.groupBox1.Controls.Add(this.MinetsToAwaitAfterEnd);
             this.groupBox1.Controls.Add(this.SmoothValueTextBox);
             this.groupBox1.Controls.Add(this.SmoothValue);
             this.groupBox1.Controls.Add(this.IntervalsKTextBox);
@@ -94,26 +95,26 @@
             this.groupBox1.Controls.Add(this.AbonentsK);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(420, 308);
+            this.groupBox1.Size = new System.Drawing.Size(420, 361);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Конфигурация вычислений";
             // 
-            // EntriesCountToStartSignalTextBox
+            // MinetsToAwaitAfterEndTextBox
             // 
-            this.EntriesCountToStartSignalTextBox.Location = new System.Drawing.Point(22, 207);
-            this.EntriesCountToStartSignalTextBox.Name = "EntriesCountToStartSignalTextBox";
-            this.EntriesCountToStartSignalTextBox.Size = new System.Drawing.Size(392, 20);
-            this.EntriesCountToStartSignalTextBox.TabIndex = 7;
+            this.MinutesToAwaitAfterEndTextBox.Location = new System.Drawing.Point(22, 207);
+            this.MinutesToAwaitAfterEndTextBox.Name = "MinetsToAwaitAfterEndTextBox";
+            this.MinutesToAwaitAfterEndTextBox.Size = new System.Drawing.Size(392, 20);
+            this.MinutesToAwaitAfterEndTextBox.TabIndex = 7;
             // 
-            // EntriesCountToStartSignal
+            // MinetsToAwaitAfterEnd
             // 
-            this.EntriesCountToStartSignal.AutoSize = true;
-            this.EntriesCountToStartSignal.Location = new System.Drawing.Point(19, 191);
-            this.EntriesCountToStartSignal.Name = "EntriesCountToStartSignal";
-            this.EntriesCountToStartSignal.Size = new System.Drawing.Size(131, 13);
-            this.EntriesCountToStartSignal.TabIndex = 6;
-            this.EntriesCountToStartSignal.Text = "EntriesCountToStartSignal";
+            this.MinetsToAwaitAfterEnd.AutoSize = true;
+            this.MinetsToAwaitAfterEnd.Location = new System.Drawing.Point(19, 191);
+            this.MinetsToAwaitAfterEnd.Name = "MinetsToAwaitAfterEnd";
+            this.MinetsToAwaitAfterEnd.Size = new System.Drawing.Size(131, 13);
+            this.MinetsToAwaitAfterEnd.TabIndex = 6;
+            this.MinetsToAwaitAfterEnd.Text = "EntriesCountToStartSignal";
             // 
             // SmoothValueTextBox
             // 
@@ -166,6 +167,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.HideEmptySeanses);
             this.groupBox2.Controls.Add(this.VenturFileExplore);
             this.groupBox2.Controls.Add(this.InitialDestPathExplore);
             this.groupBox2.Controls.Add(this.InitialSeansesPathExplore);
@@ -185,7 +187,7 @@
             this.groupBox2.Controls.Add(this.InitialSeansesPath);
             this.groupBox2.Location = new System.Drawing.Point(452, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(420, 308);
+            this.groupBox2.Size = new System.Drawing.Size(420, 361);
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Настройки приложения";
@@ -332,11 +334,21 @@
             this.InitialSeansesPath.TabIndex = 0;
             this.InitialSeansesPath.Text = "InitialSeansesPath";
             // 
+            // HideEmptySeanses
+            // 
+            this.HideEmptySeanses.AutoSize = true;
+            this.HideEmptySeanses.Location = new System.Drawing.Point(10, 296);
+            this.HideEmptySeanses.Name = "HideEmptySeanses";
+            this.HideEmptySeanses.Size = new System.Drawing.Size(156, 17);
+            this.HideEmptySeanses.TabIndex = 19;
+            this.HideEmptySeanses.Text = "Скрывать пустые сеансы";
+            this.HideEmptySeanses.UseVisualStyleBackColor = true;
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(884, 361);
+            this.ClientSize = new System.Drawing.Size(884, 414);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.CanselBtn);
@@ -358,8 +370,8 @@
         private System.Windows.Forms.Button CanselBtn;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.TextBox EntriesCountToStartSignalTextBox;
-        private System.Windows.Forms.Label EntriesCountToStartSignal;
+        private System.Windows.Forms.TextBox MinutesToAwaitAfterEndTextBox;
+        private System.Windows.Forms.Label MinetsToAwaitAfterEnd;
         private System.Windows.Forms.TextBox SmoothValueTextBox;
         private System.Windows.Forms.Label SmoothValue;
         private System.Windows.Forms.TextBox IntervalsKTextBox;
@@ -383,5 +395,6 @@
         private System.Windows.Forms.Button VenturFileExplore;
         private System.Windows.Forms.Button InitialDestPathExplore;
         private System.Windows.Forms.Button InitialSeansesPathExplore;
+        private System.Windows.Forms.CheckBox HideEmptySeanses;
     }
 }

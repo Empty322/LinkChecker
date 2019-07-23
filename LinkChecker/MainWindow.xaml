@@ -25,7 +25,7 @@
             </MenuItem>
             <MenuItem Header="Уведомления">
                 <MenuItem Header="Начало работы" IsCheckable="True" IsChecked="{Binding NotifyWhenStartWorking}" />
-                <MenuItem Header="Окончание работы" IsCheckable="True" IsEnabled="False" />
+                <MenuItem Header="Окончание работы" IsCheckable="True" IsChecked="{Binding NotifyWhenEndWorking}" />
                 <MenuItem Header="Переход в активный режим" IsCheckable="True" IsChecked="{Binding NotifyWhenStartActive}" />
                 <MenuItem Header="Выход из активного режима" IsCheckable="True" IsEnabled="False" />
             </MenuItem>
@@ -78,6 +78,7 @@
                     <DataGridTextColumn Header="Средн." Binding="{Binding AverageSize, Mode=OneWay}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Кол. корреспондентов" Binding="{Binding AbonentsCount, Mode=OneWay}" Width="60"></DataGridTextColumn>
                     <DataGridTextColumn Header="Интервалы" Binding="{Binding Intervals, Mode=OneWay}"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Процент приема" Binding="{Binding PercentReceiving, StringFormat={}{0}%, Mode=OneWay}" Width="40"></DataGridTextColumn>
                     <DataGridTextColumn Header="Последн. раб." Binding="{Binding LastWorkingTime, Mode=OneWay}" Width="60"></DataGridTextColumn>
                     <DataGridTextColumn Header="Последн. акт." Binding="{Binding LastActiveTime, Mode=OneWay}" Width="60"></DataGridTextColumn>
                 </DataGrid.Columns>
@@ -101,6 +102,7 @@
             <StackPanel Grid.Row="1" Margin="5" Grid.Column="1">
                 <Button Margin="0,0,0,10" Command="{Binding OpenLog}" IsEnabled="{Binding IsSeanceSelected}">Открыть log.txt</Button>
                 <TextBlock Text="{Binding SelectedSeanse.MaxSizeInBytes, StringFormat=Макс. объем в байтах: {0:F2}}" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding SelectedSeanse.AverageSizeInBytes, StringFormat=Средний. объем в байтах: {0:F2}}" TextWrapping="Wrap" />
                 <TextBlock Text="{Binding SelectedSeanse.LastCopy, StringFormat=Посл. копирование: {0}}" TextWrapping="Wrap" />
             </StackPanel>
         </Grid>

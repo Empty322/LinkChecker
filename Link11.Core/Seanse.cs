@@ -13,18 +13,17 @@ using Link11.Core;
 using Logger;
 using Newtonsoft.Json;
 
-
 namespace Link11.Core
 {
     public class Seanse : INotifyPropertyChanged
     {
         #region Events
 
-        public event Action<object, EventArgs> ActiveStart = (sender, e) => { };
-        public event Action<object, EventArgs> ActiveEnd = (sender, e) => { };
+        public event Action<Seanse, EventArgs> ActiveStart = (sender, e) => { };
+        public event Action<Seanse, EventArgs> ActiveEnd = (sender, e) => { };
 
-        public event Action<object, EventArgs> WorkingStart = (sender, e) => { };
-        public event Action<object, EventArgs> WorkingEnd = (sender, e) => { };
+        public event Action<Seanse, EventArgs> WorkingStart = (sender, e) => { };
+        public event Action<Seanse, EventArgs> WorkingEnd = (sender, e) => { };
 
 
         public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
@@ -78,21 +77,9 @@ namespace Link11.Core
                 return "";
             }
         }
-        public string LastActiveTime
-        {
-            get { 
-                IEnumerable<SignalEntry> active = signalEntries.Where(x => x.Type != EntryType.Error && ((x.Size - x.Errors) > (int)Mode));
-                if (active.Count() != 0)
-                    return active.Last().Time.ToShortTimeString();
-                return "";
-            }
-        }
-        public int AbonentsCount {
-            get { return GetAbonents().Count; }
-        }
-        public string Intervals {
-            get { return GetIntervals(); }
-        }
+        public string LastActiveTime { get; private set; }
+        public int AbonentsCount { get { return GetAbonents().Count; } }
+        public string Intervals { get { return GetIntervals(); } }
         public string Position
         {
             get { return position; }
@@ -111,40 +98,37 @@ namespace Link11.Core
                 OnPropertyChanged("Coordinates");
             }
         }
-        public int MaxSize
-        {
-            get { return GetMaxInFrames(); }
-        }
-        public float MaxSizeInBytes
-        {
-            get { return (float)Math.Round(MaxSize * 3.75, 2); }
-        }
-        public float AverageSize
-        {
-            get { return (float)Math.Round(GetAverageSizeInFrames()); }
-        }
-        public SeanseState State
-        {
-            get
-            {
-                return state;
-            }
-        }
+        public int MaxSize { get { return GetMaxInFrames(); } }
+        public float MaxSizeInBytes { get { return (float)Math.Round(MaxSize * 3.75f, 2); } }
+        public float AverageSizeInBytes { get { return (float)Math.Round(AverageSize * 3.75f, 2); } }
+        public float AverageSize { get { return (float)Math.Round(GetAverageSizeInFrames()); } }
+        public SeanseState State { get { return state; } }
         public List<string> ActiveEntries { get; set; }
-        public string LastCopy { 
-            get {
-                return lastCopy.ToShortTimeString();
-            }
-        }
-        public string LastUpdate
+        public string LastCopy { get { return lastCopy.ToShortTimeString(); } }
+        public string LastUpdate {get { return lastUpdate.ToShortTimeString(); } }
+        public bool ContainsEntries { get { return signalEntries.Any(); } }
+        public int PercentReceiving
         {
             get
             {
-                return lastUpdate.ToShortTimeString();
+                int notErrorsCount = signalEntries.Where(x => x.Type != EntryType.Error).Count();
+                if (notErrorsCount > 0)
+                    return (int)Math.Round(100f / signalEntries.Count() * notErrorsCount);
+                else
+                    return 100;
             }
         }
         public List<TuningChartUnit> TuningChartUnits { get; set; }
         public List<WorkingChartUnit> WorkingChartUnits { get; set; }
+        private DateTime ServerTime
+        {
+            get
+            {
+                DateTime lastEntryTime = signalEntries.Last().Time;
+                TimeSpan delay = lastModified - lastEntryTime;
+                return DateTime.Now - delay;
+            }
+        }
 
         #endregion
 
@@ -165,6 +149,7 @@ namespace Link11.Core
         private IParser parser;
         private SeanseState prevState;
         private SeanseState state;
+        private bool isEnded;
 
         // Исправить
         private const int countForWorkingLevel5 = 200;
@@ -190,8 +175,9 @@ namespace Link11.Core
             this.DirectoryExists = System.IO.Directory.Exists(Directory);
             if (!DirectoryExists)
                 throw new LogFileNotFoundException();
-            TuningChartUnits = new List<TuningChartUnit>();
-            WorkingChartUnits = new List<WorkingChartUnit>();
+            this.LastActiveTime = "";
+            this.TuningChartUnits = new List<TuningChartUnit>();
+            this.WorkingChartUnits = new List<WorkingChartUnit>();
             this.lastModified = new DateTime();
             this.logger = logger;
             this.signalEntries = new List<SignalEntry>();
@@ -222,42 +208,36 @@ namespace Link11.Core
                 LoadLog();
 
                 // Если это пустой сеанс, выйти
-                if (!signalEntries.Any())
-                    return;
-
-                // Узнать состояние сеанса
-                state = GetState();
-
-                // Eсли перешел в активный
-                if (prevState != SeanseState.Active && state == SeanseState.Active)
-                    ActiveStart.Invoke(this, new EventArgs());
-
-                // Если начал работу
-                if (prevState == SeanseState.WorkingLevel0 && state != SeanseState.WorkingLevel0)
-                    WorkingStart.Invoke(this, new EventArgs());
-
-                // Получить данные для графика расстройки
-                TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
-
-                // Получить данные для графика работы
-                WorkingChartUnits = GetWorkingChartUnits(new TimeSpan(0,1,0));
-
-                // Получить вхождения с объемом, превышающим норму
                 if (signalEntries.Any())
                 {
-                    ActiveEntries = signalEntries
-                        .Where(x => x.Type != EntryType.Error && ((x.Size - x.Errors) > (int)Mode))
-                        .Select(x => x.Time.ToShortTimeString() + '\t' + (x.Size - x.Errors))
-                        .ToList();
+                    // Узнать состояние сеанса
+                    state = GetState();
+
+                    FireEvents();
+                                        
+                    // Получить данные для графика расстройки
+                    TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
+
+                    // Получить данные для графика работы
+                    WorkingChartUnits = GetWorkingChartUnits(new TimeSpan(0,1,0));
+
+                    // Получить вхождения с объемом, превышающим норму
+                    if (signalEntries.Any())
+                    {
+                        ActiveEntries = signalEntries
+                            .Where(x => x.Type != EntryType.Error && ((x.Size - x.Errors) > (int)Mode))
+                            .Select(x => x.Time.ToShortTimeString() + '\t' + (x.Size - x.Errors))
+                            .ToList();
+                    }
+
+                    prevState = state;
+                    lastModified = File.GetLastWriteTime(Directory + "\\log.txt");
+                    lastUpdate = DateTime.Now;
+
+                    Type df = this.GetType();
+                    foreach (PropertyInfo pi in df.GetProperties())
+                        OnPropertyChanged(pi.Name);
                 }
-
-                prevState = state;
-                lastModified = File.GetLastWriteTime(Directory + "\\log.txt");
-                lastUpdate = DateTime.Now;
-
-                Type df = this.GetType();
-                foreach (PropertyInfo pi in df.GetProperties())
-                    OnPropertyChanged(pi.Name);
             }
             else
             {
@@ -275,30 +255,34 @@ namespace Link11.Core
                 if (seanseDir.Exists)
                 {
                     directoryExists = true;
-                    // Если есть изменения в log.txt
-                    if (lastModified != seanseDir.LastWriteTime)
-                    {
-                        // Получить файлы сеанса
-                        FileInfo[] files = seanseDir.GetFiles();
-
-                        // Создать папку назначения, если ее нет
-                        if (!destination.Exists)
-                            destination.Create();
-                        DirectoryInfo dest = new DirectoryInfo(destination.ToString() + '\\' + seanseDir.Name);
-                        dest.Create();
-
-                        // Скопировать файлы сеанса в папку назначения
-                        foreach (FileInfo file in files)
+                    // Если размер лога больше 40000 байт
+                    FileInfo logInfo = new FileInfo(Directory + "/log.txt");
+                    if (logInfo.Length > 40000) {
+                        // Если есть изменения в log.txt
+                        if (lastModified != seanseDir.LastWriteTime)
                         {
-                            try
+                            // Получить файлы сеанса
+                            FileInfo[] files = seanseDir.GetFiles();
+
+                            // Создать папку назначения, если ее нет
+                            if (!destination.Exists)
+                                destination.Create();
+                            DirectoryInfo dest = new DirectoryInfo(destination.ToString() + '\\' + seanseDir.Name);
+                            dest.Create();
+
+                            // Скопировать файлы сеанса в папку назначения
+                            foreach (FileInfo file in files)
                             {
-                                file.CopyTo(dest.FullName + '\\' + file.Name, true);
-                                if (file.Name == "log.txt")
-                                    lastCopy = DateTime.Now;
-                            }
-                            catch (Exception e)
-                            {
-                                logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
+                                try
+                                {
+                                    file.CopyTo(dest.FullName + '\\' + file.Name, true);
+                                    if (file.Name == "log.txt")
+                                        lastCopy = DateTime.Now;
+                                }
+                                catch (Exception e)
+                                {
+                                    logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
+                                }
                             }
                         }
                     }
@@ -308,6 +292,15 @@ namespace Link11.Core
                     directoryExists = false;
                 }
             }
+        }
+
+        #endregion
+
+        #region LogFileNotFoundException
+
+        public class LogFileNotFoundException : FileNotFoundException
+        {
+            public LogFileNotFoundException() { }
         }
 
         #endregion
@@ -559,11 +552,7 @@ namespace Link11.Core
 
             if (signalEntries.Count != 0)
             {
-                DateTime lastEntryTime = signalEntries.Last().Time;
-                TimeSpan delay = lastModified - lastEntryTime;
-                DateTime serverTime = DateTime.Now - delay;
-
-                List<SignalEntry> lastEntries = signalEntries.Where(x => x.Time > serverTime - new TimeSpan(0, 3, 0) && x.Time < serverTime).ToList();
+                List<SignalEntry> lastEntries = signalEntries.Where(x => x.Time > ServerTime - new TimeSpan(0, 3, 0) && x.Time < ServerTime).ToList();
                 if (lastEntries.Where(x => x.Type != EntryType.Error && ((x.Size - x.Errors) > (int)Mode)).Any())
                     result = SeanseState.Active;
                 else if (lastEntries.Count >= countForWorkingLevel5)
@@ -574,15 +563,43 @@ namespace Link11.Core
                     result = SeanseState.WorkingLevel3;
                 else if (lastEntries.Count >= countForWorkingLevel2)
                     result = SeanseState.WorkingLevel2;
-                else if (prevState == SeanseState.WorkingLevel0 && lastEntries.Where(x => x.Type != EntryType.Error).Count() > config.EntriesCountToStartSignal)
-                    result = SeanseState.WorkingLevel1;
-                else if (prevState != SeanseState.WorkingLevel0 && lastEntries.Count >= countForWorkingLevel1)
+                else if (lastEntries.Count >= 1)
                     result = SeanseState.WorkingLevel1;
             }
             return result;
         }
 
-        public List<TuningChartUnit> GetTuningChartUnits(int counterMax)
+        private void FireEvents()
+        {
+            // Eсли перешел в активный
+            if (prevState != SeanseState.Active && state == SeanseState.Active)
+            {
+                LastActiveTime = signalEntries.Where(x => x.Type != EntryType.Error && (x.Size - x.Errors) > (int)Mode).Last().Time.ToShortTimeString();
+                ActiveStart.Invoke(this, new EventArgs());
+            }
+
+            IEnumerable<SignalEntry> activeEntries = signalEntries.Where(x => x.Type != EntryType.Error && x.Size - x.Errors > (int)Mode);
+            // Если Вышел из активного
+            if (activeEntries.Any() && activeEntries.Last().Time < ServerTime.AddMinutes(-config.MinutesToAwaitAfterEnd))
+            {
+                ActiveEnd.Invoke(this, new EventArgs());
+            }
+
+            // Если начал работу
+            if (isEnded && state != SeanseState.WorkingLevel0)
+            {
+                isEnded = false;
+                WorkingStart.Invoke(this, new EventArgs());
+            }
+            // Если окончил работу
+            if (!isEnded && signalEntries.Where(x => x.Time > ServerTime.AddMinutes(-config.MinutesToAwaitAfterEnd) && x.Time <= ServerTime).Count() == 0)
+            {
+                isEnded = true;
+                WorkingEnd.Invoke(this, new EventArgs());
+            }
+        }
+
+        private List<TuningChartUnit> GetTuningChartUnits(int counterMax)
         {
             List<TuningChartUnit> units = new List<TuningChartUnit>();
             if (signalEntries.Count != 0)
@@ -592,12 +609,12 @@ namespace Link11.Core
                 int counter = 0;
                 while (enumerator.MoveNext() || valuesToSmooth.Any())
                 {
-                    if (counter < counterMax)
+                    if (enumerator.Current != null && counter < counterMax)
                     {
                         valuesToSmooth.Add(enumerator.Current);
                         counter++;
                     }
-                    else if (counter >= counterMax || !enumerator.MoveNext())
+                    else if (counter >= counterMax || enumerator.Current == null)
                     {
                         TuningChartUnit unit = new TuningChartUnit();
                         unit.Tuning = valuesToSmooth.Select(x => x.Tuning).Average();
@@ -612,7 +629,7 @@ namespace Link11.Core
             return units;
         }
 
-        public List<WorkingChartUnit> GetWorkingChartUnits(TimeSpan smoothTime)
+        private List<WorkingChartUnit> GetWorkingChartUnits(TimeSpan smoothTime)
         {
             List<WorkingChartUnit> units = new List<WorkingChartUnit>();
             List<SignalEntry> valuesToUnite = new List<SignalEntry>();
@@ -651,11 +668,6 @@ namespace Link11.Core
         private void OnPropertyChanged(string name)
         {
             PropertyChanged(this, new PropertyChangedEventArgs(name));
-        }
-
-        public class LogFileNotFoundException : FileNotFoundException
-        {
-            public LogFileNotFoundException() { }
         }
 
         #endregion   

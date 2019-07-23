@@ -26,7 +26,7 @@ namespace Link11Checker
             AbonentsK.Text = "Считать корреспондентов с количеством \nвхождений превышающим процент от количества \nвхождений самого частого корреспондента:";
             IntervalsK.Text = "Cчитать корреспондентов с определенным итнервалом, \nколичество вхождений которого превышает процент от количества \nвхождений всех остальных интервалов корреспондента:";
             SmoothValue.Text = "Усреднение расстройки:";
-            EntriesCountToStartSignal.Text = "Количество вхождений, необходимое для уведомления о начале сигнала:";
+            MinetsToAwaitAfterEnd.Text = "Время ожидания конца сигнала в минутах:";
 
             InitialSeansesPath.Text = "Начальная папка для добавления сеансов:";
             InitialDestPath.Text = "Начальная папка для накопления:";
@@ -39,7 +39,7 @@ namespace Link11Checker
             AbonentsKTextBox.Text = settings.Configuration.AbonentsK.ToString();
             IntervalsKTextBox.Text = settings.Configuration.IntervalsK.ToString();
             SmoothValueTextBox.Text = settings.Configuration.SmoothValue.ToString();
-            EntriesCountToStartSignalTextBox.Text = settings.Configuration.EntriesCountToStartSignal.ToString();
+            MinutesToAwaitAfterEndTextBox.Text = settings.Configuration.MinutesToAwaitAfterEnd.ToString();
 
             InitialSeansesPathTextBox.Text = settings.InitialSeansesPath;
             InitialDestPathTextBox.Text = settings.InitialDestPath;
@@ -48,6 +48,7 @@ namespace Link11Checker
             CopyCounterLimitTextBox.Text = settings.CopyCounterLimit.ToString();
             SynchronizeCounterLimitTextBox.Text = settings.SynchronizeCounterLimit.ToString();
             WorkingChartIntervalTextBox.Text = settings.WorkingChartInterval.ToString();
+            HideEmptySeanses.Checked = settings.HideEmptySeanses;
         }
 
         private void CanselBtn_Click(object sender, EventArgs e)
@@ -72,7 +73,7 @@ namespace Link11Checker
                     AbonentsK = Convert.ToDouble(AbonentsKTextBox.Text),
                     IntervalsK = Convert.ToDouble(IntervalsKTextBox.Text),
                     SmoothValue = Convert.ToInt32(SmoothValueTextBox.Text),
-                    EntriesCountToStartSignal = Convert.ToInt32(EntriesCountToStartSignalTextBox.Text)
+                    MinutesToAwaitAfterEnd = Convert.ToInt32(MinutesToAwaitAfterEndTextBox.Text)
                 };
                 newSettings.Configuration = cfg;
 
@@ -83,6 +84,7 @@ namespace Link11Checker
                 newSettings.CopyCounterLimit = Convert.ToInt32(CopyCounterLimitTextBox.Text);
                 newSettings.SynchronizeCounterLimit = Convert.ToInt32(SynchronizeCounterLimitTextBox.Text);
                 newSettings.WorkingChartInterval = Convert.ToInt32(WorkingChartIntervalTextBox.Text);
+                newSettings.HideEmptySeanses = HideEmptySeanses.Checked;
 
                 string settingsFile = JsonConvert.SerializeObject(newSettings);
                 File.WriteAllText("settings.json", settingsFile, Encoding.Default);
