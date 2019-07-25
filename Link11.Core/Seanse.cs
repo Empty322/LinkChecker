@@ -77,7 +77,16 @@ namespace Link11.Core
                 return "";
             }
         }
-        public string LastActiveTime { get; private set; }
+        public string LastActiveTime
+        {
+            get
+            {
+                if (ActiveEntries.Any())
+                    return ActiveEntries.Last().Split('\t')[0];
+                else
+                    return "";
+            }
+        }
         public int AbonentsCount { get { return GetAbonents().Count; } }
         public string Intervals { get { return GetIntervals(); } }
         public string Position
@@ -115,11 +124,12 @@ namespace Link11.Core
                 if (notErrorsCount > 0)
                     return (int)Math.Round(100f / signalEntries.Count() * notErrorsCount);
                 else
-                    return 100;
+                    return 0;
             }
         }
         public List<TuningChartUnit> TuningChartUnits { get; set; }
         public List<WorkingChartUnit> WorkingChartUnits { get; set; }
+        public List<SizeChartUnit> SizeChartUnits { get; set; }
         private DateTime ServerTime
         {
             get
@@ -150,6 +160,7 @@ namespace Link11.Core
         private SeanseState prevState;
         private SeanseState state;
         private bool isEnded;
+        private bool isActiveEnded;
 
         // Исправить
         private const int countForWorkingLevel5 = 200;
@@ -175,7 +186,6 @@ namespace Link11.Core
             this.DirectoryExists = System.IO.Directory.Exists(Directory);
             if (!DirectoryExists)
                 throw new LogFileNotFoundException();
-            this.LastActiveTime = "";
             this.TuningChartUnits = new List<TuningChartUnit>();
             this.WorkingChartUnits = new List<WorkingChartUnit>();
             this.lastModified = new DateTime();
@@ -186,6 +196,8 @@ namespace Link11.Core
             this.mode = Mode.Unknown;
             this.prevState = SeanseState.WorkingLevel0;
             this.state = SeanseState.WorkingLevel0;
+            this.isEnded = true;
+            this.isActiveEnded = true;
             Update();
         }
 
@@ -217,6 +229,9 @@ namespace Link11.Core
                                         
                     // Получить данные для графика расстройки
                     TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
+
+                    // Получить данные для графика объема
+                    SizeChartUnits = GetSizeChartUnits();
 
                     // Получить данные для графика работы
                     WorkingChartUnits = GetWorkingChartUnits(new TimeSpan(0,1,0));
@@ -257,7 +272,7 @@ namespace Link11.Core
                     directoryExists = true;
                     // Если размер лога больше 40000 байт
                     FileInfo logInfo = new FileInfo(Directory + "/log.txt");
-                    if (logInfo.Length > 40000) {
+                    if (logInfo.Length > 40000 && PercentReceiving > 30) {
                         // Если есть изменения в log.txt
                         if (lastModified != seanseDir.LastWriteTime)
                         {
@@ -382,13 +397,13 @@ namespace Link11.Core
             if (signalEntries.Count != 0)
             {
                 Dictionary<int, int> abonentsEntries = new Dictionary<int, int>();
-                if (start.Hour > end.Hour)
-                {
-                    abonents.AddRange(GetAbonents(start, DateTime.Parse("23:59:59")));
-                    abonents.AddRange(GetAbonents(DateTime.Parse("00:00"), end));
-                }
-                else
-                {
+                //if (start.Hour > end.Hour)
+                //{
+                //    abonents.AddRange(GetAbonents(start, DateTime.Parse("23:59:59")));
+                //    abonents.AddRange(GetAbonents(DateTime.Parse("00:00"), end));
+                //}
+                //else
+                //{
                     List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && x.Type != EntryType.Error).ToList();
                     if (CurrentEntries.Count == 0)
                         return new List<int>();
@@ -412,7 +427,7 @@ namespace Link11.Core
                             i++;
                         }
                     }
-                }
+                //}
             }
             return abonents;
         }
@@ -436,11 +451,11 @@ namespace Link11.Core
             List<int> result = new List<int>();
             if (signalEntries.Count != 0)
             {
-                if (start.Hour > end.Hour)
-                {
-                    result.AddRange(GetAbonentsWithInterval(start, DateTime.Parse("23:59:59"), abonents, interval));
-                    result.AddRange(GetAbonentsWithInterval(DateTime.Parse("00:00"), end, abonents, interval));
-                }
+                //if (start.Hour > end.Hour)
+                //{
+                //    result.AddRange(GetAbonentsWithInterval(start, DateTime.Parse("23:59:59"), abonents, interval));
+                //    result.AddRange(GetAbonentsWithInterval(DateTime.Parse("00:00"), end, abonents, interval));
+                //}
                 List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && x.Type != EntryType.Error && x.Ninterval != 0).ToList();
                 CurrentEntries = CurrentEntries.Where(x => x.Abonent.HasValue && abonents.Contains(x.Abonent.Value)).ToList();
 
@@ -473,11 +488,11 @@ namespace Link11.Core
             int maxInFrames = 0;
             if (signalEntries.Count != 0)
             {
-                if (start.Hour > end.Hour)
-                {
-                    maxInFrames += GetMaxInFrames(start, DateTime.Parse("23:59:59"));
-                    maxInFrames += GetMaxInFrames(DateTime.Parse("00:00"), end);
-                }
+                //if (start.Hour > end.Hour)
+                //{
+                //    maxInFrames += GetMaxInFrames(start, DateTime.Parse("23:59:59"));
+                //    maxInFrames += GetMaxInFrames(DateTime.Parse("00:00"), end);
+                //}
                 List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && x.Type != EntryType.Error).ToList();
                 int[] sizeWihoutErrors = CurrentEntries.Select(x => x.Size - x.Errors).ToArray();
 
@@ -502,11 +517,11 @@ namespace Link11.Core
             float avgInFrames = 0;
             if (signalEntries.Count != 0)
             {
-                if (start.Hour > end.Hour)
-                {
-                    avgInFrames += GetAverageSizeInFrames(start, DateTime.Parse("23:59:59"));
-                    avgInFrames += GetAverageSizeInFrames(DateTime.Parse("00:00"), end);
-                }
+                //if (start.Hour > end.Hour)
+                //{
+                //    avgInFrames += GetAverageSizeInFrames(start, DateTime.Parse("23:59:59"));
+                //    avgInFrames += GetAverageSizeInFrames(DateTime.Parse("00:00"), end);
+                //}
                 List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && (x.Type == EntryType.Message || x.Type == EntryType.Answer)).ToList();
                 int[] sizeWihoutErrors = CurrentEntries.Select(x => x.Size - x.Errors).ToArray();
 
@@ -572,16 +587,17 @@ namespace Link11.Core
         private void FireEvents()
         {
             // Eсли перешел в активный
-            if (prevState != SeanseState.Active && state == SeanseState.Active)
+            if (isActiveEnded && prevState != SeanseState.Active && state == SeanseState.Active)
             {
-                LastActiveTime = signalEntries.Where(x => x.Type != EntryType.Error && (x.Size - x.Errors) > (int)Mode).Last().Time.ToShortTimeString();
+                isActiveEnded = false;
                 ActiveStart.Invoke(this, new EventArgs());
             }
 
-            IEnumerable<SignalEntry> activeEntries = signalEntries.Where(x => x.Type != EntryType.Error && x.Size - x.Errors > (int)Mode);
             // Если Вышел из активного
-            if (activeEntries.Any() && activeEntries.Last().Time < ServerTime.AddMinutes(-config.MinutesToAwaitAfterEnd))
+            IEnumerable<SignalEntry> activeEntries = signalEntries.Where(x => x.Type != EntryType.Error && x.Size - x.Errors > (int)Mode);
+            if (!isActiveEnded && activeEntries.Any() && !(activeEntries.Last().Time > ServerTime.AddMinutes(-config.MinutesToAwaitAfterEnd) && activeEntries.Last().Time <= ServerTime))
             {
+                isActiveEnded = true;
                 ActiveEnd.Invoke(this, new EventArgs());
             }
 
@@ -601,6 +617,7 @@ namespace Link11.Core
 
         private List<TuningChartUnit> GetTuningChartUnits(int counterMax)
         {
+            float avgTuning = signalEntries.Select(x => x.Tuning).Average();
             List<TuningChartUnit> units = new List<TuningChartUnit>();
             if (signalEntries.Count != 0)
             {
@@ -617,6 +634,9 @@ namespace Link11.Core
                     else if (counter >= counterMax || enumerator.Current == null)
                     {
                         TuningChartUnit unit = new TuningChartUnit();
+                        for (int i = 0; i < valuesToSmooth.Count; i++)
+                            if (valuesToSmooth[i].Tuning > (avgTuning + 50) || valuesToSmooth[i].Tuning < (avgTuning - 50))
+                                valuesToSmooth[i].Tuning = avgTuning;
                         unit.Tuning = valuesToSmooth.Select(x => x.Tuning).Average();
                         unit.Time = valuesToSmooth.First().Time;
                         units.Add(unit);
@@ -629,6 +649,29 @@ namespace Link11.Core
             return units;
         }
 
+        private List<SizeChartUnit> GetSizeChartUnits() {
+            List<SizeChartUnit> units = new List<SizeChartUnit>();
+            if (signalEntries.Count != 0)
+            {
+                foreach (SignalEntry entry in signalEntries)
+                {
+                    SizeChartUnit unit = new SizeChartUnit();
+                    unit.Time = entry.Time;
+                    if (entry.Type != EntryType.Error)
+                    {
+                        int actualSize = entry.Size - entry.Errors;
+                        unit.Size = actualSize < 0 ? 0 : actualSize;
+                    }
+                    else
+                    {
+                        unit.Size = 0;
+                    }
+                    units.Add(unit);
+                }
+            }
+            return units;
+        }
+
         private List<WorkingChartUnit> GetWorkingChartUnits(TimeSpan smoothTime)
         {
             List<WorkingChartUnit> units = new List<WorkingChartUnit>();
@@ -636,11 +679,12 @@ namespace Link11.Core
             if (signalEntries.Any())
             {
                 DateTime end = signalEntries.Last().Time;
-                if (signalEntries.First().Time.Hour > signalEntries.Last().Time.Hour)
-                    end = end.AddDays(1);
+                //if (signalEntries.First().Time.Hour > signalEntries.Last().Time.Hour)
+                //    end = end.AddDays(1);
                 DateTime currentTime = signalEntries.First().Time;
                 do
                 {
+
                     valuesToUnite = signalEntries.Where(x => x.Time > currentTime && x.Time < (currentTime + smoothTime)).ToList();
                     WorkingChartUnit newUnit = new WorkingChartUnit();
                     if (valuesToUnite.Where(x => x.Type != EntryType.Error && (x.Size - x.Errors) > (int)Mode).Count() > 0) {

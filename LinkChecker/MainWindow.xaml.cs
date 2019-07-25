@@ -31,8 +31,36 @@ namespace Link11Checker
         {
             #region Loading settings
 
-            string settingsFile = File.ReadAllText("settings.json", Encoding.Default);
-            Settings settings = JsonConvert.DeserializeObject<Settings>(settingsFile);
+            Settings settings = new Settings();
+            if (File.Exists("settings.json"))
+            {
+                string settingsFile = File.ReadAllText("settings.json", Encoding.Default);
+                settings = JsonConvert.DeserializeObject<Settings>(settingsFile);
+            }
+            else
+            {
+                MessageBox.Show("Создан новый файл со стандартными настройками" ,"Не удалось загрузить файл настроек", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                Configuration cfg = new Configuration
+                {
+                    AbonentsK = 0.15f,
+                    IntervalsK = 0.2f,
+                    SmoothValue = 5,
+                    MinutesToAwaitAfterEnd = 15
+                };
+                settings.Configuration = cfg;
+
+                settings.InitialSeansesPath = "";
+                settings.InitialDestPath = "";
+                settings.VenturFile = "";
+                settings.UpdateCounterLimit = 1;
+                settings.CopyCounterLimit = 180;
+                settings.SynchronizeCounterLimit = 5;
+                settings.WorkingChartInterval = 5;
+                settings.HideEmptySeanses = false;
+
+                string settingsFile = JsonConvert.SerializeObject(settings);
+                File.WriteAllText("settings.json", settingsFile, Encoding.Default);
+            }
 
             #endregion
 
@@ -49,6 +77,11 @@ namespace Link11Checker
         public Chart GetWorkingChart()
         {
             return workingChart;
+        }
+
+        public Chart GetSizeChart()
+        {
+            return sizeChart;
         }
     }
 }

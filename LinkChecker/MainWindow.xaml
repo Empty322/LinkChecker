@@ -27,7 +27,7 @@
                 <MenuItem Header="Начало работы" IsCheckable="True" IsChecked="{Binding NotifyWhenStartWorking}" />
                 <MenuItem Header="Окончание работы" IsCheckable="True" IsChecked="{Binding NotifyWhenEndWorking}" />
                 <MenuItem Header="Переход в активный режим" IsCheckable="True" IsChecked="{Binding NotifyWhenStartActive}" />
-                <MenuItem Header="Выход из активного режима" IsCheckable="True" IsEnabled="False" />
+                <MenuItem Header="Выход из активного режима" IsCheckable="True" IsChecked="{Binding NotifyWhenEndActive}" />
             </MenuItem>
             <MenuItem Header="Настройки" Command="{Binding OpenSettings}" />
             <MenuItem Header="О программе" Command="{Binding About}" />
@@ -42,9 +42,11 @@
             </StatusBarItem>
             <Separator></Separator>
             <StatusBarItem HorizontalAlignment="Center">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding SelectedSeanse.Directory, StringFormat=Папка с сеансом: {0:F2}}" TextWrapping="Wrap" />
-                </StackPanel>
+                <TextBlock Text="{Binding DestPath, StringFormat=Папка назначения: {0}}" TextWrapping="Wrap" />
+            </StatusBarItem>
+            <Separator></Separator>
+            <StatusBarItem HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding SelectedSeanse.Directory, StringFormat=Папка с сеансом: {0}}" TextWrapping="Wrap" />
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
                 <TextBlock Text="{Binding Version, StringFormat=Версия: {0}}" />
@@ -89,6 +91,11 @@
                         <charting:Chart x:Name="tuningChart" Dock="Fill"></charting:Chart>
                     </WindowsFormsHost>
                 </TabItem>
+                <TabItem Header="График объема">
+                    <WindowsFormsHost>
+                        <charting:Chart x:Name="sizeChart" Dock="Fill"></charting:Chart>
+                    </WindowsFormsHost>
+                </TabItem>
                 <TabItem Header="График работы">
                     <WindowsFormsHost>
                         <charting:Chart x:Name="workingChart" Dock="Fill"></charting:Chart>
@@ -99,12 +106,14 @@
                 <TextBlock Text="Сообщения, объем которых превышает норму:" DockPanel.Dock="Top"></TextBlock>
                 <ListBox ItemsSource="{Binding SelectedSeanse.ActiveEntries}" DockPanel.Dock="Bottom"></ListBox>
             </DockPanel>
-            <StackPanel Grid.Row="1" Margin="5" Grid.Column="1">
-                <Button Margin="0,0,0,10" Command="{Binding OpenLog}" IsEnabled="{Binding IsSeanceSelected}">Открыть log.txt</Button>
-                <TextBlock Text="{Binding SelectedSeanse.MaxSizeInBytes, StringFormat=Макс. объем в байтах: {0:F2}}" TextWrapping="Wrap" />
-                <TextBlock Text="{Binding SelectedSeanse.AverageSizeInBytes, StringFormat=Средний. объем в байтах: {0:F2}}" TextWrapping="Wrap" />
-                <TextBlock Text="{Binding SelectedSeanse.LastCopy, StringFormat=Посл. копирование: {0}}" TextWrapping="Wrap" />
-            </StackPanel>
+            <DockPanel Grid.Row="1" Margin="5" Grid.Column="1">
+                <Button Margin="0,0,0,5" Command="{Binding OpenLog}" IsEnabled="{Binding IsSeanceSelected}" DockPanel.Dock="Top">Открыть log.txt</Button>
+                <Button Margin="0,0,0,10" Command="{Binding UpdateCharts}" IsEnabled="{Binding IsSeanceSelected}" DockPanel.Dock="Top">Обновить графики</Button>
+                <TextBlock Text="{Binding SelectedSeanse.MaxSizeInBytes, StringFormat=Макс. объем в байтах: {0:F2}}" TextWrapping="Wrap" DockPanel.Dock="Top"/>
+                <TextBlock Text="{Binding SelectedSeanse.AverageSizeInBytes, StringFormat=Средний. объем в байтах: {0:F2}}" TextWrapping="Wrap" DockPanel.Dock="Top"/>
+                <TextBlock Text="{Binding SelectedSeanse.LastCopy, StringFormat=Посл. копирование: {0}}" TextWrapping="Wrap" DockPanel.Dock="Top"/>
+                <!--<Slider Value="{Binding TuningChartMax}" Minimum="1" Maximum="30" VerticalAlignment="Bottom" DockPanel.Dock="Bottom"></Slider>-->
+            </DockPanel>
         </Grid>
     </DockPanel>
 </Window>

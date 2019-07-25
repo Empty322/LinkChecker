@@ -128,6 +128,17 @@ namespace Link11.Core
                     }
                 }
             }
+            if (signal.Any())
+                if (signal.First().Time > signal.Last().Time)
+                {
+                    int i = 0;
+                    while (signal[i].Time.Hour > 21)
+                    {
+                        signal[i].Time = signal[i].Time.AddDays(-1);
+                        i++;
+                    }
+                };
+                        
             return signal;
         }
 

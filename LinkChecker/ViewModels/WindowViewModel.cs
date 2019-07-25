@@ -38,6 +38,7 @@ namespace Link11Checker.ViewModels
             set {
                 selectedSeanse = value;
                 UpdateTuningChart();
+                UpdateSizeChart();
                 UpdateWorkingChart();
                 OnPropertyChanged("IsSeanceSelected");
                 OnPropertyChanged("SelectedSeanse");
@@ -78,15 +79,21 @@ namespace Link11Checker.ViewModels
         }
         public bool CanEditCollection { 
             get {
-                return !(CopyTimerOn || SynchronyzeWithVenturOn);
+                return !SynchronyzeWithVenturOn;
+            }
+        }
+        public string DestPath
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(seanseManager.DestinationPath))
+                    return "не указано";
+                return SeanseManager.DestinationPath;
             }
         }
         public bool DestPathSelected {
-            get { return destPathSelected; } 
-            set {
-                destPathSelected = value;
-                OnPropertyChanged("DestPathSelected");
-            } }
+            get { return !string.IsNullOrWhiteSpace(SeanseManager.DestinationPath); } 
+        }
         public bool IsSeanceSelected
         {
             get { return selectedSeanse == null ? false : true; }
@@ -125,20 +132,34 @@ namespace Link11Checker.ViewModels
                 OnPropertyChanged("NotifyWhenStartActive");
             }
         }
-        public int ChartMax
+        public bool NotifyWhenEndActive
         {
             get
             {
-                return chartMax;
+                return notifyWhenEndActive;
             }
             set
             {
-                chartMax = value;
-                window.GetTuningChart().ChartAreas[0].AxisY.Maximum = chartMax;
-                window.GetTuningChart().ChartAreas[0].AxisY.Minimum = -chartMax;
-                OnPropertyChanged("ChartMax");
+                notifyWhenEndActive = value;
+                OnPropertyChanged("NotifyWhenEndActive");
             }
         }
+        //public int TuningChartMax
+        //{
+        //    get
+        //    {
+        //        return tuningChartMax;
+        //    }
+        //    set
+        //    {
+        //        tuningChartMax = value;
+        //        float avgTuning = selectedSeanse.TuningChartUnits.Select(x => x.Tuning).Average();
+        //        window.GetTuningChart().ChartAreas[0].AxisY.Maximum = (int)(tuningChartMax + avgTuning);
+        //        window.GetTuningChart().ChartAreas[0].AxisY.Minimum = (int)(-tuningChartMax + avgTuning);
+        //        window.GetTuningChart().Invalidate();
+        //        OnPropertyChanged("TuningChartMax");
+        //    }
+        //}
 
         #region StatusBarProps
 
@@ -156,15 +177,15 @@ namespace Link11Checker.ViewModels
         private Seanse selectedSeanse;
         private SeanseManager seanseManager;
         private ILogger logger;
-        private bool destPathSelected;
         private string lastSelectedPathWithLinks;
         private bool notifyWhenStartWorking;
         private bool notifyWhenEndWorking;
         private bool notifyWhenStartActive;
+        private bool notifyWhenEndActive;
         private string version;
         private Settings settings;
         private MainWindow window;
-        private int chartMax;
+        private int tuningChartMax;
 
         #endregion
 
@@ -181,6 +202,7 @@ namespace Link11Checker.ViewModels
         public ICommand OpenSettings { get; set; }
         public ICommand About { get; set; }
         public ICommand OpenLog { get; set; }
+        public ICommand UpdateCharts { get; set; }
 
         #endregion
 
@@ -196,7 +218,6 @@ namespace Link11Checker.ViewModels
             this.version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             this.notifyWhenStartActive = false;
             this.notifyWhenStartActive = false;
-            this.destPathSelected = false;
             this.lastSelectedPathWithLinks = "";
 
             seanseManager.SeanseAdded += SeanseManager_SeanseAdded;
@@ -219,6 +240,21 @@ namespace Link11Checker.ViewModels
             tuningSeries.Color = System.Drawing.Color.Blue;
             tuningSeries.BorderWidth = 1;
             tuningChart.Series.Add(tuningSeries);
+
+
+            Chart sizeChart = window.GetSizeChart();
+            ChartArea sizeArea = new ChartArea("SizeArea");
+            sizeChart.ChartAreas.Add(sizeArea);
+
+            Series sizeSeries = new Series("Size");
+            sizeSeries.IsXValueIndexed = true;
+            sizeSeries.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            sizeSeries.XValueType = ChartValueType.Time;
+            sizeSeries.XValueMember = "Time";
+            sizeSeries.YValueMembers = "Size";
+            sizeSeries.Color = System.Drawing.Color.Blue;
+            sizeSeries.BorderWidth = 1;
+            sizeChart.Series.Add(sizeSeries);
 
 
             Chart workingChart = window.GetWorkingChart();
@@ -274,7 +310,8 @@ namespace Link11Checker.ViewModels
                 if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
                 {
                     SeanseManager.DestinationPath = fbd.SelectedPath;
-                    DestPathSelected = true;
+                    OnPropertyChanged("DestPath");
+                    OnPropertyChanged("DestPathSelected");
                 }
             });
 
@@ -373,6 +410,16 @@ namespace Link11Checker.ViewModels
                 }
             });
 
+            UpdateCharts = new RelayCommand(() =>
+            {
+                if (SelectedSeanse != null)
+                {
+                    UpdateTuningChart();
+                    UpdateWorkingChart();
+                    UpdateSizeChart();
+                }
+            });
+
             #endregion
         }
 
@@ -400,6 +447,7 @@ namespace Link11Checker.ViewModels
             newSeanse.WorkingStart += Seanse_WorkingStart;
             newSeanse.ActiveStart += Seanse_ActiveStart;
             newSeanse.WorkingEnd += Seanse_WorkingEnd;
+            newSeanse.ActiveEnd += newSeanse_ActiveEnd;
             window.Dispatcher.BeginInvoke((ThreadStart)delegate()
             {
                 Seanses.Add(newSeanse);
@@ -409,26 +457,42 @@ namespace Link11Checker.ViewModels
 
         private void Seanse_ActiveStart(Seanse seanse, EventArgs args)
         {
+            string msg = string.Format("Линк {0} {1} преходит в активный режим.", seanse.Freq, seanse.Mode);
             if (NotifyWhenStartActive)
             {
-                MessageBox.Show(string.Format("Линк {0} {1} преходит в активный режим.", seanse.Freq, seanse.Mode), "Переход в активный", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(msg, "Переход в активный", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+            logger.LogMessage(msg, LogLevel.Info);
+        }
+
+        private void newSeanse_ActiveEnd(Seanse seanse, EventArgs args)
+        {
+            string msg = string.Format("Линк {0} {1} вышел из активного режима " + settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode);
+            if (NotifyWhenEndActive)
+            {
+                MessageBox.Show(msg, "Выход из активного режима", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            logger.LogMessage(msg, LogLevel.Info);
         }
 
         private void Seanse_WorkingStart(Seanse seanse, EventArgs args)
         {
+            string msg = string.Format("Линк {0} {1} начинает свою работу.", seanse.Freq, seanse.Mode);
             if (NotifyWhenStartWorking)
             {
-                MessageBox.Show(string.Format("Линк {0} {1} начинает свою работу.", seanse.Freq, seanse.Mode), "Начало работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(msg, "Начало работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+            logger.LogMessage(msg, LogLevel.Info);
         }
 
-        private void Seanse_WorkingEnd(Seanse seanse, EventArgs arg2)
+        private void Seanse_WorkingEnd(Seanse seanse, EventArgs args)
         {
+            string msg = string.Format("Линк {0} {1} окончил свою работу " + settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode);
             if (NotifyWhenEndWorking)
             {
-                MessageBox.Show(string.Format("Линк {0} {1} окончил свою работу " + settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode), "Окончание работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(msg, "Окончание работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+            logger.LogMessage(msg, LogLevel.Info);
         }
         
         #endregion
@@ -439,6 +503,15 @@ namespace Link11Checker.ViewModels
             {
                 window.GetTuningChart().DataSource = SelectedSeanse.TuningChartUnits;
                 window.GetTuningChart().Invalidate();
+            }
+        }
+
+        private void UpdateSizeChart()
+        {
+            if (SelectedSeanse != null)
+            {
+                window.GetSizeChart().DataSource = SelectedSeanse.SizeChartUnits;
+                window.GetSizeChart().Invalidate();
             }
         }
 
