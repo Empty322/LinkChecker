@@ -26,6 +26,9 @@ namespace Link11Checker.Core
         public event Action<object> EndCopying = (sender) => { };
         public event Action<object> StartUpdating = (sender) => { };
         public event Action<object> EndUpdating = (sender) => { };
+        public event Action<object> CopyingStarted = (sender) => { };
+        public event Action<object, int, int> SeanseCopyed = (sender, num, count) => { };
+        public event Action<object> CopyingEnded = (sender) => { };
         
 
         #endregion
@@ -202,10 +205,10 @@ namespace Link11Checker.Core
                     {
                         logger.LogMessage(e.FileName + " не найден", LogLevel.Warning);
                     }
-                    //catch (Exception e)
-                    //{
-                    //    logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
-                    //}
+                    catch (Exception e)
+                    {
+                        logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
+                    }
                 }
                 SaveDirectories();
             }
@@ -269,17 +272,24 @@ namespace Link11Checker.Core
         {
             lock (Seanses)
             {
-                foreach (Seanse seanse in Seanses)
+                CopyingStarted.Invoke(this);
+                for (int i = 0; i < Seanses.Count; i++)
                 {
+                    bool result = false;
                     try
                     {
-                        seanse.Copy(new DirectoryInfo(DestinationPath));
+                        result = Seanses[i].Copy(new DirectoryInfo(DestinationPath));
                     }
                     catch (Exception e)
                     {
                         logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
                     }
+                    finally
+                    {
+                        SeanseCopyed.Invoke(this, i+1, Seanses.Count);
+                    }
                 }
+                CopyingEnded.Invoke(this);
             }
         }
 

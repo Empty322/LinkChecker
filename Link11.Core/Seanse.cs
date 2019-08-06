@@ -260,8 +260,9 @@ namespace Link11.Core
             }            
         }
 
-        public void Copy(DirectoryInfo destination)
+        public bool Copy(DirectoryInfo destination)
         {
+            bool result = false;
             // Если есть вхождения
             if (signalEntries.Count != 0)
             {
@@ -292,7 +293,10 @@ namespace Link11.Core
                                 {
                                     file.CopyTo(dest.FullName + '\\' + file.Name, true);
                                     if (file.Name == "log.txt")
+                                    {
                                         lastCopy = DateTime.Now;
+                                        result = true;
+                                    }
                                 }
                                 catch (Exception e)
                                 {
@@ -307,6 +311,7 @@ namespace Link11.Core
                     directoryExists = false;
                 }
             }
+            return result;
         }
 
         #endregion

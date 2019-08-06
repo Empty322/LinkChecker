@@ -98,6 +98,15 @@ namespace Link11Checker.ViewModels
         {
             get { return selectedSeanse == null ? false : true; }
         }
+        public int PercentCopying
+        {
+            get { return percentCopying; }
+            set
+            {
+                percentCopying = value;
+                OnPropertyChanged("PercentCopying");
+            }
+        }
         public bool NotifyWhenStartWorking
         {
             get
@@ -144,22 +153,6 @@ namespace Link11Checker.ViewModels
                 OnPropertyChanged("NotifyWhenEndActive");
             }
         }
-        //public int TuningChartMax
-        //{
-        //    get
-        //    {
-        //        return tuningChartMax;
-        //    }
-        //    set
-        //    {
-        //        tuningChartMax = value;
-        //        float avgTuning = selectedSeanse.TuningChartUnits.Select(x => x.Tuning).Average();
-        //        window.GetTuningChart().ChartAreas[0].AxisY.Maximum = (int)(tuningChartMax + avgTuning);
-        //        window.GetTuningChart().ChartAreas[0].AxisY.Minimum = (int)(-tuningChartMax + avgTuning);
-        //        window.GetTuningChart().Invalidate();
-        //        OnPropertyChanged("TuningChartMax");
-        //    }
-        //}
 
         #region StatusBarProps
 
@@ -178,6 +171,7 @@ namespace Link11Checker.ViewModels
         private SeanseManager seanseManager;
         private ILogger logger;
         private string lastSelectedPathWithLinks;
+        private int percentCopying;
         private bool notifyWhenStartWorking;
         private bool notifyWhenEndWorking;
         private bool notifyWhenStartActive;
@@ -185,7 +179,6 @@ namespace Link11Checker.ViewModels
         private string version;
         private Settings settings;
         private MainWindow window;
-        private int tuningChartMax;
 
         #endregion
 
@@ -223,6 +216,7 @@ namespace Link11Checker.ViewModels
             seanseManager.SeanseAdded += SeanseManager_SeanseAdded;
             seanseManager.SeanseRemoved += SeanseManager_SeanseRemoved;
             seanseManager.SeanseUpdated += SeanseManager_SeanseUpdated;
+            seanseManager.SeanseCopyed += SeanseManager_SeanseCopyed;
             
             
             #region Charts initialization
@@ -376,8 +370,9 @@ namespace Link11Checker.ViewModels
 
             CopySeanses = new RelayCommand(async () =>
             {
-                    if (!string.IsNullOrWhiteSpace(SeanseManager.DestinationPath))
+                    if (!string.IsNullOrWhiteSpace(SeanseManager.DestinationPath)){
                         await SeanseManager.CopySeansesAsync();
+                    }
                     else
                         MessageBox.Show("Папка для накопления не выбрана", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             });
@@ -493,6 +488,13 @@ namespace Link11Checker.ViewModels
                 MessageBox.Show(msg, "Окончание работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             logger.LogMessage(msg, LogLevel.Info);
+        }
+
+        private void SeanseManager_SeanseCopyed(object seanse, int num, int count)
+        {
+            PercentCopying = (int)(100 / count * num);
+            if (PercentCopying == 100)
+                PercentCopying = 0;
         }
         
         #endregion
