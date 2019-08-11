@@ -3,9 +3,9 @@
                     xmlns:local="clr-namespace:Link11.Core"
                     xmlns:converters="clr-namespace:Link11Checker.Converters"
                     xmlns:standartConverters="clr-namespace:System.Windows.Controls;assembly=PresentationFramework">
-    
 
     <converters:StateToColorConverter x:Key="StateToColorConverter"></converters:StateToColorConverter>
+    <converters:BoolToColorConverter x:Key="BoolToColorConverter"></converters:BoolToColorConverter>
     <standartConverters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></standartConverters:BooleanToVisibilityConverter>
 
     <Style TargetType="{x:Type DataGridCell}">
@@ -14,7 +14,7 @@
             <Trigger Property="IsSelected" Value="True">
                 <Setter Property="Foreground" Value="Black"></Setter>
                 <Setter Property="BorderBrush" Value="Gray"></Setter>
-                <Setter Property="BorderThickness" Value="1"></Setter>
+                <Setter Property="BorderThickness" Value="0 1 0 1"></Setter>
             </Trigger>
         </Style.Triggers>         
     </Style>

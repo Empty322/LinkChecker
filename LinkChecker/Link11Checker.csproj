@@ -71,6 +71,7 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Converter\BoolToColorConverter.cs" />
     <Compile Include="Converter\StateToColorConverter.cs" />
     <Compile Include="SeanseManager.cs" />
     <Compile Include="Settings.cs" />

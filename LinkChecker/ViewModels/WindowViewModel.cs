@@ -82,13 +82,13 @@ namespace Link11Checker.ViewModels
                 return !SynchronyzeWithVenturOn;
             }
         }
-        public string DestPath
+        public DirectoryInfo DestPath
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(seanseManager.DestinationPath))
-                    return "не указано";
-                return SeanseManager.DestinationPath;
+                if (!string.IsNullOrWhiteSpace(seanseManager.DestinationPath))
+                    return new DirectoryInfo(SeanseManager.DestinationPath);
+                return null;
             }
         }
         public bool DestPathSelected {
@@ -97,15 +97,6 @@ namespace Link11Checker.ViewModels
         public bool IsSeanceSelected
         {
             get { return selectedSeanse == null ? false : true; }
-        }
-        public int PercentCopying
-        {
-            get { return percentCopying; }
-            set
-            {
-                percentCopying = value;
-                OnPropertyChanged("PercentCopying");
-            }
         }
         public bool NotifyWhenStartWorking
         {
@@ -157,8 +148,33 @@ namespace Link11Checker.ViewModels
         #region StatusBarProps
 
         public string Version { get { return version; } }
+        public bool IsCopying
+        {
+            get
+            {
+                return isCopying;
+            }
+            set
+            {
+                isCopying = value;
+                OnPropertyChanged("IsCopying");
+            }
+        }
+        public bool IsUpdating
+        {
+            get
+            {
+                return isUpdating;
+            }
+            set
+            {
+                isUpdating = value;
+                OnPropertyChanged("IsUpdating");
+            }
+        }
         public int ActiveCount { get { return Seanses.Where(x => x.State == SeanseState.Active).Count(); } }
         public int WorkingCount { get { return Seanses.Where(x => x.State != SeanseState.WorkingLevel0).Count(); } }
+        
 
         #endregion
 
@@ -171,12 +187,13 @@ namespace Link11Checker.ViewModels
         private SeanseManager seanseManager;
         private ILogger logger;
         private string lastSelectedPathWithLinks;
-        private int percentCopying;
         private bool notifyWhenStartWorking;
         private bool notifyWhenEndWorking;
         private bool notifyWhenStartActive;
         private bool notifyWhenEndActive;
         private string version;
+        private bool isCopying;
+        private bool isUpdating;
         private Settings settings;
         private MainWindow window;
 
@@ -195,7 +212,6 @@ namespace Link11Checker.ViewModels
         public ICommand OpenSettings { get; set; }
         public ICommand About { get; set; }
         public ICommand OpenLog { get; set; }
-        public ICommand UpdateCharts { get; set; }
 
         #endregion
 
@@ -216,8 +232,10 @@ namespace Link11Checker.ViewModels
             seanseManager.SeanseAdded += SeanseManager_SeanseAdded;
             seanseManager.SeanseRemoved += SeanseManager_SeanseRemoved;
             seanseManager.SeanseUpdated += SeanseManager_SeanseUpdated;
-            seanseManager.SeanseCopyed += SeanseManager_SeanseCopyed;
-            
+            seanseManager.CopyingStarted += SeanseManager_CopyingStarted;
+            seanseManager.CopyingEnded += SeanseManager_CopyingEnded;
+            seanseManager.UpdatingStarted += SeanseManager_UpdatingStarted;
+            seanseManager.UpdatingEnded += SeanseManager_UpdatingEnded;
             
             #region Charts initialization
 
@@ -405,17 +423,27 @@ namespace Link11Checker.ViewModels
                 }
             });
 
-            UpdateCharts = new RelayCommand(() =>
-            {
-                if (SelectedSeanse != null)
-                {
-                    UpdateTuningChart();
-                    UpdateWorkingChart();
-                    UpdateSizeChart();
-                }
-            });
-
             #endregion
+        }
+
+        private void SeanseManager_CopyingStarted(object obj)
+        {
+            IsCopying = true;
+        }
+
+        private void SeanseManager_CopyingEnded(object obj)
+        {
+            IsCopying = false;
+        }
+
+        private void SeanseManager_UpdatingStarted(object obj)
+        {
+            IsUpdating = true;
+        }
+
+        private void SeanseManager_UpdatingEnded(object obj)
+        {
+            IsUpdating = false;
         }
 
         #endregion
@@ -426,6 +454,15 @@ namespace Link11Checker.ViewModels
         {
             OnPropertyChanged("ActiveCount");
             OnPropertyChanged("WorkingCount");
+            if (seanse == SelectedSeanse)
+            {
+                window.Dispatcher.BeginInvoke((ThreadStart)delegate()
+                {
+                    UpdateTuningChart();
+                    UpdateWorkingChart();
+                    UpdateSizeChart();
+                });
+            }
         }
 
         private void SeanseManager_SeanseRemoved(object sender, Seanse seanse)
@@ -488,13 +525,6 @@ namespace Link11Checker.ViewModels
                 MessageBox.Show(msg, "Окончание работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             logger.LogMessage(msg, LogLevel.Info);
-        }
-
-        private void SeanseManager_SeanseCopyed(object seanse, int num, int count)
-        {
-            PercentCopying = (int)(100 / count * num);
-            if (PercentCopying == 100)
-                PercentCopying = 0;
         }
         
         #endregion

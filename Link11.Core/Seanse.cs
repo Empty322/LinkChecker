@@ -32,7 +32,7 @@ namespace Link11.Core
 
         #region Properties
 
-        public string Directory { get; private set; }
+        public DirectoryInfo Directory { get; private set; }
         public bool DirectoryExists
         {
             get
@@ -182,8 +182,8 @@ namespace Link11.Core
 
         public Seanse(string directory, Configuration config, IParser parser, ILogger logger) 
         {
-            this.Directory = directory;
-            this.DirectoryExists = System.IO.Directory.Exists(Directory);
+            this.Directory = new DirectoryInfo(directory);
+            this.DirectoryExists = Directory.Exists;
             if (!DirectoryExists)
                 throw new LogFileNotFoundException();
             this.TuningChartUnits = new List<TuningChartUnit>();
@@ -207,9 +207,8 @@ namespace Link11.Core
 
         public void Update()
         {
-            DirectoryInfo di = new DirectoryInfo(Directory);
             // Если директория существует
-            if (di.Exists)
+            if (Directory.Exists)
             {
                 DirectoryExists = true;
 
@@ -266,24 +265,23 @@ namespace Link11.Core
             // Если есть вхождения
             if (signalEntries.Count != 0)
             {
-                DirectoryInfo seanseDir = new DirectoryInfo(Directory);
                 // Если директория существует
-                if (seanseDir.Exists)
+                if (Directory.Exists)
                 {
                     directoryExists = true;
                     // Если размер лога больше 40000 байт
                     FileInfo logInfo = new FileInfo(Directory + "/log.txt");
                     if (logInfo.Length > 40000 && PercentReceiving > 30) {
                         // Если есть изменения в log.txt
-                        if (lastModified != seanseDir.LastWriteTime)
+                        if (lastModified != Directory.LastWriteTime)
                         {
                             // Получить файлы сеанса
-                            FileInfo[] files = seanseDir.GetFiles();
+                            FileInfo[] files = Directory.GetFiles();
 
                             // Создать папку назначения, если ее нет
                             if (!destination.Exists)
                                 destination.Create();
-                            DirectoryInfo dest = new DirectoryInfo(destination.ToString() + '\\' + seanseDir.Name);
+                            DirectoryInfo dest = new DirectoryInfo(destination.ToString() + '\\' + Directory.Name);
                             dest.Create();
 
                             // Скопировать файлы сеанса в папку назначения

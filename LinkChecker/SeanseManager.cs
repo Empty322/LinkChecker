@@ -24,8 +24,8 @@ namespace Link11Checker.Core
         public event Action<object, Seanse> SeanseRemoved = (sender, e) => { };
         public event Action<object> StartCopying = (sender) => { };
         public event Action<object> EndCopying = (sender) => { };
-        public event Action<object> StartUpdating = (sender) => { };
-        public event Action<object> EndUpdating = (sender) => { };
+        public event Action<object> UpdatingStarted = (sender) => { };
+        public event Action<object> UpdatingEnded = (sender) => { };
         public event Action<object> CopyingStarted = (sender) => { };
         public event Action<object, int, int> SeanseCopyed = (sender, num, count) => { };
         public event Action<object> CopyingEnded = (sender) => { };
@@ -155,7 +155,7 @@ namespace Link11Checker.Core
                 List<ch> channels = GetChannelsFromVentursFile(file);
                 foreach (ch channel in channels)
                 {
-                    if (!Seanses.Select(x => x.Directory.ToLower()).Contains(channel.Directory.ToLower()) && (channel.Trakt == "slew" || channel.Trakt == "link11"))
+                    if (!Seanses.Select(x => x.Directory.FullName.ToLower()).Contains(channel.Directory.ToLower()) && (channel.Trakt == "slew" || channel.Trakt == "link11"))
                     {
                         try
                         {
@@ -190,7 +190,7 @@ namespace Link11Checker.Core
                 DirectoryInfo di = new DirectoryInfo(path);
                 DirectoryInfo[] childDirs = di.GetDirectories();
 
-                List<string> dirsInStock = Seanses.Select(x => x.Directory.ToLower()).ToList();
+                List<string> dirsInStock = Seanses.Select(x => x.Directory.FullName.ToLower()).ToList();
                 foreach (DirectoryInfo directory in childDirs)
                 {
                     if (dirsInStock.Contains(directory.FullName.ToLower()))
@@ -255,7 +255,7 @@ namespace Link11Checker.Core
                 List<Seanse> seansesToRemove = new List<Seanse>();
                 foreach (Seanse seanse in Seanses)
                 {
-                    if (!ventursDirs.Contains(seanse.Directory.ToLower()))
+                    if (!ventursDirs.Contains(seanse.Directory.FullName.ToLower()))
                     {
                         seansesToRemove.Add(seanse);
                     }
@@ -303,6 +303,7 @@ namespace Link11Checker.Core
         {
             lock (Seanses)
             {
+                UpdatingStarted.Invoke(this);
                 foreach (Seanse seanse in Seanses)
                 {
                     try
@@ -315,6 +316,7 @@ namespace Link11Checker.Core
                         logger.LogMessage(e.FileName + " не найден", LogLevel.Warning);
                     }
                 }
+                UpdatingEnded.Invoke(this);
             }
         }
         public async Task UpdateSeansesAsync()
@@ -330,7 +332,7 @@ namespace Link11Checker.Core
                 List<string> seansesToSave = new List<string>();
                 foreach (Seanse s in Seanses)
                 {
-                    seansesToSave.Add(s.Directory);
+                    seansesToSave.Add(s.Directory.FullName);
                 };
                 string json = JsonConvert.SerializeObject(seansesToSave);
                 File.WriteAllText("seanses.json", json, Encoding.Default);

@@ -41,12 +41,20 @@
                 <TextBlock Text="{Binding ActiveCount, StringFormat=Активных: {0}}" />
             </StatusBarItem>
             <Separator></Separator>
-            <StatusBarItem HorizontalAlignment="Center">
-                <TextBlock Text="{Binding DestPath, StringFormat=Папка назначения: {0}}" TextWrapping="Wrap" />
+            <StatusBarItem>
+                <Ellipse Stroke="Black" Fill="{Binding IsCopying, Converter={StaticResource BoolToColorConverter}}" ToolTip="Копирование" Height="15" Width="15"/>
+            </StatusBarItem>
+            <Separator></Separator>
+            <StatusBarItem>
+                <Ellipse Stroke="Black" Fill="{Binding IsUpdating, Converter={StaticResource BoolToColorConverter}}" ToolTip="Обновление" Height="15" Width="15"/>
             </StatusBarItem>
             <Separator></Separator>
             <StatusBarItem HorizontalAlignment="Center">
-                    <TextBlock Text="{Binding SelectedSeanse.Directory, StringFormat=Папка с сеансом: {0}}" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding DestPath.Name, FallbackValue=не указано, StringFormat=Папка назначения: {0}}" ToolTip="{Binding DestPath.FullName}" TextWrapping="Wrap" />
+            </StatusBarItem>
+            <Separator></Separator>
+            <StatusBarItem HorizontalAlignment="Center">
+                <TextBlock Text="{Binding SelectedSeanse.Directory.Name, StringFormat=Папка с сеансом: {0}}" TextWrapping="Wrap" ToolTip="{Binding SelectedSeanse.Directory.FullName}" />
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
                 <TextBlock Text="{Binding Version, StringFormat=Версия: {0}}" />
@@ -109,12 +117,10 @@
             </DockPanel>
             <DockPanel Grid.Row="1" Margin="5" Grid.Column="1">
                 <Button Margin="0,0,0,5" Command="{Binding OpenLog}" IsEnabled="{Binding IsSeanceSelected}" DockPanel.Dock="Top">Открыть log.txt</Button>
-                <Button Margin="0,0,0,10" Command="{Binding UpdateCharts}" IsEnabled="{Binding IsSeanceSelected}" DockPanel.Dock="Top">Обновить графики</Button>
                 <TextBlock Text="{Binding SelectedSeanse.MaxSizeInBytes, StringFormat=Макс. объем в байтах: {0:F2}}" TextWrapping="Wrap" DockPanel.Dock="Top"/>
                 <TextBlock Text="{Binding SelectedSeanse.AverageSizeInBytes, StringFormat=Средний. объем в байтах: {0:F2}}" TextWrapping="Wrap" DockPanel.Dock="Top"/>
                 <TextBlock Text="{Binding SelectedSeanse.LastCopy, StringFormat=Посл. копирование: {0}}" TextWrapping="Wrap" DockPanel.Dock="Top"/>
             </DockPanel>
-            <ProgressBar Value="{Binding PercentCopying}" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,0,5,0" />
         </Grid>
     </DockPanel>
 </Window>
