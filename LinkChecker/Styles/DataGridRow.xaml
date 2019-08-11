@@ -20,6 +20,6 @@
     </Style>
 
     <Style TargetType="{x:Type DataGridRow}">
-        <Setter Property="Visibility" Value="{Binding Path=ContainsEntries, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}"></Setter>
+        <Setter Property="Visibility" Value="{Binding Path=Visible, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}"></Setter>
     </Style>
 </ResourceDictionary>

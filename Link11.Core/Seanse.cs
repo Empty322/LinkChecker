@@ -115,7 +115,13 @@ namespace Link11.Core
         public List<string> ActiveEntries { get; set; }
         public string LastCopy { get { return lastCopy.ToShortTimeString(); } }
         public string LastUpdate {get { return lastUpdate.ToShortTimeString(); } }
-        public bool ContainsEntries { get { return signalEntries.Any(); } }
+        public bool Visible {
+            get {
+                if (signalEntries.Where(e => e.Type != EntryType.Error).Count() > config.Trashold)
+                    return true;
+                return false; 
+            } 
+        }
         public int PercentReceiving
         {
             get
@@ -271,7 +277,7 @@ namespace Link11.Core
                     directoryExists = true;
                     // Если размер лога больше 40000 байт
                     FileInfo logInfo = new FileInfo(Directory + "/log.txt");
-                    if (logInfo.Length > 40000 && PercentReceiving > 30) {
+                    if (logInfo.Length >= config.CopyLengthTrashold && PercentReceiving >= config.CopyPercentTrashold) {
                         // Если есть изменения в log.txt
                         if (lastModified != Directory.LastWriteTime)
                         {

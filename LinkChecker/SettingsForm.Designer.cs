@@ -41,6 +41,7 @@
             this.AbonentsKTextBox = new System.Windows.Forms.TextBox();
             this.AbonentsK = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.HideEmptySeanses = new System.Windows.Forms.CheckBox();
             this.VenturFileExplore = new System.Windows.Forms.Button();
             this.InitialDestPathExplore = new System.Windows.Forms.Button();
             this.InitialSeansesPathExplore = new System.Windows.Forms.Button();
@@ -58,14 +59,22 @@
             this.InitialDestPath = new System.Windows.Forms.Label();
             this.InitialSeansesPathTextBox = new System.Windows.Forms.TextBox();
             this.InitialSeansesPath = new System.Windows.Forms.Label();
-            this.HideEmptySeanses = new System.Windows.Forms.CheckBox();
+            this.EmptySeansesTrashold = new System.Windows.Forms.Label();
+            this.EmptySeansesTrasholdUpDown = new System.Windows.Forms.NumericUpDown();
+            this.CopyLengthTrashold = new System.Windows.Forms.Label();
+            this.CopyPercentTrashold = new System.Windows.Forms.Label();
+            this.CopyLengthTrasholdUpDown = new System.Windows.Forms.NumericUpDown();
+            this.CopyPercentTrasholdUpDown = new System.Windows.Forms.NumericUpDown();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.EmptySeansesTrasholdUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CopyLengthTrasholdUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CopyPercentTrasholdUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // OkBtn
             // 
-            this.OkBtn.Location = new System.Drawing.Point(716, 379);
+            this.OkBtn.Location = new System.Drawing.Point(716, 430);
             this.OkBtn.Name = "OkBtn";
             this.OkBtn.Size = new System.Drawing.Size(75, 23);
             this.OkBtn.TabIndex = 0;
@@ -75,7 +84,7 @@
             // 
             // CanselBtn
             // 
-            this.CanselBtn.Location = new System.Drawing.Point(797, 379);
+            this.CanselBtn.Location = new System.Drawing.Point(797, 430);
             this.CanselBtn.Name = "CanselBtn";
             this.CanselBtn.Size = new System.Drawing.Size(75, 23);
             this.CanselBtn.TabIndex = 1;
@@ -95,15 +104,15 @@
             this.groupBox1.Controls.Add(this.AbonentsK);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(420, 361);
+            this.groupBox1.Size = new System.Drawing.Size(420, 412);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Конфигурация вычислений";
             // 
-            // MinetsToAwaitAfterEndTextBox
+            // MinutesToAwaitAfterEndTextBox
             // 
             this.MinutesToAwaitAfterEndTextBox.Location = new System.Drawing.Point(22, 207);
-            this.MinutesToAwaitAfterEndTextBox.Name = "MinetsToAwaitAfterEndTextBox";
+            this.MinutesToAwaitAfterEndTextBox.Name = "MinutesToAwaitAfterEndTextBox";
             this.MinutesToAwaitAfterEndTextBox.Size = new System.Drawing.Size(392, 20);
             this.MinutesToAwaitAfterEndTextBox.TabIndex = 7;
             // 
@@ -167,6 +176,12 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.CopyPercentTrasholdUpDown);
+            this.groupBox2.Controls.Add(this.CopyLengthTrasholdUpDown);
+            this.groupBox2.Controls.Add(this.CopyPercentTrashold);
+            this.groupBox2.Controls.Add(this.CopyLengthTrashold);
+            this.groupBox2.Controls.Add(this.EmptySeansesTrasholdUpDown);
+            this.groupBox2.Controls.Add(this.EmptySeansesTrashold);
             this.groupBox2.Controls.Add(this.HideEmptySeanses);
             this.groupBox2.Controls.Add(this.VenturFileExplore);
             this.groupBox2.Controls.Add(this.InitialDestPathExplore);
@@ -187,10 +202,20 @@
             this.groupBox2.Controls.Add(this.InitialSeansesPath);
             this.groupBox2.Location = new System.Drawing.Point(452, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(420, 361);
+            this.groupBox2.Size = new System.Drawing.Size(420, 412);
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Настройки приложения";
+            // 
+            // HideEmptySeanses
+            // 
+            this.HideEmptySeanses.AutoSize = true;
+            this.HideEmptySeanses.Location = new System.Drawing.Point(10, 376);
+            this.HideEmptySeanses.Name = "HideEmptySeanses";
+            this.HideEmptySeanses.Size = new System.Drawing.Size(156, 17);
+            this.HideEmptySeanses.TabIndex = 19;
+            this.HideEmptySeanses.Text = "Скрывать пустые сеансы";
+            this.HideEmptySeanses.UseVisualStyleBackColor = true;
             // 
             // VenturFileExplore
             // 
@@ -334,21 +359,59 @@
             this.InitialSeansesPath.TabIndex = 0;
             this.InitialSeansesPath.Text = "InitialSeansesPath";
             // 
-            // HideEmptySeanses
+            // EmptySeansesTrashold
             // 
-            this.HideEmptySeanses.AutoSize = true;
-            this.HideEmptySeanses.Location = new System.Drawing.Point(10, 296);
-            this.HideEmptySeanses.Name = "HideEmptySeanses";
-            this.HideEmptySeanses.Size = new System.Drawing.Size(156, 17);
-            this.HideEmptySeanses.TabIndex = 19;
-            this.HideEmptySeanses.Text = "Скрывать пустые сеансы";
-            this.HideEmptySeanses.UseVisualStyleBackColor = true;
+            this.EmptySeansesTrashold.AutoSize = true;
+            this.EmptySeansesTrashold.Location = new System.Drawing.Point(7, 298);
+            this.EmptySeansesTrashold.Name = "EmptySeansesTrashold";
+            this.EmptySeansesTrashold.Size = new System.Drawing.Size(118, 13);
+            this.EmptySeansesTrashold.TabIndex = 20;
+            this.EmptySeansesTrashold.Text = "EmptySeansesTrashold";
+            // 
+            // EmptySeansesTrasholdUpDown
+            // 
+            this.EmptySeansesTrasholdUpDown.Location = new System.Drawing.Point(331, 296);
+            this.EmptySeansesTrasholdUpDown.Name = "EmptySeansesTrasholdUpDown";
+            this.EmptySeansesTrasholdUpDown.Size = new System.Drawing.Size(83, 20);
+            this.EmptySeansesTrasholdUpDown.TabIndex = 21;
+            // 
+            // CopyLengthTrashold
+            // 
+            this.CopyLengthTrashold.AutoSize = true;
+            this.CopyLengthTrashold.Location = new System.Drawing.Point(7, 324);
+            this.CopyLengthTrashold.Name = "CopyLengthTrashold";
+            this.CopyLengthTrashold.Size = new System.Drawing.Size(136, 13);
+            this.CopyLengthTrashold.TabIndex = 22;
+            this.CopyLengthTrashold.Text = "CopyLengthTrashold(bytes)";
+            // 
+            // CopyPercentTrashold
+            // 
+            this.CopyPercentTrashold.AutoSize = true;
+            this.CopyPercentTrashold.Location = new System.Drawing.Point(7, 350);
+            this.CopyPercentTrashold.Name = "CopyPercentTrashold";
+            this.CopyPercentTrashold.Size = new System.Drawing.Size(151, 13);
+            this.CopyPercentTrashold.TabIndex = 24;
+            this.CopyPercentTrashold.Text = "CopyPercentTrashold(percent)";
+            // 
+            // CopyLengthTrasholdUpDown
+            // 
+            this.CopyLengthTrasholdUpDown.Location = new System.Drawing.Point(331, 322);
+            this.CopyLengthTrasholdUpDown.Name = "CopyLengthTrasholdUpDown";
+            this.CopyLengthTrasholdUpDown.Size = new System.Drawing.Size(83, 20);
+            this.CopyLengthTrasholdUpDown.TabIndex = 25;
+            // 
+            // CopyPercentTrasholdUpDown
+            // 
+            this.CopyPercentTrasholdUpDown.Location = new System.Drawing.Point(331, 348);
+            this.CopyPercentTrasholdUpDown.Name = "CopyPercentTrasholdUpDown";
+            this.CopyPercentTrasholdUpDown.Size = new System.Drawing.Size(83, 20);
+            this.CopyPercentTrasholdUpDown.TabIndex = 26;
             // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(884, 414);
+            this.ClientSize = new System.Drawing.Size(884, 465);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.CanselBtn);
@@ -360,6 +423,9 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.EmptySeansesTrasholdUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CopyLengthTrasholdUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CopyPercentTrasholdUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -396,5 +462,11 @@
         private System.Windows.Forms.Button InitialDestPathExplore;
         private System.Windows.Forms.Button InitialSeansesPathExplore;
         private System.Windows.Forms.CheckBox HideEmptySeanses;
+        private System.Windows.Forms.Label EmptySeansesTrashold;
+        private System.Windows.Forms.NumericUpDown CopyPercentTrasholdUpDown;
+        private System.Windows.Forms.NumericUpDown CopyLengthTrasholdUpDown;
+        private System.Windows.Forms.Label CopyPercentTrashold;
+        private System.Windows.Forms.Label CopyLengthTrashold;
+        private System.Windows.Forms.NumericUpDown EmptySeansesTrasholdUpDown;
     }
 }

@@ -45,7 +45,10 @@ namespace Link11Checker
                     AbonentsK = 0.15f,
                     IntervalsK = 0.2f,
                     SmoothValue = 5,
-                    MinutesToAwaitAfterEnd = 15
+                    MinutesToAwaitAfterEnd = 15,
+                    CopyLengthTrashold = 40000,
+                    CopyPercentTrashold = 20,
+                    Trashold = 10
                 };
                 settings.Configuration = cfg;
 

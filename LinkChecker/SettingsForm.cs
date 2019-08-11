@@ -35,6 +35,9 @@ namespace Link11Checker
             CopyCounterLimit.Text = "Счетчик для таймера копирования (*5сек):";
             SynchronizeCounterLimit.Text = "Счетчик для таймера синхронизации (*5сек):";
             WorkingChartInterval.Text = "Интервал для оси Х графика работы:";
+            EmptySeansesTrashold.Text = "Максимальное количество НЕ ошибок в скрытых сеансах";
+            CopyLengthTrashold.Text = "Минимальный размер копируемых сеансов (байты)";
+            CopyPercentTrashold.Text = "Минимальный процент ошибок копируемых сеансов";
 
             AbonentsKTextBox.Text = settings.Configuration.AbonentsK.ToString();
             IntervalsKTextBox.Text = settings.Configuration.IntervalsK.ToString();
@@ -49,6 +52,17 @@ namespace Link11Checker
             SynchronizeCounterLimitTextBox.Text = settings.SynchronizeCounterLimit.ToString();
             WorkingChartIntervalTextBox.Text = settings.WorkingChartInterval.ToString();
             HideEmptySeanses.Checked = settings.HideEmptySeanses;
+
+            EmptySeansesTrasholdUpDown.Minimum = 0;
+            EmptySeansesTrasholdUpDown.Maximum = decimal.MaxValue;
+            EmptySeansesTrasholdUpDown.Value = settings.Configuration.Trashold < 0 ? 0 : settings.Configuration.Trashold;
+
+            CopyLengthTrasholdUpDown.Minimum = 0;
+            CopyLengthTrasholdUpDown.Maximum = decimal.MaxValue;
+            CopyLengthTrasholdUpDown.Value = settings.Configuration.CopyLengthTrashold < 0 ? 0 : settings.Configuration.CopyLengthTrashold;
+
+            CopyPercentTrasholdUpDown.Minimum = 0;
+            CopyPercentTrasholdUpDown.Value = settings.Configuration.CopyPercentTrashold < 0 ? 0 : settings.Configuration.CopyPercentTrashold;
         }
 
         private void CanselBtn_Click(object sender, EventArgs e)
@@ -73,7 +87,11 @@ namespace Link11Checker
                     AbonentsK = Convert.ToDouble(AbonentsKTextBox.Text),
                     IntervalsK = Convert.ToDouble(IntervalsKTextBox.Text),
                     SmoothValue = Convert.ToInt32(SmoothValueTextBox.Text),
-                    MinutesToAwaitAfterEnd = Convert.ToInt32(MinutesToAwaitAfterEndTextBox.Text)
+                    MinutesToAwaitAfterEnd = Convert.ToInt32(MinutesToAwaitAfterEndTextBox.Text),
+
+                    Trashold = EmptySeansesTrasholdUpDown.Value,
+                    CopyLengthTrashold = CopyLengthTrasholdUpDown.Value,
+                    CopyPercentTrashold = (int)CopyPercentTrasholdUpDown.Value
                 };
                 newSettings.Configuration = cfg;
 
