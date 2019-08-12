@@ -48,7 +48,8 @@ namespace Link11Checker
                     MinutesToAwaitAfterEnd = 15,
                     CopyLengthTrashold = 40000,
                     CopyPercentTrashold = 20,
-                    Trashold = 10
+                    Trashold = 10,
+                    HideEmptySeanses = false
                 };
                 settings.Configuration = cfg;
 
@@ -59,7 +60,6 @@ namespace Link11Checker
                 settings.CopyCounterLimit = 180;
                 settings.SynchronizeCounterLimit = 5;
                 settings.WorkingChartInterval = 5;
-                settings.HideEmptySeanses = false;
 
                 string settingsFile = JsonConvert.SerializeObject(settings);
                 File.WriteAllText("settings.json", settingsFile, Encoding.Default);

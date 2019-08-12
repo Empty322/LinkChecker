@@ -17,6 +17,5 @@ namespace Link11Checker.Core
         public int CopyCounterLimit { get; set; }
         public int SynchronizeCounterLimit { get; set; }
         public int WorkingChartInterval { get; set; }
-        public bool HideEmptySeanses { get; set; }
     }
 }

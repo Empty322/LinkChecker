@@ -15,5 +15,7 @@ namespace Link11.Core
         public decimal Trashold { get; set; }
         public decimal CopyLengthTrashold { get; set; }
         public int CopyPercentTrashold { get; set; }
+        public bool HideEmptySeanses { get; set; }
+
     }
 }

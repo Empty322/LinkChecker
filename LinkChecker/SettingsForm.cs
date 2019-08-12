@@ -52,7 +52,7 @@ namespace Link11Checker
             CopyCounterLimitTextBox.Text = settings.CopyCounterLimit.ToString();
             SynchronizeCounterLimitTextBox.Text = settings.SynchronizeCounterLimit.ToString();
             WorkingChartIntervalTextBox.Text = settings.WorkingChartInterval.ToString();
-            HideEmptySeanses.Checked = settings.HideEmptySeanses;
+            HideEmptySeanses.Checked = settings.Configuration.HideEmptySeanses;
 
             EmptySeansesTrasholdUpDown.Minimum = 0;
             EmptySeansesTrasholdUpDown.Maximum = decimal.MaxValue;
@@ -89,6 +89,7 @@ namespace Link11Checker
                     IntervalsK = Convert.ToDouble(IntervalsKTextBox.Text),
                     SmoothValue = Convert.ToInt32(SmoothValueTextBox.Text),
                     MinutesToAwaitAfterEnd = Convert.ToInt32(MinutesToAwaitAfterEndTextBox.Text),
+                    HideEmptySeanses = HideEmptySeanses.Checked,
 
                     Trashold = EmptySeansesTrasholdUpDown.Value,
                     CopyLengthTrashold = CopyLengthTrasholdUpDown.Value,
@@ -103,7 +104,6 @@ namespace Link11Checker
                 newSettings.CopyCounterLimit = Convert.ToInt32(CopyCounterLimitTextBox.Text);
                 newSettings.SynchronizeCounterLimit = Convert.ToInt32(SynchronizeCounterLimitTextBox.Text);
                 newSettings.WorkingChartInterval = Convert.ToInt32(WorkingChartIntervalTextBox.Text);
-                newSettings.HideEmptySeanses = HideEmptySeanses.Checked;
 
                 string settingsFile = JsonConvert.SerializeObject(newSettings);
                 File.WriteAllText("settings.json", settingsFile, Encoding.Default);

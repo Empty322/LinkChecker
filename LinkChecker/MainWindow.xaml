@@ -81,7 +81,13 @@
                       Margin="5" 
                       CanUserAddRows="False" CanUserDeleteRows="False">
                 <DataGrid.Columns>
-                    <DataGridCheckBoxColumn Header="Существует ли директория" Width="20" Binding="{Binding DirectoryExists, Mode=OneWay}"></DataGridCheckBoxColumn>
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Ellipse Stroke="Black" Fill="{Binding DirectoryExists, Converter={StaticResource BoolToColorConverter}}" Height="12" Width="12"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>    
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Частота" Binding="{Binding Freq, Mode=OneWay}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Режим" Binding="{Binding Mode, Mode=OneWay}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Макс." Binding="{Binding MaxSize, Mode=OneWay}"></DataGridTextColumn>

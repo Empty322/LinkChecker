@@ -131,9 +131,9 @@ namespace Link11.Core
         public string LastUpdate {get { return lastUpdate.ToShortTimeString(); } }
         public bool Visible {
             get {
-                if (signalEntries.Where(e => e.Type != EntryType.Error).Count() > config.Trashold)
-                    return true;
-                return false; 
+                if (config.HideEmptySeanses && !(signalEntries.Where(e => e.Type != EntryType.Error).Count() > config.Trashold))
+                    return false;
+                return true; 
             } 
         }
         public int PercentReceiving
@@ -208,6 +208,7 @@ namespace Link11.Core
             this.DirectoryExists = Directory.Exists;
             if (!DirectoryExists)
                 throw new LogFileNotFoundException();
+            this.ActiveEntries = new List<string>();
             this.TuningChartUnits = new List<TuningChartUnit>();
             this.WorkingChartUnits = new List<WorkingChartUnit>();
             this.Abonents = new List<AbonentInfo>();
@@ -231,7 +232,7 @@ namespace Link11.Core
         public void Update()
         {
             // Если директория существует
-            if (Directory.Exists)
+            if (System.IO.Directory.Exists(Directory.FullName))
             {
                 DirectoryExists = true;
 
@@ -367,6 +368,12 @@ namespace Link11.Core
             {
                 // Если его нет, сделать запись в логе приложения
                 logger.LogMessage("Файл " + Directory + "\\all_log.txt не найден.", LogLevel.Warning);
+                return;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                logger.LogMessage("Папка c сеансом " + Directory + "не найдена", LogLevel.Warning);
+                return;
             }
 
             // Попробовать парсить allLog.txt

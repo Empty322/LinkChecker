@@ -315,6 +315,10 @@ namespace Link11Checker.Core
                     {
                         logger.LogMessage(e.FileName + " не найден", LogLevel.Warning);
                     }
+                    catch (DirectoryNotFoundException e)
+                    {
+                        logger.LogMessage("Папка c сеансом " + seanse.Directory + " не найдена", LogLevel.Warning);
+                    }
                 }
                 UpdatingEnded.Invoke(this);
             }
