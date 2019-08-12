@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Link11.Core;
 
-namespace Link11Checker
+namespace Link11Checker.Core
 {
     public struct Settings
     {

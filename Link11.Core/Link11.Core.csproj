@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbonentInfo.cs" />
     <Compile Include="Channel.cs" />
     <Compile Include="Charting\SizeChartUnit.cs" />
     <Compile Include="Charting\TuningChartUnit.cs" />

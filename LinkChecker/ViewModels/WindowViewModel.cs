@@ -42,7 +42,7 @@ namespace Link11Checker.ViewModels
                 UpdateWorkingChart();
                 OnPropertyChanged("IsSeanceSelected");
                 OnPropertyChanged("SelectedSeanse");
-            } } 
+            } }
         public SeanseManager SeanseManager { 
             get { return seanseManager; }
             set {

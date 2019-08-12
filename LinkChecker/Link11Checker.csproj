@@ -73,8 +73,8 @@
     </Compile>
     <Compile Include="Converter\BoolToColorConverter.cs" />
     <Compile Include="Converter\StateToColorConverter.cs" />
-    <Compile Include="SeanseManager.cs" />
-    <Compile Include="Settings.cs" />
+    <Compile Include="Core\SeanseManager.cs" />
+    <Compile Include="Core\Settings.cs" />
     <Compile Include="SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>

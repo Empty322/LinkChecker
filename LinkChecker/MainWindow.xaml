@@ -66,10 +66,9 @@
                 <ColumnDefinition Width="30*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="26*"></RowDefinition>
-                <RowDefinition Height="30*"></RowDefinition>
                 <RowDefinition Height="40*"></RowDefinition>
-                <RowDefinition Height="4*"></RowDefinition>
+                <RowDefinition Height="16*"></RowDefinition>
+                <RowDefinition Height="40*"></RowDefinition>
             </Grid.RowDefinitions>
 
             <DataGrid VirtualizingPanel.IsVirtualizing="True" 
@@ -112,8 +111,33 @@
                 </TabItem>
             </TabControl>
             <DockPanel Grid.Column="2" Margin="5">
-                <TextBlock Text="Сообщения, объем которых превышает норму:" DockPanel.Dock="Top"></TextBlock>
-                <ListBox ItemsSource="{Binding SelectedSeanse.ActiveEntries}" DockPanel.Dock="Bottom"></ListBox>
+                <ListBox ItemsSource="{Binding SelectedSeanse.ActiveEntries}" DockPanel.Dock="Left" MinWidth="130"></ListBox>
+                <TreeView ItemsSource="{Binding SelectedSeanse.Abonents}" DockPanel.Dock="Right">
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Intervals}">
+                            <TextBlock>
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0}: {1}">
+                                        <Binding Path="Name"></Binding>
+                                        <Binding Path="Count"></Binding>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                            <HierarchicalDataTemplate.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0}: {1}">
+                                                <Binding Path="Key"></Binding>
+                                                <Binding Path="Value"></Binding>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </HierarchicalDataTemplate.ItemTemplate>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
             </DockPanel>
             <DockPanel Grid.Row="1" Margin="5" Grid.Column="1">
                 <Button Margin="0,0,0,5" Command="{Binding OpenLog}" IsEnabled="{Binding IsSeanceSelected}" DockPanel.Dock="Top">Открыть log.txt</Button>

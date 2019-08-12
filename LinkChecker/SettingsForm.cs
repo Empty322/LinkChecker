@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 using Newtonsoft.Json;
 using Link11.Core;
+using Link11Checker.Core;
 using Logger;
 
 namespace Link11Checker

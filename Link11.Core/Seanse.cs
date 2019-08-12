@@ -87,8 +87,22 @@ namespace Link11.Core
                     return "";
             }
         }
-        public int AbonentsCount { get { return GetAbonents().Count; } }
-        public string Intervals { get { return GetIntervals(); } }
+        public int AbonentsCount { get { return GetAbonents().Count; } } // УБРАТЬ
+        public string Intervals { 
+            get {
+                string result = "";
+                Dictionary<int, int> intervalEntries = GetIntervals();
+                int i = 0;
+                while (i < intervalEntries.Count && i < 3)
+                {
+                    int max = intervalEntries.Max(x => x.Value);
+                    result += intervalEntries.Where(x => x.Value == max).First() + " ";
+                    intervalEntries.Remove(intervalEntries.Where(x => x.Value == max).First().Key);
+                    i++;
+                }
+                return result; 
+            } 
+        }
         public string Position
         {
             get { return position; }
@@ -136,6 +150,8 @@ namespace Link11.Core
         public List<TuningChartUnit> TuningChartUnits { get; set; }
         public List<WorkingChartUnit> WorkingChartUnits { get; set; }
         public List<SizeChartUnit> SizeChartUnits { get; set; }
+        public List<AbonentInfo> Abonents { get; set; }
+
         private DateTime ServerTime
         {
             get
@@ -194,6 +210,7 @@ namespace Link11.Core
                 throw new LogFileNotFoundException();
             this.TuningChartUnits = new List<TuningChartUnit>();
             this.WorkingChartUnits = new List<WorkingChartUnit>();
+            this.Abonents = new List<AbonentInfo>();
             this.lastModified = new DateTime();
             this.logger = logger;
             this.signalEntries = new List<SignalEntry>();
@@ -249,6 +266,8 @@ namespace Link11.Core
                             .Select(x => x.Time.ToShortTimeString() + '\t' + (x.Size - x.Errors))
                             .ToList();
                     }
+
+                    UpdateAbonentsInfo(Abonents);
 
                     prevState = state;
                     lastModified = File.GetLastWriteTime(Directory + "\\log.txt");
@@ -406,37 +425,30 @@ namespace Link11.Core
             if (signalEntries.Count != 0)
             {
                 Dictionary<int, int> abonentsEntries = new Dictionary<int, int>();
-                //if (start.Hour > end.Hour)
-                //{
-                //    abonents.AddRange(GetAbonents(start, DateTime.Parse("23:59:59")));
-                //    abonents.AddRange(GetAbonents(DateTime.Parse("00:00"), end));
-                //}
-                //else
-                //{
-                    List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && x.Type != EntryType.Error).ToList();
-                    if (CurrentEntries.Count == 0)
-                        return new List<int>();
-                    abonents = CurrentEntries.Where(x => x.Abonent.HasValue).Select(x => x.Abonent.Value).Distinct().ToList();
-                    foreach (int abonent in abonents)
+
+                List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && x.Type != EntryType.Error).ToList();
+                if (CurrentEntries.Count == 0)
+                    return new List<int>();
+                abonents = CurrentEntries.Where(x => x.Abonent.HasValue).Select(x => x.Abonent.Value).Distinct().ToList();
+                foreach (int abonent in abonents)
+                {
+                    int count = CurrentEntries.Where(x => x.Abonent == abonent).Count();
+                    abonentsEntries.Add(abonent, count);
+                }
+                if (abonents.Count() > 0)
+                {
+                    int max = abonentsEntries.Max(x => x.Value);
+                    int i = 0;
+                    while (i < abonents.Count)
                     {
-                        int count = CurrentEntries.Where(x => x.Abonent == abonent).Count();
-                        abonentsEntries.Add(abonent, count);
-                    }
-                    if (abonents.Count() > 0)
-                    {
-                        int max = abonentsEntries.Max(x => x.Value);
-                        int i = 0;
-                        while (i < abonents.Count)
+                        if (abonentsEntries[abonents[i]] < max * config.AbonentsK)
                         {
-                            if (abonentsEntries[abonents[i]] < max * config.AbonentsK)
-                            {
-                                abonents.RemoveAt(i);
-                                continue;
-                            }
-                            i++;
+                            abonents.RemoveAt(i);
+                            continue;
                         }
+                        i++;
                     }
-                //}
+                }
             }
             return abonents;
         }
@@ -460,11 +472,6 @@ namespace Link11.Core
             List<int> result = new List<int>();
             if (signalEntries.Count != 0)
             {
-                //if (start.Hour > end.Hour)
-                //{
-                //    result.AddRange(GetAbonentsWithInterval(start, DateTime.Parse("23:59:59"), abonents, interval));
-                //    result.AddRange(GetAbonentsWithInterval(DateTime.Parse("00:00"), end, abonents, interval));
-                //}
                 List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && x.Type != EntryType.Error && x.Ninterval != 0).ToList();
                 CurrentEntries = CurrentEntries.Where(x => x.Abonent.HasValue && abonents.Contains(x.Abonent.Value)).ToList();
 
@@ -497,11 +504,6 @@ namespace Link11.Core
             int maxInFrames = 0;
             if (signalEntries.Count != 0)
             {
-                //if (start.Hour > end.Hour)
-                //{
-                //    maxInFrames += GetMaxInFrames(start, DateTime.Parse("23:59:59"));
-                //    maxInFrames += GetMaxInFrames(DateTime.Parse("00:00"), end);
-                //}
                 List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && x.Type != EntryType.Error).ToList();
                 int[] sizeWihoutErrors = CurrentEntries.Select(x => x.Size - x.Errors).ToArray();
 
@@ -526,11 +528,6 @@ namespace Link11.Core
             float avgInFrames = 0;
             if (signalEntries.Count != 0)
             {
-                //if (start.Hour > end.Hour)
-                //{
-                //    avgInFrames += GetAverageSizeInFrames(start, DateTime.Parse("23:59:59"));
-                //    avgInFrames += GetAverageSizeInFrames(DateTime.Parse("00:00"), end);
-                //}
                 List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && (x.Type == EntryType.Message || x.Type == EntryType.Answer)).ToList();
                 int[] sizeWihoutErrors = CurrentEntries.Select(x => x.Size - x.Errors).ToArray();
 
@@ -542,33 +539,59 @@ namespace Link11.Core
             return avgInFrames;
         }
 
-        private string GetIntervals()
+        private Dictionary<int, int> GetIntervals(params int[] abonents)
         {
-            string result = "";
+            Dictionary<int, int> intervalEntries = new Dictionary<int, int>();
             if (signalEntries.Count != 0) {
-                List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Type != EntryType.Error && x.Ninterval != 0).ToList();
-                if (CurrentEntries.Count != 0)
+                List<SignalEntry> currentEntries;
+                if (abonents.Any())
+                    currentEntries = signalEntries.Where(x => x.Type != EntryType.Error && x.Ninterval != 0 && (x.Abonent.HasValue  ? abonents.Contains(x.Abonent.Value) : false)).ToList();
+                else
+                    currentEntries = signalEntries.Where(x => x.Type != EntryType.Error && x.Ninterval != 0).ToList();
+
+                if (currentEntries.Count != 0)
                 {
-                    List<int> intervals = CurrentEntries.Select(x => x.Ninterval).Distinct().ToList();
+                    List<int> intervals = currentEntries.Select(x => x.Ninterval).Distinct().ToList();
                     intervals.Sort();
 
-                    Dictionary<int, int> intervalEntries = new Dictionary<int, int>();
                     foreach (int interval in intervals)
                     {
-                        int count = CurrentEntries.Where(x => x.Ninterval == interval).Count();
+                        int count = currentEntries.Where(x => x.Ninterval == interval).Count();
                         intervalEntries.Add(interval, count);
-                    }
-                    int i = 0;
-                    while (i < intervalEntries.Count && i < 3)
-                    {
-                        int max = intervalEntries.Max(x => x.Value);
-                        result += intervalEntries.Where(x => x.Value == max).First() + " ";
-                        intervalEntries.Remove(intervalEntries.Where(x => x.Value == max).First().Key);
-                        i++;
                     }
                 }
             }                 
-            return result;
+            return intervalEntries;
+        }
+
+        private void UpdateAbonentsInfo(List<AbonentInfo> abonentsInfo)
+        {
+            List<int> abonents = GetAbonents();
+            foreach (int abonent in abonents)
+            {
+                Dictionary<int, int> allAbonentIntervals = GetIntervals(abonent);
+                Dictionary<int, int> selectedAbonentIntervals = new Dictionary<int, int>();
+                int i = 0;
+                while (i < allAbonentIntervals.Count && i < 3)
+                {
+                    int max = allAbonentIntervals.Max(x => x.Value);
+                    KeyValuePair<int, int> interval = allAbonentIntervals.Where(x => x.Value == max).First();
+                    selectedAbonentIntervals.Add(interval.Key, interval.Value);
+                    allAbonentIntervals.Remove(interval.Key);
+                    i++;
+                }
+                selectedAbonentIntervals.Reverse();
+
+                AbonentInfo info = abonentsInfo.FirstOrDefault(abonentInfo => abonentInfo.Name == abonent);
+                if (info == null)
+                {
+                    info = new AbonentInfo(abonent);
+                    abonentsInfo.Add(info);
+                }
+                info.Count = signalEntries.Where(e => e.Abonent.HasValue && e.Abonent.Value == abonent).Count();
+                info.UpdateIntervals(selectedAbonentIntervals);
+            }
+            Abonents = abonentsInfo.OrderByDescending(x => x.Count).ToList();
         }
 
         private SeanseState GetState() {
@@ -688,8 +711,6 @@ namespace Link11.Core
             if (signalEntries.Any())
             {
                 DateTime end = signalEntries.Last().Time;
-                //if (signalEntries.First().Time.Hour > signalEntries.Last().Time.Hour)
-                //    end = end.AddDays(1);
                 DateTime currentTime = signalEntries.First().Time;
                 do
                 {
