@@ -14,7 +14,7 @@ namespace Link11Checker.Converters
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if ((bool)value)
-                return new SolidColorBrush(Colors.LightGreen);
+                return new SolidColorBrush(Color.FromRgb(25, 250, 0));
             return new SolidColorBrush(Colors.LightGray);
         }
 
