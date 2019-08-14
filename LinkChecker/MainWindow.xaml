@@ -42,6 +42,10 @@
             </StatusBarItem>
             <Separator></Separator>
             <StatusBarItem>
+                <Ellipse Stroke="Black" Fill="{Binding IsLoading, Converter={StaticResource BoolToColorConverter}}" ToolTip="Загрузка" Height="15" Width="15"/>
+            </StatusBarItem>
+            <Separator></Separator>
+            <StatusBarItem>
                 <Ellipse Stroke="Black" Fill="{Binding IsCopying, Converter={StaticResource BoolToColorConverter}}" ToolTip="Копирование" Height="15" Width="15"/>
             </StatusBarItem>
             <Separator></Separator>
@@ -152,5 +156,6 @@
                 <TextBlock Text="{Binding SelectedSeanse.LastCopy, StringFormat=Посл. копирование: {0}}" TextWrapping="Wrap" DockPanel.Dock="Top"/>
             </DockPanel>
         </Grid>
+        <GroupBox Header="GroupBox" Height="522" VerticalAlignment="Top"/>
     </DockPanel>
 </Window>

@@ -148,6 +148,17 @@ namespace Link11Checker.ViewModels
         #region StatusBarProps
 
         public string Version { get { return version; } }
+        public bool IsLoading {
+            get
+            {
+                return isLoading;
+            }
+            set
+            {
+                isLoading = value;
+                OnPropertyChanged("IsLoading");
+            }
+        }
         public bool IsCopying
         {
             get
@@ -192,6 +203,7 @@ namespace Link11Checker.ViewModels
         private bool notifyWhenStartActive;
         private bool notifyWhenEndActive;
         private string version;
+        private bool isLoading;
         private bool isCopying;
         private bool isUpdating;
         private Settings settings;
@@ -229,6 +241,7 @@ namespace Link11Checker.ViewModels
             this.notifyWhenStartActive = false;
             this.lastSelectedPathWithLinks = "";
 
+            seanseManager.SeanseAdding += SeanseManager_SeanseAdding;
             seanseManager.SeanseAdded += SeanseManager_SeanseAdded;
             seanseManager.SeanseRemoved += SeanseManager_SeanseRemoved;
             seanseManager.SeanseUpdated += SeanseManager_SeanseUpdated;
@@ -426,25 +439,7 @@ namespace Link11Checker.ViewModels
             #endregion
         }
 
-        private void SeanseManager_CopyingStarted(object obj)
-        {
-            IsCopying = true;
-        }
-
-        private void SeanseManager_CopyingEnded(object obj)
-        {
-            IsCopying = false;
-        }
-
-        private void SeanseManager_UpdatingStarted(object obj)
-        {
-            IsUpdating = true;
-        }
-
-        private void SeanseManager_UpdatingEnded(object obj)
-        {
-            IsUpdating = false;
-        }
+        
 
         #endregion
 
@@ -473,9 +468,14 @@ namespace Link11Checker.ViewModels
             });
         }
 
+        void SeanseManager_SeanseAdding(object sender, string directory)
+        {
+            IsLoading = true;
+        }
+
         private void SeanseManager_SeanseAdded(object sender, Seanse newSeanse)
         {
-
+            IsLoading = false;
             newSeanse.WorkingStart += Seanse_WorkingStart;
             newSeanse.ActiveStart += Seanse_ActiveStart;
             newSeanse.WorkingEnd += Seanse_WorkingEnd;
@@ -485,6 +485,26 @@ namespace Link11Checker.ViewModels
                 Seanses.Add(newSeanse);
                 SelectedSeanse = newSeanse;
             });
+        }
+
+        private void SeanseManager_CopyingStarted(object sender)
+        {
+            IsCopying = true;
+        }
+
+        private void SeanseManager_CopyingEnded(object sender)
+        {
+            IsCopying = false;
+        }
+
+        private void SeanseManager_UpdatingStarted(object sender)
+        {
+            IsUpdating = true;
+        }
+
+        private void SeanseManager_UpdatingEnded(object sender)
+        {
+            IsUpdating = false;
         }
 
         private void Seanse_ActiveStart(Seanse seanse, EventArgs args)

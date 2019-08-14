@@ -16,9 +16,9 @@ namespace Link11Checker.Core
 {
     public class SeanseManager
     {
-        #region
+        #region Events
 
-        public event Action<object, Seanse> SeanseLoaded = (sender, seanse) => { };
+        public event Action<object, string> SeanseAdding = (sender, direcory) => { };
         public event Action<object, Seanse> SeanseUpdated = (sender, e) => { };
         public event Action<object, Seanse> SeanseAdded = (sender, e) => { };
         public event Action<object, Seanse> SeanseRemoved = (sender, e) => { };
@@ -129,22 +129,8 @@ namespace Link11Checker.Core
             bool result = false;
             lock (Seanses)
             {
-                try
-                {
-                    Seanse newSeanse = new Seanse(seanseDir, settings.Configuration);
-                    Seanses.Add(newSeanse);
-                    SeanseAdded.Invoke(this, newSeanse);
-                    SaveDirectories();
-                    result = true;
-                }
-                catch (DirectoryNotFoundException e)
-                {
-                    logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
-                }
-                catch (Seanse.LogFileNotFoundException e)
-                {
-                    logger.LogMessage(e.FileName + " не найден", LogLevel.Warning);
-                }
+                result = LoadSeanse(seanseDir);
+                SaveDirectories();
             }
             return result;
         }
@@ -157,20 +143,7 @@ namespace Link11Checker.Core
                 {
                     if (!Seanses.Select(x => x.Directory.FullName.ToLower()).Contains(channel.Directory.ToLower()) && (channel.Trakt == "slew" || channel.Trakt == "link11"))
                     {
-                        try
-                        {
-                            Seanse newSeanse = new Seanse(channel.Directory, settings.Configuration);
-                            Seanses.Add(newSeanse);
-                            SeanseAdded.Invoke(this, newSeanse);
-                        }
-                        catch (Seanse.LogFileNotFoundException e)
-                        {
-                            logger.LogMessage(e.FileName + " не найден", LogLevel.Warning);
-                        }
-                        catch (Exception e)
-                        {
-                            logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
-                        }
+                        LoadSeanse(channel.Directory);
                     }
                 }
                 SaveDirectories();
@@ -195,20 +168,7 @@ namespace Link11Checker.Core
                 {
                     if (dirsInStock.Contains(directory.FullName.ToLower()))
                         continue;
-                    try
-                    {
-                        Seanse newSeanse = new Seanse(directory.FullName, settings.Configuration);
-                        Seanses.Add(newSeanse);
-                        SeanseAdded.Invoke(this, newSeanse);
-                    }
-                    catch (Seanse.LogFileNotFoundException e)
-                    {
-                        logger.LogMessage(e.FileName + " не найден", LogLevel.Warning);
-                    }
-                    catch (Exception e)
-                    {
-                        logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
-                    }
+                    LoadSeanse(directory.FullName);
                 }
                 SaveDirectories();
             }
@@ -362,6 +322,28 @@ namespace Link11Checker.Core
             catch (Exception e)
             {
                 logger.LogMessage(e.ToString() + ' ' + e.Message, LogLevel.Error);
+            }
+            return result;
+        }
+
+        private bool LoadSeanse(string directory)
+        {
+            bool result = false;
+            try
+            {
+                SeanseAdding.Invoke(this, directory);
+                Seanse newSeanse = new Seanse(directory, settings.Configuration);
+                Seanses.Add(newSeanse);
+                SeanseAdded.Invoke(this, newSeanse);
+                result = true;
+            }
+            catch (Seanse.LogFileNotFoundException e)
+            {
+                logger.LogMessage(e.FileName + " не найден", LogLevel.Warning);
+            }
+            catch (Exception e)
+            {
+                logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
             }
             return result;
         }
