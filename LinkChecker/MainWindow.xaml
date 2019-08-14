@@ -123,7 +123,7 @@
                         <HierarchicalDataTemplate ItemsSource="{Binding Intervals}">
                             <TextBlock>
                                 <TextBlock.Text>
-                                    <MultiBinding StringFormat="{}{0}: {1}">
+                                    <MultiBinding StringFormat="{}{0} ({1})">
                                         <Binding Path="Name"></Binding>
                                         <Binding Path="Count"></Binding>
                                     </MultiBinding>
@@ -133,7 +133,7 @@
                                 <DataTemplate>
                                     <TextBlock>
                                         <TextBlock.Text>
-                                            <MultiBinding StringFormat="{}{0}: {1}">
+                                            <MultiBinding StringFormat="{}{0} ({1})">
                                                 <Binding Path="Key"></Binding>
                                                 <Binding Path="Value"></Binding>
                                             </MultiBinding>
