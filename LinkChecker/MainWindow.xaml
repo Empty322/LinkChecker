@@ -100,7 +100,6 @@
                     <DataGridTextColumn Header="Интервалы" Binding="{Binding Intervals, Mode=OneWay}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Процент приема" Binding="{Binding PercentReceiving, StringFormat={}{0}%, Mode=OneWay}" Width="40"></DataGridTextColumn>
                     <DataGridTextColumn Header="Последн. раб." Binding="{Binding LastWorkingTime, Mode=OneWay}" Width="60"></DataGridTextColumn>
-                    <DataGridTextColumn Header="Последн. акт." Binding="{Binding LastActiveTime, Mode=OneWay}" Width="60"></DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>
             <TabControl x:Name="tc" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5" DataContext="{Binding SelectedSeanse}">
