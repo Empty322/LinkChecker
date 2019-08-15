@@ -250,7 +250,9 @@ namespace Link11Checker.ViewModels
             seanseManager.CopyingEnded += SeanseManager_CopyingEnded;
             seanseManager.UpdatingStarted += SeanseManager_UpdatingStarted;
             seanseManager.UpdatingEnded += SeanseManager_UpdatingEnded;
-            
+
+            window.Loaded += Window_Loaded;
+
             #region Charts initialization
 
             Chart tuningChart = window.GetTuningChart();
@@ -299,29 +301,6 @@ namespace Link11Checker.ViewModels
             workingSeries.Color = System.Drawing.Color.Blue;
             workingSeries.BorderWidth = 2;
             workingChart.Series.Add(workingSeries);
-
-            #endregion
-
-            #region Loading seanses
-
-            if (File.Exists("seanses.json"))
-            {
-                string jsonFile = "";
-                List<String> dirs = new List<string>();
-                try
-                {
-                    jsonFile = File.ReadAllText("seanses.json", Encoding.Default);
-                    dirs = JsonConvert.DeserializeObject<List<string>>(jsonFile);
-                }
-                catch (Exception e)
-                {
-                    logger.LogMessage(e.Message, LogLevel.Error);
-                }
-                foreach (string dir in dirs)
-                {
-                    seanseManager.AddSeanse(dir);
-                }
-            }
 
             #endregion
 
@@ -447,9 +426,7 @@ namespace Link11Checker.ViewModels
 
             #endregion
         }
-
-        
-
+    
         #endregion
 
         #region EventHandlers
@@ -555,7 +532,29 @@ namespace Link11Checker.ViewModels
             }
             logger.LogMessage(msg, LogLevel.Info);
         }
-        
+
+        private async void Window_Loaded(object sender, System.Windows.RoutedEventArgs args)
+        {
+            if (File.Exists("seanses.json"))
+            {
+                string jsonFile = "";
+                List<String> dirs = new List<string>();
+                try
+                {
+                    jsonFile = File.ReadAllText("seanses.json", Encoding.Default);
+                    dirs = JsonConvert.DeserializeObject<List<string>>(jsonFile);
+                }
+                catch (Exception e)
+                {
+                    logger.LogMessage(e.Message, LogLevel.Error);
+                }
+                foreach (string dir in dirs)
+                {
+                    await seanseManager.AddSeanseAsync(dir);
+                }
+            }
+        }
+
         #endregion
                   
         private void UpdateTuningChart()
