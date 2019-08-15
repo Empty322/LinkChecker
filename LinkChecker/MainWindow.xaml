@@ -70,8 +70,8 @@
                 <ColumnDefinition Width="30*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="40*"></RowDefinition>
-                <RowDefinition Height="16*"></RowDefinition>
+                <RowDefinition Height="33*"></RowDefinition>
+                <RowDefinition Height="23*"></RowDefinition>
                 <RowDefinition Height="40*"></RowDefinition>
             </Grid.RowDefinitions>
 
@@ -149,7 +149,8 @@
                 </TreeView>
             </DockPanel>
             <DockPanel Grid.Row="1" Margin="5" Grid.Column="1">
-                <Button Margin="0,0,0,5" Command="{Binding OpenLog}" IsEnabled="{Binding IsSeanceSelected}" DockPanel.Dock="Top">Открыть log.txt</Button>
+                <Button Margin="0,0,0,5" Command="{Binding OpenLog}" IsEnabled="{Binding SelectedSeanse.DirectoryExists, FallbackValue=false}" DockPanel.Dock="Top">Открыть log.txt</Button>
+                <Button Margin="0,0,0,5" Command="{Binding DeleteSeanseDirectory}" IsEnabled="{Binding SelectedSeanse.DirectoryExists, FallbackValue=false}" DockPanel.Dock="Top">Удалить папку с сеансом</Button>
                 <TextBlock Text="{Binding SelectedSeanse.MaxSizeInBytes, StringFormat=Макс. объем в байтах: {0:F2}}" TextWrapping="Wrap" DockPanel.Dock="Top"/>
                 <TextBlock Text="{Binding SelectedSeanse.AverageSizeInBytes, StringFormat=Средний. объем в байтах: {0:F2}}" TextWrapping="Wrap" DockPanel.Dock="Top"/>
                 <TextBlock Text="{Binding SelectedSeanse.LastCopy, StringFormat=Посл. копирование: {0}}" TextWrapping="Wrap" DockPanel.Dock="Top"/>

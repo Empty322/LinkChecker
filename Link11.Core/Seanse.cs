@@ -87,7 +87,6 @@ namespace Link11.Core
                     return "";
             }
         }
-        public int AbonentsCount { get { return GetAbonents().Count; } } // УБРАТЬ
         public string Intervals { 
             get {
                 string result = "";
@@ -336,6 +335,12 @@ namespace Link11.Core
                 }
             }
             return result;
+        }
+
+        public void Delete()
+        {
+            Directory.Delete(true);
+            DirectoryExists = false;
         }
 
         #endregion

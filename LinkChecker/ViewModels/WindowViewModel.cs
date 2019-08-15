@@ -224,6 +224,7 @@ namespace Link11Checker.ViewModels
         public ICommand OpenSettings { get; set; }
         public ICommand About { get; set; }
         public ICommand OpenLog { get; set; }
+        public ICommand DeleteSeanseDirectory { get; set; }
 
         #endregion
 
@@ -434,6 +435,14 @@ namespace Link11Checker.ViewModels
                     p.StartInfo = new ProcessStartInfo("excel.exe", "\"" + SelectedSeanse.Directory + "\\log.txt\"");
                     p.Start();
                 }
+            });
+
+            DeleteSeanseDirectory = new RelayCommand(() =>
+            {
+                if (SelectedSeanse != null)
+                {
+                    SelectedSeanse.Delete();
+                };
             });
 
             #endregion
