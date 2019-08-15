@@ -135,6 +135,12 @@ namespace Link11Checker.Core
             return result;
         }
 
+        public async Task<bool> AddSeanseAsync(string seanseDir)
+        {
+            Task<bool> addingTask = Task<bool>.Run(() => AddSeanse(seanseDir));
+            return await addingTask;
+        }
+
         public void AddSeansesFromVentursFile(string file)
         {
             lock (Seanses) {

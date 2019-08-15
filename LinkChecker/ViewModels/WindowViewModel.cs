@@ -340,7 +340,7 @@ namespace Link11Checker.ViewModels
                 }
             });
 
-            AddSeanse = new RelayCommand(() =>
+            AddSeanse = new RelayCommand(async () =>
             {
                 FolderBrowserDialog fbd = new FolderBrowserDialog();
                 if (!string.IsNullOrWhiteSpace(lastSelectedPathWithLinks))
@@ -350,7 +350,7 @@ namespace Link11Checker.ViewModels
                 DialogResult result = fbd.ShowDialog();
                 if (result == DialogResult.OK && fbd.SelectedPath != null)
                 {
-                    if (!SeanseManager.AddSeanse(fbd.SelectedPath))
+                    if (!await SeanseManager.AddSeanseAsync(fbd.SelectedPath))
                         logger.LogMessage("Не удалось добавить сеанс: \n" + fbd.SelectedPath, LogLevel.Warning);
                 }
                 lastSelectedPathWithLinks = fbd.SelectedPath;

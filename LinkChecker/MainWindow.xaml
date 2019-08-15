@@ -156,6 +156,5 @@
                 <TextBlock Text="{Binding SelectedSeanse.LastCopy, StringFormat=Посл. копирование: {0}}" TextWrapping="Wrap" DockPanel.Dock="Top"/>
             </DockPanel>
         </Grid>
-        <GroupBox Header="GroupBox" Height="522" VerticalAlignment="Top"/>
     </DockPanel>
 </Window>
