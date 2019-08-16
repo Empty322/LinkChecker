@@ -121,36 +121,11 @@
             </TabControl>
             <DockPanel Grid.Column="2" Margin="5">
                 <ListBox ItemsSource="{Binding SelectedSeanse.ActiveEntries}" DockPanel.Dock="Left" MinWidth="130"></ListBox>
-                <TreeView ItemsSource="{Binding SelectedSeanse.Abonents}" DockPanel.Dock="Right">
-                    <TreeView.ItemTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding Intervals}">
-                            <TextBlock>
-                                <TextBlock.Text>
-                                    <MultiBinding StringFormat="{}{0} ({1})">
-                                        <Binding Path="Name"></Binding>
-                                        <Binding Path="Count"></Binding>
-                                    </MultiBinding>
-                                </TextBlock.Text>
-                            </TextBlock>
-                            <HierarchicalDataTemplate.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock>
-                                        <TextBlock.Text>
-                                            <MultiBinding StringFormat="{}{0} ({1})">
-                                                <Binding Path="Key"></Binding>
-                                                <Binding Path="Value"></Binding>
-                                            </MultiBinding>
-                                        </TextBlock.Text>
-                                    </TextBlock>
-                                </DataTemplate>
-                            </HierarchicalDataTemplate.ItemTemplate>
-                        </HierarchicalDataTemplate>
-                    </TreeView.ItemTemplate>
-                </TreeView>
             </DockPanel>
             <DockPanel Grid.Row="1" Margin="5" Grid.Column="1">
                 <Button Margin="0,0,0,5" Command="{Binding OpenLog}" IsEnabled="{Binding SelectedSeanse.DirectoryExists, FallbackValue=false}" DockPanel.Dock="Top">Открыть log.txt</Button>
                 <Button Margin="0,0,0,5" Command="{Binding DeleteSeanseDirectory}" IsEnabled="{Binding SelectedSeanse.DirectoryExists, FallbackValue=false}" DockPanel.Dock="Top">Удалить папку с сеансом</Button>
+                <Button Margin="0,0,0,5" Command="{Binding OpenAbonentsInfo}" IsEnabled="{Binding SelectedSeanse.DirectoryExists, FallbackValue=false}" DockPanel.Dock="Top">Подробно о корреспондентах</Button>
                 <TextBlock Text="{Binding SelectedSeanse.MaxSizeInBytes, StringFormat=Макс. объем в байтах: {0:F2}}" TextWrapping="Wrap" DockPanel.Dock="Top"/>
                 <TextBlock Text="{Binding SelectedSeanse.AverageSizeInBytes, StringFormat=Средний. объем в байтах: {0:F2}}" TextWrapping="Wrap" DockPanel.Dock="Top"/>
                 <TextBlock Text="{Binding SelectedSeanse.LastCopy, StringFormat=Посл. копирование: {0}}" TextWrapping="Wrap" DockPanel.Dock="Top"/>

@@ -581,19 +581,7 @@ namespace Link11.Core
             List<int> abonents = GetAbonents();
             foreach (int abonent in abonents)
             {
-                Dictionary<int, int> allAbonentIntervals = GetIntervals(abonent);
-                Dictionary<int, int> selectedAbonentIntervals = new Dictionary<int, int>();
-                int i = 0;
-                while (i < allAbonentIntervals.Count && i < 3)
-                {
-                    int max = allAbonentIntervals.Max(x => x.Value);
-                    KeyValuePair<int, int> interval = allAbonentIntervals.Where(x => x.Value == max).First();
-                    selectedAbonentIntervals.Add(interval.Key, interval.Value);
-                    allAbonentIntervals.Remove(interval.Key);
-                    i++;
-                }
-                selectedAbonentIntervals.Reverse();
-
+                Dictionary<int, int> abonentIntervals = GetIntervals(abonent);
                 AbonentInfo info = abonentsInfo.FirstOrDefault(abonentInfo => abonentInfo.Name == abonent);
                 if (info == null)
                 {
@@ -601,7 +589,7 @@ namespace Link11.Core
                     abonentsInfo.Add(info);
                 }
                 info.Count = signalEntries.Where(e => e.Abonent.HasValue && e.Abonent.Value == abonent).Count();
-                info.UpdateIntervals(selectedAbonentIntervals);
+                info.UpdateIntervals(abonentIntervals);
             }
             Abonents = abonentsInfo.OrderByDescending(x => x.Count).ToList();
         }

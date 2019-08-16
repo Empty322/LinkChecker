@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Specialized;
 
 namespace Link11.Core
 {
@@ -12,7 +13,7 @@ namespace Link11.Core
     {
         public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
 
-        public int Name { get; set; }
+        public int Name { get; private set; }
         public int Count
         {
             get
@@ -25,27 +26,27 @@ namespace Link11.Core
                 OnPropertyChanged("Count");
             }
         }
-        public ReadOnlyDictionary<int, int> Intervals { get; set; }
+        public List<Interval> Intervals { get; private set; }
 
-        private Dictionary<int, int> intervals;
         private int count;
 
         public AbonentInfo(int name)
         {
+            this.Intervals = new List<Interval>();
             this.Name = name;
-            this.intervals = new Dictionary<int, int>();
-            this.Intervals = new ReadOnlyDictionary<int, int>(intervals);
+            this.count = 0;
         }
 
-        public void UpdateIntervals(Dictionary<int, int> abonentIntervals)
+        public void UpdateIntervals(Dictionary<int, int> inAbonentIntervals)
         {
-            foreach (var interval in abonentIntervals)
+            foreach (var inInterval in inAbonentIntervals)
             {
-                if (Intervals.Keys.Contains(interval.Key))
-                    intervals[interval.Key] = interval.Value;
-                else
-                    intervals.Add(interval.Key, interval.Value);
+                Interval newInterval = new Interval();
+                newInterval.Name = inInterval.Key;
+                newInterval.Count = inInterval.Value;
+                Intervals.Add(newInterval);
             }
+            Intervals = Intervals.OrderByDescending(i => i.Count).ToList();
         }
 
 
@@ -58,5 +59,11 @@ namespace Link11.Core
         {
             return this.Count - other.Count;
         }
+    }
+
+    public struct Interval
+    {
+        public int Name { get; set; }
+        public int Count { get; set; }
     }
 }

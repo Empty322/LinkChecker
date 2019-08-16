@@ -225,6 +225,7 @@ namespace Link11Checker.ViewModels
         public ICommand About { get; set; }
         public ICommand OpenLog { get; set; }
         public ICommand DeleteSeanseDirectory { get; set; }
+        public ICommand OpenAbonentsInfo { get; set; }
 
         #endregion
 
@@ -421,6 +422,17 @@ namespace Link11Checker.ViewModels
                 if (SelectedSeanse != null)
                 {
                     SelectedSeanse.Delete();
+                };
+            });
+
+            OpenAbonentsInfo = new RelayCommand(() =>
+            {
+                if (SelectedSeanse != null)
+                {
+                    AbonentsInfoWindow abonentsInfo = new AbonentsInfoWindow();
+                    abonentsInfo.DataContext = SelectedSeanse;
+                    abonentsInfo.Title = SelectedSeanse.Freq.ToString() + " " + SelectedSeanse.Mode.ToString();
+                    abonentsInfo.Show();
                 };
             });
 
