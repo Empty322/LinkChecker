@@ -378,6 +378,8 @@ namespace Link11.Core
                     // Попробовать прочитать файл
                     allLogFileContent = fs.ReadToEnd();
                 }
+                // Попробовать парсить allLog.txt
+                parser.ParseAllLog(allLogFileContent, out freq, out mode);
             }
             catch (FileNotFoundException)
             {
@@ -389,13 +391,7 @@ namespace Link11.Core
             {
                 logger.LogMessage("Папка c сеансом " + Directory + "не найдена", LogLevel.Warning);
                 return;
-            }
-
-            // Попробовать парсить allLog.txt
-            try
-            {
-                parser.ParseAllLog(allLogFileContent, out freq, out mode);            
-            }            
+            }    
             catch
             {
                 // Если не удалось, сделать запись в логе приложения

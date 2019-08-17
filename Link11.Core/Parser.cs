@@ -28,7 +28,8 @@ namespace Link11.Core
             {
                 string[] lineData = lines[i].Split('\t');
                 SignalEntry se = new SignalEntry();
-                
+                int dayNumber = 0;
+
                 int num = 0;
                 DateTime time;
                 int abonent = 0;
@@ -121,23 +122,15 @@ namespace Link11.Core
                                 se.Tuning = -se.Tuning;
                         }
                         
-                        
-                        // Уровень
+                        // Корректирование даты
+                        if (signal.Any() && signal.Last().Time > se.Time)
+                            dayNumber++;
+                        se.Time = se.Time.AddDays((double)dayNumber);
 
                         signal.Add(se);
                     }
                 }
             }
-            if (signal.Any())
-                if (signal.First().Time > signal.Last().Time)
-                {
-                    int i = 0;
-                    while (signal[i].Time.Hour > 21)
-                    {
-                        signal[i].Time = signal[i].Time.AddDays(-1);
-                        i++;
-                    }
-                };
                         
             return signal;
         }
