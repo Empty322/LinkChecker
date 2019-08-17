@@ -1,9 +1,11 @@
 ﻿<Window x:Class="Link11Checker.AbonentsInfoWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="AbonentsInfo" Height="300" Width="300">
+        x:Name="abonentsInfoWindow"
+        Icon="Resources/btnSonogr.png"
+        Title="AbonentsInfo" Height="300" Width="300" MinHeight="30" MinWidth="30">
     <Grid>
-        <TreeView ItemsSource="{Binding Abonents}">
+        <TreeView ItemsSource="{Binding Path=DataContext, ElementName=abonentsInfoWindow}">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Intervals}">
                     <TextBlock>

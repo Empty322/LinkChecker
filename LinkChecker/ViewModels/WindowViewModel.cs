@@ -432,8 +432,11 @@ namespace Link11Checker.ViewModels
                 if (SelectedSeanse != null)
                 {
                     AbonentsInfoWindow abonentsInfo = new AbonentsInfoWindow();
-                    abonentsInfo.DataContext = SelectedSeanse;
+                    AbonentInfo[] abonentsInfoCopy= new AbonentInfo[SelectedSeanse.Abonents.Count];
+                    SelectedSeanse.Abonents.CopyTo(abonentsInfoCopy);
+                    abonentsInfo.DataContext = abonentsInfoCopy;
                     abonentsInfo.Title = SelectedSeanse.Freq.ToString() + " " + SelectedSeanse.Mode.ToString();
+                    abonentsInfo.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
                     abonentsInfo.Show();
                 };
             });

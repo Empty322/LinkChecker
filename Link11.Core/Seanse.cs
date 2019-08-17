@@ -15,7 +15,7 @@ using Newtonsoft.Json;
 
 namespace Link11.Core
 {
-    public class Seanse : INotifyPropertyChanged
+    public class Seanse : INotifyPropertyChanged, ICloneable
     {
         #region Events
 
@@ -740,5 +740,10 @@ namespace Link11.Core
 
         #endregion   
    
+    
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
     }
 }
