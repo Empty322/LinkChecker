@@ -339,8 +339,18 @@ namespace Link11.Core
 
         public void Delete()
         {
-            Directory.Delete(true);
-            DirectoryExists = false;
+            try
+            {
+                FileInfo[] log = Directory.GetFiles("log.txt");
+                if (log.Count() != 0)
+                    log[0].Delete();
+                Directory.Delete(true);
+                DirectoryExists = false;
+            }
+            catch
+            {
+                logger.LogMessage("Невозможно удалить папку " + Directory, LogLevel.Warning);
+            }
         }
 
         #endregion

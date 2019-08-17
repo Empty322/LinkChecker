@@ -70,8 +70,8 @@
                 <ColumnDefinition Width="30*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="33*"></RowDefinition>
-                <RowDefinition Height="23*"></RowDefinition>
+                <RowDefinition Height="31*"></RowDefinition>
+                <RowDefinition Height="29*"></RowDefinition>
                 <RowDefinition Height="40*"></RowDefinition>
             </Grid.RowDefinitions>
 

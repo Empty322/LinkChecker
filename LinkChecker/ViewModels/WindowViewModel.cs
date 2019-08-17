@@ -421,8 +421,10 @@ namespace Link11Checker.ViewModels
             {
                 if (SelectedSeanse != null)
                 {
-                    SelectedSeanse.Delete();
-                };
+                    DialogResult res = MessageBox.Show("Удалить папку с сеансом?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (res == DialogResult.Yes)
+                        SelectedSeanse.Delete();
+                }
             });
 
             OpenAbonentsInfo = new RelayCommand(() =>
