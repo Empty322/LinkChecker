@@ -96,7 +96,7 @@
                     <DataGridTextColumn Header="Режим" Binding="{Binding Mode, Mode=OneWay}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Макс." Binding="{Binding MaxSize, Mode=OneWay}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Средн." Binding="{Binding AverageSize, Mode=OneWay}"></DataGridTextColumn>
-                    <DataGridTextColumn Header="Кол. корреспондентов" Binding="{Binding AbonentsCount, Mode=OneWay}" Width="60"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Кол. корреспондентов" Binding="{Binding Abonents.Count, Mode=OneWay}" Width="60"></DataGridTextColumn>
                     <DataGridTextColumn Header="Интервалы" Binding="{Binding Intervals, Mode=OneWay}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Процент приема" Binding="{Binding PercentReceiving, StringFormat={}{0}%, Mode=OneWay}" Width="40"></DataGridTextColumn>
                     <DataGridTextColumn Header="Последн. раб." Binding="{Binding LastWorkingTime, Mode=OneWay}" Width="60"></DataGridTextColumn>
