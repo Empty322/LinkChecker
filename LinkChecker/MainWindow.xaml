@@ -121,6 +121,17 @@
             </TabControl>
             <DockPanel Grid.Column="2" Margin="5">
                 <ListBox ItemsSource="{Binding SelectedSeanse.ActiveEntries}" DockPanel.Dock="Left" MinWidth="130"></ListBox>
+                <ListView ItemsSource="{Binding SelectedSeanse.Abonents}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListView.View>
+                        <GridView>
+                            <GridView.Columns>
+                                <GridViewColumn Header="Корреспондент" Width="68" DisplayMemberBinding="{Binding Name}" />
+                                <GridViewColumn Header="Коичество" Width="68" DisplayMemberBinding="{Binding Count}" />
+                            </GridView.Columns>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
             </DockPanel>
             <DockPanel Grid.Row="1" Margin="5" Grid.Column="1">
                 <Button Margin="0,0,0,5" Command="{Binding OpenLog}" IsEnabled="{Binding SelectedSeanse.DirectoryExists, FallbackValue=false}" DockPanel.Dock="Top">Открыть log.txt</Button>
