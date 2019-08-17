@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbonentInfo.cs" />
+    <Compile Include="ActiveEntry.cs" />
     <Compile Include="Channel.cs" />
     <Compile Include="Charting\SizeChartUnit.cs" />
     <Compile Include="Charting\TuningChartUnit.cs" />

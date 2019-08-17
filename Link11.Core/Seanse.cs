@@ -77,16 +77,6 @@ namespace Link11.Core
                 return "";
             }
         }
-        public string LastActiveTime
-        {
-            get
-            {
-                if (ActiveEntries.Any())
-                    return ActiveEntries.Last().Split('\t')[0];
-                else
-                    return "";
-            }
-        }
         public string Intervals { 
             get {
                 string result = "";
@@ -125,7 +115,7 @@ namespace Link11.Core
         public float AverageSizeInBytes { get { return (float)Math.Round(AverageSize * 3.75f, 2); } }
         public float AverageSize { get { return (float)Math.Round(GetAverageSizeInFrames()); } }
         public SeanseState State { get { return state; } }
-        public List<string> ActiveEntries { get; set; }
+        public List<ActiveEntry> ActiveEntries { get; set; }
         public string LastCopy { get { return lastCopy.ToShortTimeString(); } }
         public string LastUpdate {get { return lastUpdate.ToShortTimeString(); } }
         public bool Visible {
@@ -207,7 +197,7 @@ namespace Link11.Core
             this.DirectoryExists = Directory.Exists;
             if (!DirectoryExists)
                 throw new LogFileNotFoundException();
-            this.ActiveEntries = new List<string>();
+            this.ActiveEntries = new List<ActiveEntry>();
             this.TuningChartUnits = new List<TuningChartUnit>();
             this.WorkingChartUnits = new List<WorkingChartUnit>();
             this.Abonents = new List<AbonentInfo>();
@@ -262,9 +252,7 @@ namespace Link11.Core
                     if (signalEntries.Any())
                     {
                         ActiveEntries = signalEntries
-                            .Where(x => x.Type != EntryType.Error && ((x.Size - x.Errors) > (int)Mode))
-                            .Select(x => x.Time.ToShortTimeString() + '\t' + (x.Size - x.Errors))
-                            .ToList();
+                            .Where(x => x.Type != EntryType.Error && ((x.Size - x.Errors) > (int)Mode)).Select(x => new ActiveEntry { Time = x.Time.ToShortTimeString(), Size = x.Size - x.Errors }).ToList();
                     }
 
                     UpdateAbonentsInfo(Abonents);
