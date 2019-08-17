@@ -39,6 +39,7 @@ namespace Link11.Core
 
         public void UpdateIntervals(Dictionary<int, int> inAbonentIntervals)
         {
+            Intervals.Clear();
             foreach (var inInterval in inAbonentIntervals)
             {
                 Interval newInterval = new Interval();
