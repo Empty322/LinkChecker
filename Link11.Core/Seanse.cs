@@ -140,6 +140,13 @@ namespace Link11.Core
         public List<WorkingChartUnit> WorkingChartUnits { get; set; }
         public List<SizeChartUnit> SizeChartUnits { get; set; }
         public List<AbonentInfo> Abonents { get; set; }
+        public int AbonentsCount
+        {
+            get
+            {
+                return GetActualAbonentsCount(Abonents);
+            }
+        }
 
         private DateTime ServerTime
         {
@@ -225,45 +232,49 @@ namespace Link11.Core
             {
                 DirectoryExists = true;
 
-                // Загрузить log.txt
-                LoadAllLog();
-                
-                // Загрузить allLog.txt
-                LoadLog();
-
-                // Если это пустой сеанс, выйти
-                if (signalEntries.Any())
+                if (lastModified != Directory.LastWriteTime)
                 {
-                    // Узнать состояние сеанса
-                    state = GetState();
 
-                    FireEvents();
-                                        
-                    // Получить данные для графика расстройки
-                    TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
+                    // Загрузить log.txt
+                    LoadAllLog();
 
-                    // Получить данные для графика объема
-                    SizeChartUnits = GetSizeChartUnits();
+                    // Загрузить allLog.txt
+                    LoadLog();
 
-                    // Получить данные для графика работы
-                    WorkingChartUnits = GetWorkingChartUnits(new TimeSpan(0,1,0));
-
-                    // Получить вхождения с объемом, превышающим норму
+                    // Если это пустой сеанс, выйти
                     if (signalEntries.Any())
                     {
-                        ActiveEntries = signalEntries
-                            .Where(x => x.Type != EntryType.Error && ((x.Size - x.Errors) > (int)Mode)).Select(x => new ActiveEntry { Time = x.Time.ToShortTimeString(), Size = x.Size - x.Errors }).ToList();
+                        // Узнать состояние сеанса
+                        state = GetState();
+
+                        FireEvents();
+
+                        // Получить данные для графика расстройки
+                        TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
+
+                        // Получить данные для графика объема
+                        SizeChartUnits = GetSizeChartUnits();
+
+                        // Получить данные для графика работы
+                        WorkingChartUnits = GetWorkingChartUnits(new TimeSpan(0, 1, 0));
+
+                        // Получить вхождения с объемом, превышающим норму
+                        if (signalEntries.Any())
+                        {
+                            ActiveEntries = signalEntries
+                                .Where(x => x.Type != EntryType.Error && ((x.Size - x.Errors) > (int)Mode)).Select(x => new ActiveEntry { Time = x.Time.ToShortTimeString(), Size = x.Size - x.Errors }).ToList();
+                        }
+
+                        UpdateAbonentsInfo(Abonents);
+
+                        prevState = state;
+                        lastModified = File.GetLastWriteTime(Directory + "\\log.txt");
+                        lastUpdate = DateTime.Now;
+
+                        Type df = this.GetType();
+                        foreach (PropertyInfo pi in df.GetProperties())
+                            OnPropertyChanged(pi.Name);
                     }
-
-                    UpdateAbonentsInfo(Abonents);
-
-                    prevState = state;
-                    lastModified = File.GetLastWriteTime(Directory + "\\log.txt");
-                    lastUpdate = DateTime.Now;
-
-                    Type df = this.GetType();
-                    foreach (PropertyInfo pi in df.GetProperties())
-                        OnPropertyChanged(pi.Name);
                 }
             }
             else
@@ -341,6 +352,91 @@ namespace Link11.Core
             }
         }
 
+
+        public int GetActualAbonentsCount(List<AbonentInfo> abonents)
+        {
+            int resCount = 0;
+            if (abonents.Count() > 0)
+            {
+                int max = abonents.Max(x => x.Count);
+                int i = 0;
+                while (i < abonents.Count)
+                {
+                    if (Abonents[i].Count > max * config.AbonentsK)
+                        resCount++;
+                    i++;
+                }
+            }
+            return resCount;
+        }
+
+
+        public List<int> GetAbonents()
+        {
+            List<int> abonents = new List<int>();
+            if (signalEntries.Count != 0)
+                abonents = GetAbonents(signalEntries.First().Time, signalEntries.Last().Time);
+            return abonents;
+        }
+
+        public List<int> GetAbonents(DateTime start, DateTime end)
+        {
+            List<int> abonents = new List<int>();
+            if (signalEntries.Count != 0)
+            {
+                Dictionary<int, int> abonentsEntries = new Dictionary<int, int>();
+
+                List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && x.Type != EntryType.Error).ToList();
+                if (CurrentEntries.Count == 0)
+                    return new List<int>();
+                abonents = CurrentEntries.Where(x => x.Abonent.HasValue).Select(x => x.Abonent.Value).Distinct().ToList();
+                foreach (int abonent in abonents)
+                {
+                    int count = CurrentEntries.Where(x => x.Abonent == abonent).Count();
+                    abonentsEntries.Add(abonent, count);
+                }
+            }
+            return abonents;
+        }
+
+        public List<int> GetAbonentsWithInterval(int interval, float intervalsK)
+        {
+            List<int> abonetns = new List<int>();
+            if (signalEntries.Count != 0)
+                abonetns = GetAbonentsWithInterval(signalEntries.First().Time, signalEntries.Last().Time, interval, intervalsK);
+            return abonetns;
+        }
+
+        public List<int> GetAbonentsWithInterval(DateTime start, DateTime end, int interval, float intervalsK)
+        {
+            List<int> abonents = GetAbonents(start, end);
+            return GetAbonentsWithInterval(start, end, abonents, interval, intervalsK);
+        }
+
+        public List<int> GetAbonentsWithInterval(DateTime start, DateTime end, List<int> abonents, int interval, float intervalsK)
+        {
+            List<int> result = new List<int>();
+            if (signalEntries.Count != 0)
+            {
+                List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && x.Type != EntryType.Error && x.Ninterval != 0).ToList();
+                CurrentEntries = CurrentEntries.Where(x => x.Abonent.HasValue && abonents.Contains(x.Abonent.Value)).ToList();
+
+                Dictionary<int, int> intervalCount = new Dictionary<int, int>();
+                foreach (int abonent in abonents)
+                {
+                    List<int> intervals = CurrentEntries.Where(x => x.Abonent == abonent && x.Ninterval != 0).Select(x => x.Ninterval).ToList();
+                    int count = intervals.Where(x => x == interval).Count();
+                    intervals = intervals.Where(x => x != interval).ToList();
+                    logger.LogMessage("Абонент: " + abonent, LogLevel.Info);
+                    logger.LogMessage("Количество" + interval + "интервалов = " + count, LogLevel.Info);
+                    logger.LogMessage("Количество остальных интервалов = " + intervals.Count(), LogLevel.Info);
+                    if (count > intervals.Count() * intervalsK)
+                        result.Add(abonent);
+                }
+            }
+            return result;
+        }
+
         #endregion
 
         #region LogFileNotFoundException
@@ -415,86 +511,6 @@ namespace Link11.Core
                 // Парсить log.txt
                 signalEntries = parser.ParseLog(lines);
             }    
-        }
-
-        private List<int> GetAbonents()
-        {
-            List<int> abonents = new List<int>();
-            if (signalEntries.Count != 0)
-                abonents = GetAbonents(signalEntries.First().Time, signalEntries.Last().Time);
-            return abonents;
-        }
-
-        private List<int> GetAbonents(DateTime start, DateTime end)
-        {
-            List<int> abonents = new List<int>();
-            if (signalEntries.Count != 0)
-            {
-                Dictionary<int, int> abonentsEntries = new Dictionary<int, int>();
-
-                List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && x.Type != EntryType.Error).ToList();
-                if (CurrentEntries.Count == 0)
-                    return new List<int>();
-                abonents = CurrentEntries.Where(x => x.Abonent.HasValue).Select(x => x.Abonent.Value).Distinct().ToList();
-                foreach (int abonent in abonents)
-                {
-                    int count = CurrentEntries.Where(x => x.Abonent == abonent).Count();
-                    abonentsEntries.Add(abonent, count);
-                }
-                if (abonents.Count() > 0)
-                {
-                    int max = abonentsEntries.Max(x => x.Value);
-                    int i = 0;
-                    while (i < abonents.Count)
-                    {
-                        if (abonentsEntries[abonents[i]] < max * config.AbonentsK)
-                        {
-                            abonents.RemoveAt(i);
-                            continue;
-                        }
-                        i++;
-                    }
-                }
-            }
-            return abonents;
-        }
-
-        private List<int> GetAbonentsWithInterval(int interval)
-        {
-            List<int> abonetns = new List<int>();
-            if (signalEntries.Count != 0)
-                abonetns = GetAbonentsWithInterval(signalEntries.First().Time, signalEntries.Last().Time, interval);
-            return abonetns;
-        }
-
-        private List<int> GetAbonentsWithInterval(DateTime start, DateTime end, int interval)
-        {
-            List<int> abonents = GetAbonents(start, end);
-            return GetAbonentsWithInterval(start, end, abonents, interval);
-        }
-
-        private List<int> GetAbonentsWithInterval(DateTime start, DateTime end, List<int> abonents, int interval)
-        {
-            List<int> result = new List<int>();
-            if (signalEntries.Count != 0)
-            {
-                List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && x.Type != EntryType.Error && x.Ninterval != 0).ToList();
-                CurrentEntries = CurrentEntries.Where(x => x.Abonent.HasValue && abonents.Contains(x.Abonent.Value)).ToList();
-
-                Dictionary<int, int> intervalCount = new Dictionary<int, int>();
-                foreach (int abonent in abonents)
-                {
-                    List<int> intervals = CurrentEntries.Where(x => x.Abonent == abonent && x.Ninterval != 0).Select(x => x.Ninterval).ToList();
-                    int count = intervals.Where(x => x == interval).Count();
-                    intervals = intervals.Where(x => x != interval).ToList();
-                    logger.LogMessage("Абонент: " + abonent, LogLevel.Info);
-                    logger.LogMessage("Количество" + interval + "интервалов = " + count, LogLevel.Info);
-                    logger.LogMessage("Количество остальных интервалов = " + intervals.Count(), LogLevel.Info);
-                    if (count > intervals.Count() * config.IntervalsK)
-                        result.Add(abonent);
-                }
-            }
-            return result;
         }
 
         private int GetMaxInFrames()
