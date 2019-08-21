@@ -353,12 +353,12 @@ namespace Link11Checker.ViewModels
                     await SeanseManager.AddAllSeansesFromFolderAsync(fbd.SelectedPath);
             });
 
-            RemoveSeanse = new RelayCommand(() =>
+            RemoveSeanse = new RelayCommand(async () =>
             {
                 try
                 {
                     if (SelectedSeanse != null)
-                        SeanseManager.RemoveSeanse(SelectedSeanse);
+                        await SeanseManager.RemoveSeanseAsync(SelectedSeanse);
                     else
                         MessageBox.Show("Выбирете сеанс", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
@@ -368,12 +368,12 @@ namespace Link11Checker.ViewModels
                 }
             });
 
-            RemoveAllSeanses = new RelayCommand(() =>
+            RemoveAllSeanses = new RelayCommand(async () =>
             {
                 try {
                     DialogResult result = MessageBox.Show("Удалить все сеансы?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result == DialogResult.Yes)
-                        SeanseManager.RemoveAllSeanses();                                 
+                        await SeanseManager.RemoveAllSeansesAsync();                                 
                 }
                 catch (Exception e)
                 {

@@ -198,6 +198,12 @@ namespace Link11Checker.Core
             }
         }
 
+        public async Task RemoveSeanseAsync(Seanse seanse)
+        {
+            Task removingTask = Task.Run(() => RemoveSeanse(seanse));
+            await removingTask;
+        }  
+
         public void RemoveAllSeanses()
         {
             lock (Seanses)
@@ -211,6 +217,12 @@ namespace Link11Checker.Core
                 SaveDirectories();
             }
         }
+
+        public async Task RemoveAllSeansesAsync()
+        {
+            Task removingTask = Task.Run(() => RemoveAllSeanses());
+            await removingTask;
+        }  
 
         private void RemoveExcessSeanses()
         {
