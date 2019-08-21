@@ -98,8 +98,8 @@ namespace Link11Checker.Core
                     {
                         try
                         {
-                            AddSeansesFromVentursFile(settings.VenturFile);
                             RemoveExcessSeanses();
+                            AddSeansesFromVentursFile(settings.VenturFile);
                         }
                         catch (Exception e)
                         {
