@@ -432,12 +432,22 @@ namespace Link11Checker.ViewModels
             {
                 if (SelectedSeanse != null)
                 {
+                    foreach (var ownedWin in window.OwnedWindows)
+                    {
+                        if ((ownedWin as System.Windows.Window).Tag == SelectedSeanse.Directory)
+                        {
+                            (ownedWin as System.Windows.Window).Focus();
+                            return;
+                        }
+                    }
                     AbonentsInfoWindow abonentsInfo = new AbonentsInfoWindow();
                     AbonentInfo[] abonentsInfoCopy= new AbonentInfo[SelectedSeanse.Abonents.Count];
                     SelectedSeanse.Abonents.CopyTo(abonentsInfoCopy);
                     abonentsInfo.DataContext = abonentsInfoCopy;
                     abonentsInfo.Title = SelectedSeanse.Freq.ToString() + " " + SelectedSeanse.Mode.ToString();
                     abonentsInfo.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
+                    abonentsInfo.Tag = SelectedSeanse.Directory;
+                    abonentsInfo.WindowStyle = System.Windows.WindowStyle.ToolWindow;
                     abonentsInfo.Owner = window;
                     abonentsInfo.Show();
                 };
@@ -527,7 +537,7 @@ namespace Link11Checker.ViewModels
             string msg = string.Format("Линк {0} {1} преходит в активный режим.", seanse.Freq, seanse.Mode);
             if (NotifyWhenStartActive)
             {
-                MessageBox.Show(msg, "Переход в активный", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                System.Windows.Forms.MessageBox.Show(msg, "Переход в активный", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             logger.LogMessage(msg, LogLevel.Info);
         }
@@ -537,7 +547,7 @@ namespace Link11Checker.ViewModels
             string msg = string.Format("Линк {0} {1} вышел из активного режима " + settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode);
             if (NotifyWhenEndActive)
             {
-                MessageBox.Show(msg, "Выход из активного режима", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                System.Windows.Forms.MessageBox.Show(msg, "Выход из активного режима", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             logger.LogMessage(msg, LogLevel.Info);
         }
@@ -547,7 +557,7 @@ namespace Link11Checker.ViewModels
             string msg = string.Format("Линк {0} {1} начинает свою работу.", seanse.Freq, seanse.Mode);
             if (NotifyWhenStartWorking)
             {
-                MessageBox.Show(msg, "Начало работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                System.Windows.Forms.MessageBox.Show(msg, "Начало работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             logger.LogMessage(msg, LogLevel.Info);
         }
@@ -557,7 +567,7 @@ namespace Link11Checker.ViewModels
             string msg = string.Format("Линк {0} {1} окончил свою работу " + settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode);
             if (NotifyWhenEndWorking)
             {
-                MessageBox.Show(msg, "Окончание работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                System.Windows.Forms.MessageBox.Show(msg, "Окончание работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             logger.LogMessage(msg, LogLevel.Info);
         }
