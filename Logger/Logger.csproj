@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F4AFC6E5-9D48-4221-88F3-A9794749A6DE}</ProjectGuid>
+    <ProjectGuid>{550ED7CB-CB96-42AC-AAA3-9C2B0716DAE1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Link11.Core</RootNamespace>
-    <AssemblyName>Link11.Core</AssemblyName>
+    <RootNamespace>Logger</RootNamespace>
+    <AssemblyName>Logger</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,10 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\LinkChecker\bin\Release\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,28 +39,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbonentInfo.cs" />
-    <Compile Include="ActiveEntry.cs" />
-    <Compile Include="Channel.cs" />
-    <Compile Include="Charting\SizeChartUnit.cs" />
-    <Compile Include="Charting\TuningChartUnit.cs" />
-    <Compile Include="Charting\WorkingChartUnit.cs" />
-    <Compile Include="Configuration.cs" />
-    <Compile Include="Enums\EntryType.cs" />
-    <Compile Include="Enums\Mode.cs" />
-    <Compile Include="Enums\SeanseState.cs" />
-    <Compile Include="Enums\Source.cs" />
-    <Compile Include="Parser.cs" />
-    <Compile Include="Seanse.cs" />
-    <Compile Include="SignalEntry.cs" />
-    <Compile Include="Interfaces\IParser.cs" />
+    <Compile Include="PrimitiveLogger.cs" />
+    <Compile Include="Interfaces\ILogger.cs" />
+    <Compile Include="Enums\LogLevel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Logger\Logger.csproj">
-      <Project>{550ed7cb-cb96-42ac-aaa3-9c2b0716dae1}</Project>
-      <Name>Logger</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

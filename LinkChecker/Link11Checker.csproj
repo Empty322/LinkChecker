@@ -150,15 +150,15 @@
     <Resource Include="btnSonogr.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Link11Report\Link11.Core\Link11.Core.csproj">
+    <ProjectReference Include="..\Link11.Core\Link11.Core.csproj">
       <Project>{f4afc6e5-9d48-4221-88f3-a9794749a6de}</Project>
       <Name>Link11.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Link11Report\Link11Report\Link11Report.csproj">
+    <ProjectReference Include="..\Link11Report\Link11Report.csproj">
       <Project>{d3b6ebd5-7747-49a2-815a-e8f61f316ce4}</Project>
       <Name>Link11Report</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Link11Report\Logger\Logger.csproj">
+    <ProjectReference Include="..\Logger\Logger.csproj">
       <Project>{550ed7cb-cb96-42ac-aaa3-9c2b0716dae1}</Project>
       <Name>Logger</Name>
     </ProjectReference>

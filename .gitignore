@@ -1,9 +1,9 @@
 Link11.Core/bin
 Link11.Core/obj
 LinkChecker/bin
-<<<<<<< HEAD
 LinkChecker/obj
-=======
-LinkChecker/obj
->>>>>>> 3edd27d... Deleting excess files
 LinkChecker.v12.suo
+Link11Report/bin
+Link11Report/obj
+Logger/bin
+Logger/obj

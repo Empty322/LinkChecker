@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F4AFC6E5-9D48-4221-88F3-A9794749A6DE}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{D3B6EBD5-7747-49A2-815A-E8F61F316CE4}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Link11.Core</RootNamespace>
-    <AssemblyName>Link11.Core</AssemblyName>
+    <RootNamespace>Link11Report</RootNamespace>
+    <AssemblyName>Link11Report</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,7 +34,7 @@
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\LinkChecker\bin\Release\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\LinkChecker\LinkChecker\bin\Release\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -43,24 +45,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbonentInfo.cs" />
-    <Compile Include="ActiveEntry.cs" />
-    <Compile Include="Channel.cs" />
-    <Compile Include="Charting\SizeChartUnit.cs" />
-    <Compile Include="Charting\TuningChartUnit.cs" />
-    <Compile Include="Charting\WorkingChartUnit.cs" />
-    <Compile Include="Configuration.cs" />
-    <Compile Include="Enums\EntryType.cs" />
-    <Compile Include="Enums\Mode.cs" />
-    <Compile Include="Enums\SeanseState.cs" />
-    <Compile Include="Enums\Source.cs" />
-    <Compile Include="Parser.cs" />
-    <Compile Include="Seanse.cs" />
-    <Compile Include="SignalEntry.cs" />
-    <Compile Include="Interfaces\IParser.cs" />
+    <Compile Include="HelpExt.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Entities\ReportLine.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Link11.Core\Link11.Core.csproj">
+      <Project>{f4afc6e5-9d48-4221-88f3-a9794749a6de}</Project>
+      <Name>Link11.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Logger\Logger.csproj">
       <Project>{550ed7cb-cb96-42ac-aaa3-9c2b0716dae1}</Project>
       <Name>Logger</Name>
