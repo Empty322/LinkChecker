@@ -226,6 +226,7 @@ namespace Link11Checker.ViewModels
         public ICommand OpenLog { get; set; }
         public ICommand DeleteSeanseDirectory { get; set; }
         public ICommand OpenAbonentsInfo { get; set; }
+        public ICommand GetReport { get; set; }
 
         #endregion
 
@@ -437,8 +438,19 @@ namespace Link11Checker.ViewModels
                     abonentsInfo.DataContext = abonentsInfoCopy;
                     abonentsInfo.Title = SelectedSeanse.Freq.ToString() + " " + SelectedSeanse.Mode.ToString();
                     abonentsInfo.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
+                    abonentsInfo.Owner = window;
                     abonentsInfo.Show();
                 };
+            });
+
+            GetReport = new ParametrizedCommand(i => {
+                if (IsSeanceSelected)
+                {
+                    int interval = Convert.ToInt32(i);
+                    Process linkReport = new Process();
+                    linkReport.StartInfo = new ProcessStartInfo("Link11Report.exe", interval.ToString() + " \"" + SelectedSeanse.Directory +  "\"");
+                    linkReport.Start();
+                }
             });
 
             #endregion

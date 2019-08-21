@@ -5,9 +5,11 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Link11Checker", "LinkChecker\Link11Checker.csproj", "{493348D9-300A-42C2-911D-937478BA249A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logger", "..\46report\Logger\Logger.csproj", "{550ED7CB-CB96-42AC-AAA3-9C2B0716DAE1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logger", "..\Link11Report\Logger\Logger.csproj", "{550ED7CB-CB96-42AC-AAA3-9C2B0716DAE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Link11.Core", "Link11.Core\Link11.Core.csproj", "{F4AFC6E5-9D48-4221-88F3-A9794749A6DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Link11Report", "..\Link11Report\Link11Report\Link11Report.csproj", "{D3B6EBD5-7747-49A2-815A-E8F61F316CE4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Link11.Core", "..\Link11Report\Link11.Core\Link11.Core.csproj", "{F4AFC6E5-9D48-4221-88F3-A9794749A6DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +25,10 @@ Global
 		{550ED7CB-CB96-42AC-AAA3-9C2B0716DAE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{550ED7CB-CB96-42AC-AAA3-9C2B0716DAE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{550ED7CB-CB96-42AC-AAA3-9C2B0716DAE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3B6EBD5-7747-49A2-815A-E8F61F316CE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3B6EBD5-7747-49A2-815A-E8F61F316CE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3B6EBD5-7747-49A2-815A-E8F61F316CE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3B6EBD5-7747-49A2-815A-E8F61F316CE4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F4AFC6E5-9D48-4221-88F3-A9794749A6DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F4AFC6E5-9D48-4221-88F3-A9794749A6DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4AFC6E5-9D48-4221-88F3-A9794749A6DE}.Release|Any CPU.ActiveCfg = Release|Any CPU

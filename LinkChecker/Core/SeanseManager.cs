@@ -283,7 +283,7 @@ namespace Link11Checker.Core
                     }
                     catch (DirectoryNotFoundException)
                     {
-                        logger.LogMessage("Папка c сеансом " + seanse.Directory + " не найдена", LogLevel.Warning);
+                        logger.LogMessage("Cеанс '" + seanse.Directory + "' не найден", LogLevel.Warning);
                     }
                 }
                 UpdatingEnded.Invoke(this);

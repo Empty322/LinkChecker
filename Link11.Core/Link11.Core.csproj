@@ -61,7 +61,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\46report\Logger\Logger.csproj">
+    <ProjectReference Include="..\..\Link11Report\Logger\Logger.csproj">
       <Project>{550ed7cb-cb96-42ac-aaa3-9c2b0716dae1}</Project>
       <Name>Logger</Name>
     </ProjectReference>
