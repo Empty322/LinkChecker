@@ -92,30 +92,24 @@ namespace Link11.Core
                 return result; 
             } 
         }
-        public string Position
-        {
-            get { return position; }
-            private set
-            {
-                position = value;
-                OnPropertyChanged("Position");
-            }
-        }
-        public string Coordinates
-        {
-            get { return coordinates; }
-            private set
-            {
-                coordinates = value;
-                OnPropertyChanged("Coordinates");
-            }
-        }
         public int MaxSize { get { return GetMaxInFrames(); } }
         public float MaxSizeInBytes { get { return (float)Math.Round(MaxSize * 3.75f, 2); } }
         public float AverageSizeInBytes { get { return (float)Math.Round(AverageSize * 3.75f, 2); } }
         public float AverageSize { get { return (float)Math.Round(GetAverageSizeInFrames()); } }
         public SeanseState State { get { return state; } }
         public List<ActiveEntry> ActiveEntries { get; set; }
+        public string Remark
+        {
+            get
+            {
+                return remark;
+            }
+            set
+            {
+                remark = value;
+                OnPropertyChanged("Remark");
+            }
+        }
         public string LastCopy { get { return lastCopy.ToShortTimeString(); } }
         public string LastUpdate {get { return lastUpdate.ToShortTimeString(); } }
         public bool Visible {
@@ -168,8 +162,7 @@ namespace Link11.Core
         private bool directoryExists;
         private float freq;
         private Mode mode;
-        private string position;
-        private string coordinates;
+        private string remark;
         private DateTime lastModified;
         private DateTime lastCopy;
         private DateTime lastUpdate;
@@ -211,6 +204,7 @@ namespace Link11.Core
             this.WorkingChartUnits = new List<WorkingChartUnit>();
             this.Abonents = new List<AbonentInfo>();
             this.lastModified = new DateTime();
+            this.remark = "";
             this.logger = logger;
             this.signalEntries = new List<SignalEntry>();
             this.parser = parser;
@@ -240,7 +234,7 @@ namespace Link11.Core
                 // Загрузить allLog.txt
                 LoadLog();
 
-                // Если это пустой сеанс, выйти
+                // Если это не пустой сеанс
                 if (signalEntries.Any())
                 {
                     // Узнать состояние сеанса
