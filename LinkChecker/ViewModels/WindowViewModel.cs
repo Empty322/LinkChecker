@@ -527,7 +527,7 @@ namespace Link11Checker.ViewModels
             string msg = string.Format("Линк {0} {1} преходит в активный режим.", seanse.Freq, seanse.Mode);
             if (NotifyWhenStartActive)
             {
-                Task.Run(() => MessageBox.Show(msg, "Переход в активный", MessageBoxButtons.OK, MessageBoxIcon.Information));
+                MessageBox.Show(msg, "Переход в активный", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             logger.LogMessage(msg, LogLevel.Info);
         }
@@ -537,7 +537,7 @@ namespace Link11Checker.ViewModels
             string msg = string.Format("Линк {0} {1} вышел из активного режима " + settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode);
             if (NotifyWhenEndActive)
             {
-                Task.Run(() => MessageBox.Show(msg, "Выход из активного режима", MessageBoxButtons.OK, MessageBoxIcon.Information));
+                MessageBox.Show(msg, "Выход из активного режима", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             logger.LogMessage(msg, LogLevel.Info);
         }
@@ -547,7 +547,7 @@ namespace Link11Checker.ViewModels
             string msg = string.Format("Линк {0} {1} начинает свою работу.", seanse.Freq, seanse.Mode);
             if (NotifyWhenStartWorking)
             {
-                Task.Run(() => MessageBox.Show(msg, "Начало работы", MessageBoxButtons.OK, MessageBoxIcon.Information));
+                MessageBox.Show(msg, "Начало работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             logger.LogMessage(msg, LogLevel.Info);
         }
@@ -557,7 +557,7 @@ namespace Link11Checker.ViewModels
             string msg = string.Format("Линк {0} {1} окончил свою работу " + settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode);
             if (NotifyWhenEndWorking)
             {
-                Task.Run(() => MessageBox.Show(msg, "Окончание работы", MessageBoxButtons.OK, MessageBoxIcon.Information));
+                MessageBox.Show(msg, "Окончание работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             logger.LogMessage(msg, LogLevel.Info);
         }
