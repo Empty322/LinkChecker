@@ -7,7 +7,7 @@ using Link11.Core;
 
 namespace Link11Checker.Core
 {
-    public struct Settings
+    public class Settings
     {
         public Configuration Configuration { get; set; }
         public string InitialSeansesPath { get; set; }

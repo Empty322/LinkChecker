@@ -206,7 +206,6 @@ namespace Link11Checker.ViewModels
         private bool isLoading;
         private bool isCopying;
         private bool isUpdating;
-        private Settings settings;
         private MainWindow window;
 
         #endregion
@@ -232,10 +231,9 @@ namespace Link11Checker.ViewModels
 
         #region Ctor
 
-        public WindowViewModel(MainWindow wnd ,SeanseManager sm, Settings settings, ILogger logger)
+        public WindowViewModel(MainWindow wnd ,SeanseManager sm, ILogger logger)
         {
             this.logger = logger;
-            this.settings = settings;
             this.window = wnd;
             this.seanseManager = sm;
             this.seanses = new ObservableCollection<Seanse>();
@@ -290,7 +288,7 @@ namespace Link11Checker.ViewModels
             Chart workingChart = window.GetWorkingChart();
             ChartArea workingArea = new ChartArea("WorkingArea");
             workingArea.AxisX.IntervalType = DateTimeIntervalType.Auto;
-            workingArea.AxisX.Interval = settings.WorkingChartInterval;
+            workingArea.AxisX.Interval = IoC.Settings.WorkingChartInterval;
             workingArea.AxisY.Interval = 1;
             workingChart.ChartAreas.Add(workingArea);
             
@@ -311,8 +309,8 @@ namespace Link11Checker.ViewModels
             SelectDestinationPath = new RelayCommand(() =>
             {
                 FolderBrowserDialog fbd = new FolderBrowserDialog();
-                if (Directory.Exists(settings.InitialDestPath))
-                    fbd.SelectedPath = settings.InitialDestPath;
+                if (Directory.Exists(IoC.Settings.InitialDestPath))
+                    fbd.SelectedPath = IoC.Settings.InitialDestPath;
                 DialogResult result = fbd.ShowDialog();
                 if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
                 {
@@ -327,8 +325,8 @@ namespace Link11Checker.ViewModels
                 FolderBrowserDialog fbd = new FolderBrowserDialog();
                 if (!string.IsNullOrWhiteSpace(lastSelectedPathWithLinks))
                     fbd.SelectedPath = lastSelectedPathWithLinks;
-                else if (Directory.Exists(settings.InitialSeansesPath))
-                    fbd.SelectedPath = settings.InitialSeansesPath;
+                else if (Directory.Exists(IoC.Settings.InitialSeansesPath))
+                    fbd.SelectedPath = IoC.Settings.InitialSeansesPath;
                 DialogResult result = fbd.ShowDialog();
                 if (result == DialogResult.OK && fbd.SelectedPath != null)
                 {
@@ -340,14 +338,14 @@ namespace Link11Checker.ViewModels
 
             AddSeansesFromVentur = new RelayCommand(async () =>
             {
-                await SeanseManager.AddSeansesFromVentursFileAsync(settings.VenturFile);
+                await SeanseManager.AddSeansesFromVentursFileAsync(IoC.Settings.VenturFile);
             });
 
             AddAllSeanses = new RelayCommand(async () =>
             {
                 FolderBrowserDialog fbd = new FolderBrowserDialog();
-                if (Directory.Exists(settings.InitialDestPath))
-                    fbd.SelectedPath = settings.InitialDestPath;
+                if (Directory.Exists(IoC.Settings.InitialDestPath))
+                    fbd.SelectedPath = IoC.Settings.InitialDestPath;
                 DialogResult result = fbd.ShowDialog();
                 if (result == DialogResult.OK && fbd.SelectedPath != null)
                     await SeanseManager.AddAllSeansesFromFolderAsync(fbd.SelectedPath);
@@ -395,12 +393,13 @@ namespace Link11Checker.ViewModels
                 await SeanseManager.UpdateSeansesAsync();
             });
 
-            OpenSettings = new RelayCommand(() =>
+            OpenSettings = new RelayCommand(async () =>
             {
-                SettingsForm sf = new SettingsForm(settings, logger);
+                SettingsForm sf = new SettingsForm(logger);
                 sf.ShowDialog();
-                window.GetWorkingChart().ChartAreas[0].AxisX.Interval = settings.WorkingChartInterval;
-                window.GetWorkingChart().Invalidate();
+                SeanseManager.SetConfiguration(IoC.Settings.Configuration);
+                await SeanseManager.UpdateSeansesAsync();
+
             });
 
             About = new RelayCommand(() => {
@@ -544,7 +543,7 @@ namespace Link11Checker.ViewModels
 
         private void newSeanse_ActiveEnd(Seanse seanse, EventArgs args)
         {
-            string msg = string.Format("Линк {0} {1} вышел из активного режима " + settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode);
+            string msg = string.Format("Линк {0} {1} вышел из активного режима " + IoC.Settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode);
             if (NotifyWhenEndActive)
             {
                 System.Windows.Forms.MessageBox.Show(msg, "Выход из активного режима", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -564,7 +563,7 @@ namespace Link11Checker.ViewModels
 
         private void Seanse_WorkingEnd(Seanse seanse, EventArgs args)
         {
-            string msg = string.Format("Линк {0} {1} окончил свою работу " + settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode);
+            string msg = string.Format("Линк {0} {1} окончил свою работу " + IoC.Settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode);
             if (NotifyWhenEndWorking)
             {
                 System.Windows.Forms.MessageBox.Show(msg, "Окончание работы", MessageBoxButtons.OK, MessageBoxIcon.Information);

@@ -78,6 +78,7 @@
     <Compile Include="Converter\StateToColorConverter.cs" />
     <Compile Include="Core\SeanseManager.cs" />
     <Compile Include="Core\Settings.cs" />
+    <Compile Include="IoC.cs" />
     <Compile Include="SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>

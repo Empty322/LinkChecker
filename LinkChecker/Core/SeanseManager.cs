@@ -46,19 +46,17 @@ namespace Link11Checker.Core
         #region Fields
     
         private ILogger logger;
-        private Settings settings;
 
         #endregion
 
         #region Ctor
 
-        public SeanseManager(Settings settings, IParser parser, ILogger logger)
+        public SeanseManager(IParser parser, ILogger logger)
         {
             this.Seanses = new List<Seanse>();
             this.logger = logger;
             this.UpdateTimerOn = false;
             this.CopyTimerOn = false;
-            this.settings = settings;
 
             #region SetTimer
 
@@ -69,7 +67,7 @@ namespace Link11Checker.Core
                 int synchronizeCounter = 1;
                 while (true)
                 {
-                    if (UpdateTimerOn && updateCounter >= settings.UpdateCounterLimit)
+                    if (UpdateTimerOn && updateCounter >= IoC.Settings.UpdateCounterLimit)
                     {
                         try
                         {
@@ -81,7 +79,7 @@ namespace Link11Checker.Core
                         }
                         updateCounter = 0;
                     }
-                    if (CopyTimerOn && copyCounter >= settings.CopyCounterLimit)
+                    if (CopyTimerOn && copyCounter >= IoC.Settings.CopyCounterLimit)
                     {
                         if (!string.IsNullOrWhiteSpace(DestinationPath))
                         try
@@ -94,12 +92,12 @@ namespace Link11Checker.Core
                         }
                         copyCounter = 0;
                     }
-                    if (SynchronyzeWithVenturOn && synchronizeCounter >= settings.SynchronizeCounterLimit)
+                    if (SynchronyzeWithVenturOn && synchronizeCounter >= IoC.Settings.SynchronizeCounterLimit)
                     {
                         try
                         {
                             RemoveExcessSeanses();
-                            AddSeansesFromVentursFile(settings.VenturFile);
+                            AddSeansesFromVentursFile(IoC.Settings.VenturFile);
                         }
                         catch (Exception e)
                         {
@@ -110,7 +108,7 @@ namespace Link11Checker.Core
                     updateCounter++;
                     copyCounter++;
                     synchronizeCounter++;
-                    Thread.Sleep(5000);
+                    Thread.Sleep(1000);
                 }
             });
 
@@ -228,7 +226,7 @@ namespace Link11Checker.Core
         {
             lock (Seanses)
             {
-                List<ch> channels = GetChannelsFromVentursFile(settings.VenturFile);
+                List<ch> channels = GetChannelsFromVentursFile(IoC.Settings.VenturFile);
                 string[] ventursDirs = channels.Where(x => x.Trakt == "slew" || x.Trakt == "link11").Select(x => x.Directory.ToLower()).ToArray();
                 List<Seanse> seansesToRemove = new List<Seanse>();
                 foreach (Seanse seanse in Seanses)
@@ -350,7 +348,7 @@ namespace Link11Checker.Core
             try
             {
                 SeanseAdding.Invoke(this, directory);
-                Seanse newSeanse = new Seanse(directory, settings.Configuration);
+                Seanse newSeanse = new Seanse(directory, IoC.Settings.Configuration);
                 Seanses.Add(newSeanse);
                 SeanseAdded.Invoke(this, newSeanse);
                 result = true;
@@ -367,5 +365,13 @@ namespace Link11Checker.Core
         }
 
         #endregion
+
+        public void SetConfiguration(Configuration configuration)
+        {
+            foreach (Seanse seanse in Seanses)
+            {
+                seanse.SetConfuguration(configuration);
+            }
+        }
     }
 }

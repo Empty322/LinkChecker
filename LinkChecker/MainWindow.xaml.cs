@@ -65,11 +65,13 @@ namespace Link11Checker
                 File.WriteAllText("settings.json", settingsFile, Encoding.Default);
             }
 
+            IoC.Settings = settings;
+
             #endregion
 
             ILogger logger = new PrimitiveLogger("log.txt", LogLevel.Error);
             InitializeComponent();
-            DataContext = new WindowViewModel(this, new SeanseManager(settings, new Parser(), logger), settings, logger);
+            DataContext = new WindowViewModel(this, new SeanseManager(new Parser(), logger), logger);
         }
 
         public Chart GetTuningChart()

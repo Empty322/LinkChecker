@@ -150,7 +150,7 @@
                 <TextBlock Text="{Binding SelectedSeanse.MaxSizeInBytes, StringFormat=Макс. объем в байтах: {0:F2}}" TextWrapping="Wrap" DockPanel.Dock="Bottom"/>
                 <TextBlock Text="{Binding SelectedSeanse.AverageSizeInBytes, StringFormat=Средний. объем в байтах: {0:F2}}" TextWrapping="Wrap" DockPanel.Dock="Bottom"/>
                 <WindowsFormsHost Margin="2,0,2,5" DockPanel.Dock="Right">
-                    <winforms:NumericUpDown Minimum="1" Maximum="999" x:Name="intervalUpDown"></winforms:NumericUpDown>
+                    <winforms:NumericUpDown Minimum="1" Maximum="999" Value="46" x:Name="intervalUpDown"></winforms:NumericUpDown>
                 </WindowsFormsHost>
                 <Button Margin="0,0,0,5" Command="{Binding GetReport}" CommandParameter="{Binding ElementName=intervalUpDown, Path=Value}" IsEnabled="{Binding SelectedSeanse.DirectoryExists, FallbackValue=false}" DockPanel.Dock="Left">Отчет</Button>
             </DockPanel>

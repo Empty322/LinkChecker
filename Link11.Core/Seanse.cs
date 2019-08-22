@@ -114,10 +114,13 @@ namespace Link11.Core
         public string LastUpdate {get { return lastUpdate.ToShortTimeString(); } }
         public bool Visible {
             get {
-                if (config.HideEmptySeanses && !(signalEntries.Where(e => e.Type != EntryType.Error).Count() > config.Trashold))
-                    return false;
-                return true; 
-            } 
+                return visible;
+            }
+            set
+            {
+                visible = value;
+                OnPropertyChanged("Visible");
+            }
         }
         public int PercentReceiving
         {
@@ -174,6 +177,7 @@ namespace Link11.Core
         private SeanseState state;
         private bool isEnded;
         private bool isActiveEnded;
+        private bool visible;
 
         // Исправить
         private const int countForWorkingLevel5 = 200;
@@ -234,12 +238,19 @@ namespace Link11.Core
                 // Загрузить allLog.txt
                 LoadLog();
 
+                // Обновить видимость
+                if (config.HideEmptySeanses && !(signalEntries.Where(e => e.Type != EntryType.Error).Count() > config.Trashold))
+                    Visible = false;
+                else
+                    Visible = true; 
+
                 // Если это не пустой сеанс
                 if (signalEntries.Any())
                 {
                     // Узнать состояние сеанса
                     state = GetState();
 
+                    // Запустить уведомления
                     FireEvents();
 
                     // Получить данные для графика расстройки
@@ -255,9 +266,11 @@ namespace Link11.Core
                     if (signalEntries.Any())
                     {
                         ActiveEntries = signalEntries
-                            .Where(x => x.Type != EntryType.Error && ((x.Size - x.Errors) > (int)Mode)).Select(x => new ActiveEntry { Time = x.Time.ToShortTimeString(), Size = x.Size - x.Errors }).ToList();
+                            .Where(x => x.Type != EntryType.Error && 
+                                ((x.Size - x.Errors) > (int)Mode)).Select(x => new ActiveEntry { Time = x.Time.ToShortTimeString(), Size = x.Size - x.Errors }).ToList();
                     }
 
+                    // Получить абонентов
                     Abonents = GetAbonentsInfo();
 
                     prevState = state;
@@ -466,6 +479,11 @@ namespace Link11.Core
                 }
             }
             return intervalEntries;
+        }
+
+        public void SetConfuguration(Configuration config)
+        {
+            this.config = config;
         }
 
         public object Clone()
