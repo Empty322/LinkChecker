@@ -169,6 +169,8 @@ namespace Link11.Core
         private DateTime lastModified;
         private DateTime lastCopy;
         private DateTime lastUpdate;
+        private long lastUpdateFileLenght;
+        private long lastCopyLogFileLenght;
 
         private ILogger logger;   
         private Configuration config;
@@ -218,6 +220,8 @@ namespace Link11.Core
             this.state = SeanseState.WorkingLevel0;
             this.isEnded = true;
             this.isActiveEnded = true;
+            this.lastCopyLogFileLenght = -1;
+            this.lastUpdateFileLenght = -1;
             Update();
         }
 
@@ -232,11 +236,44 @@ namespace Link11.Core
             {
                 DirectoryExists = true;
 
-                // Загрузить log.txt
-                LoadAllLog();
+                // Размер лог файла
+                long logFileLength = new FileInfo(Directory + "\\log.txt").Length;
+                if (logFileLength != lastUpdateFileLenght)
+                {
+                    // Загрузить log.txt
+                    LoadAllLog();
 
-                // Загрузить allLog.txt
-                LoadLog();
+                    // Загрузить allLog.txt
+                    LoadLog();
+
+                    // Если это не пустой сеанс
+                    if (signalEntries.Any())
+                    {
+                        // Получить данные для графика расстройки
+                        TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
+
+                        // Получить данные для графика объема
+                        SizeChartUnits = GetSizeChartUnits();
+
+                        // Получить данные для графика работы
+                        WorkingChartUnits = GetWorkingChartUnits(new TimeSpan(0, 1, 0));
+
+                        // Получить вхождения с объемом, превышающим норму
+                        ActiveEntries = signalEntries.Where(x => x.Type != EntryType.Error &&
+                                ((x.Size - x.Errors) > (int)Mode)).Select(x => new ActiveEntry { Time = x.Time.ToShortTimeString(), Size = x.Size - x.Errors }).ToList();
+
+                        // Получить абонентов
+                        Abonents = GetAbonentsInfo();
+
+                        lastModified = File.GetLastWriteTime(Directory + "\\log.txt");
+                        lastUpdate = DateTime.Now;
+                        lastUpdateFileLenght = logFileLength;
+
+                        Type df = this.GetType();
+                        foreach (PropertyInfo pi in df.GetProperties())
+                            OnPropertyChanged(pi.Name);
+                    }
+                }
 
                 // Обновить видимость
                 if (config.HideEmptySeanses && !(signalEntries.Where(e => e.Type != EntryType.Error).Count() > config.Trashold))
@@ -244,43 +281,13 @@ namespace Link11.Core
                 else
                     Visible = true; 
 
-                // Если это не пустой сеанс
-                if (signalEntries.Any())
-                {
-                    // Узнать состояние сеанса
-                    state = GetState();
+                // Узнать состояние сеанса
+                state = GetState();
 
-                    // Запустить уведомления
-                    FireEvents();
+                // Запустить уведомления
+                FireEvents();
 
-                    // Получить данные для графика расстройки
-                    TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
-
-                    // Получить данные для графика объема
-                    SizeChartUnits = GetSizeChartUnits();
-
-                    // Получить данные для графика работы
-                    WorkingChartUnits = GetWorkingChartUnits(new TimeSpan(0, 1, 0));
-
-                    // Получить вхождения с объемом, превышающим норму
-                    if (signalEntries.Any())
-                    {
-                        ActiveEntries = signalEntries
-                            .Where(x => x.Type != EntryType.Error && 
-                                ((x.Size - x.Errors) > (int)Mode)).Select(x => new ActiveEntry { Time = x.Time.ToShortTimeString(), Size = x.Size - x.Errors }).ToList();
-                    }
-
-                    // Получить абонентов
-                    Abonents = GetAbonentsInfo();
-
-                    prevState = state;
-                    lastModified = File.GetLastWriteTime(Directory + "\\log.txt");
-                    lastUpdate = DateTime.Now;
-
-                    Type df = this.GetType();
-                    foreach (PropertyInfo pi in df.GetProperties())
-                        OnPropertyChanged(pi.Name);
-                }
+                prevState = state;
             }
             else
             {
@@ -298,9 +305,17 @@ namespace Link11.Core
                 if (Directory.Exists)
                 {
                     directoryExists = true;
-                    // Если размер лога больше 40000 байт
+                    // Если размер лога больше 40000 байт и
+                    // Превышает порог и
+                    // Его размер не равен размеру при прошлом копировании
                     FileInfo logInfo = new FileInfo(Directory + "/log.txt");
-                    if (logInfo.Length >= config.CopyLengthTrashold && PercentReceiving >= config.CopyPercentTrashold) {
+                    if (logInfo.Length >= config.CopyLengthTrashold &&
+                        logInfo.Length != lastCopyLogFileLenght &&
+                        PercentReceiving >= config.CopyPercentTrashold) 
+                    {
+                        // Обновить размер лог файла при последнем копировании
+                        lastCopyLogFileLenght = logInfo.Length;
+
                         // Если есть изменения в log.txt
                         if (lastModified != Directory.LastWriteTime)
                         {

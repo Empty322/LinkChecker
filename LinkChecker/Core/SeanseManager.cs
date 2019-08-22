@@ -58,64 +58,9 @@ namespace Link11Checker.Core
             this.UpdateTimerOn = false;
             this.CopyTimerOn = false;
 
-            #region SetTimer
-
-            Thread timer = new Thread(() =>
-            {
-                int updateCounter = 1;
-                int copyCounter = 1;
-                int synchronizeCounter = 1;
-                while (true)
-                {
-                    if (UpdateTimerOn && updateCounter >= IoC.Settings.UpdateCounterLimit)
-                    {
-                        try
-                        {
-                            UpdateSeanses();
-                        }
-                        catch (Exception e)
-                        {
-                            logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
-                        }
-                        updateCounter = 0;
-                    }
-                    if (CopyTimerOn && copyCounter >= IoC.Settings.CopyCounterLimit)
-                    {
-                        if (!string.IsNullOrWhiteSpace(DestinationPath))
-                        try
-                        {
-                            CopySeanses();
-                        }
-                        catch (Exception e)
-                        {
-                            logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
-                        }
-                        copyCounter = 0;
-                    }
-                    if (SynchronyzeWithVenturOn && synchronizeCounter >= IoC.Settings.SynchronizeCounterLimit)
-                    {
-                        try
-                        {
-                            RemoveExcessSeanses();
-                            AddSeansesFromVentursFile(IoC.Settings.VenturFile);
-                        }
-                        catch (Exception e)
-                        {
-                            logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
-                        }
-                        synchronizeCounter = 0;
-                    }
-                    updateCounter++;
-                    copyCounter++;
-                    synchronizeCounter++;
-                    Thread.Sleep(1000);
-                }
-            });
-
+            Thread timer = new Thread(new ThreadStart(Timer));
             timer.IsBackground = true;
             timer.Start();
-
-            #endregion
         }
 
         #endregion
@@ -244,6 +189,12 @@ namespace Link11Checker.Core
             }
         }
 
+        public async Task RemoveExcessSeansesAsync()
+        {
+            Task removingTask = Task.Run(() => RemoveExcessSeanses());
+            await removingTask;
+        }  
+
         public void CopySeanses()
         {
             lock (Seanses)
@@ -371,6 +322,58 @@ namespace Link11Checker.Core
             foreach (Seanse seanse in Seanses)
             {
                 seanse.SetConfuguration(configuration);
+            }
+        }
+
+        private async void Timer()
+        {
+            int updateCounter = 1;
+            int copyCounter = 1;
+            int synchronizeCounter = 1;
+            while (true)
+            {
+                if (UpdateTimerOn && updateCounter >= IoC.Settings.UpdateCounterLimit)
+                {
+                    try
+                    {
+                        await UpdateSeansesAsync();
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
+                    }
+                    updateCounter = 0;
+                }
+                if (CopyTimerOn && copyCounter >= IoC.Settings.CopyCounterLimit)
+                {
+                    if (!string.IsNullOrWhiteSpace(DestinationPath))
+                        try
+                        {
+                            await CopySeansesAsync();
+                        }
+                        catch (Exception e)
+                        {
+                            logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
+                        }
+                    copyCounter = 0;
+                }
+                if (SynchronyzeWithVenturOn && synchronizeCounter >= IoC.Settings.SynchronizeCounterLimit)
+                {
+                    try
+                    {
+                        await RemoveExcessSeansesAsync();
+                        await AddSeansesFromVentursFileAsync(IoC.Settings.VenturFile);
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
+                    }
+                    synchronizeCounter = 0;
+                }
+                updateCounter++;
+                copyCounter++;
+                synchronizeCounter++;
+                Thread.Sleep(1000);
             }
         }
     }

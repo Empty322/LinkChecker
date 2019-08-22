@@ -398,8 +398,9 @@ namespace Link11Checker.ViewModels
                 SettingsForm sf = new SettingsForm(logger);
                 sf.ShowDialog();
                 SeanseManager.SetConfiguration(IoC.Settings.Configuration);
+                window.workingChart.ChartAreas[0].AxisX.Interval = IoC.Settings.WorkingChartInterval;
+                window.workingChart.Invalidate();
                 await SeanseManager.UpdateSeansesAsync();
-
             });
 
             About = new RelayCommand(() => {
