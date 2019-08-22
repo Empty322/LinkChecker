@@ -96,7 +96,16 @@ namespace Link11.Core
         public float MaxSizeInBytes { get { return (float)Math.Round(MaxSize * 3.75f, 2); } }
         public float AverageSizeInBytes { get { return (float)Math.Round(AverageSize * 3.75f, 2); } }
         public float AverageSize { get { return (float)Math.Round(GetAverageSizeInFrames()); } }
-        public SeanseState State { get { return state; } }
+        public SeanseState State { 
+            get { 
+                return state; 
+            }
+            private set
+            {
+                state = value;
+                OnPropertyChanged("State");
+            }
+        }
         public List<ActiveEntry> ActiveEntries { get; set; }
         public string Remark
         {
@@ -282,7 +291,7 @@ namespace Link11.Core
                     Visible = true; 
 
                 // Узнать состояние сеанса
-                state = GetState();
+                State = GetState();
 
                 // Запустить уведомления
                 FireEvents();

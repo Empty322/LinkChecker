@@ -246,6 +246,10 @@ namespace Link11Checker.Core
                     {
                         logger.LogMessage("Cеанс '" + seanse.Directory + "' не найден", LogLevel.Warning);
                     }
+                    catch (Exception e)
+                    {
+                        logger.LogMessage(e.Message, LogLevel.Error);
+                    }
                 }
                 UpdatingEnded.Invoke(this);
             }
