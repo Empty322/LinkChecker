@@ -118,6 +118,926 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="OkBtn.Location" type="System.Drawing.Point, System.Drawing">
+    <value>277, 537</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="OkBtn.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="OkBtn.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 22</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="OkBtn.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="OkBtn.Text" xml:space="preserve">
+    <value>ОК</value>
+  </data>
+  <data name="&gt;&gt;OkBtn.Name" xml:space="preserve">
+    <value>OkBtn</value>
+  </data>
+  <data name="&gt;&gt;OkBtn.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;OkBtn.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;OkBtn.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="CanselBtn.Location" type="System.Drawing.Point, System.Drawing">
+    <value>358, 537</value>
+  </data>
+  <data name="CanselBtn.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="CanselBtn.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 22</value>
+  </data>
+  <data name="CanselBtn.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="CanselBtn.Text" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="&gt;&gt;CanselBtn.Name" xml:space="preserve">
+    <value>CanselBtn</value>
+  </data>
+  <data name="&gt;&gt;CanselBtn.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;CanselBtn.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;CanselBtn.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="MinetsToAwaitAfterEnd.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="MinetsToAwaitAfterEnd.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 464</value>
+  </data>
+  <data name="MinetsToAwaitAfterEnd.Size" type="System.Drawing.Size, System.Drawing">
+    <value>118, 13</value>
+  </data>
+  <data name="MinetsToAwaitAfterEnd.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="MinetsToAwaitAfterEnd.Text" xml:space="preserve">
+    <value>MinetsToAwaitAfterEnd</value>
+  </data>
+  <data name="&gt;&gt;MinetsToAwaitAfterEnd.Name" xml:space="preserve">
+    <value>MinetsToAwaitAfterEnd</value>
+  </data>
+  <data name="&gt;&gt;MinetsToAwaitAfterEnd.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MinetsToAwaitAfterEnd.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;MinetsToAwaitAfterEnd.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="SmoothValue.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="SmoothValue.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 438</value>
+  </data>
+  <data name="SmoothValue.Size" type="System.Drawing.Size, System.Drawing">
+    <value>70, 13</value>
+  </data>
+  <data name="SmoothValue.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="SmoothValue.Text" xml:space="preserve">
+    <value>SmoothValue</value>
+  </data>
+  <data name="&gt;&gt;SmoothValue.Name" xml:space="preserve">
+    <value>SmoothValue</value>
+  </data>
+  <data name="&gt;&gt;SmoothValue.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;SmoothValue.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;SmoothValue.ZOrder" xml:space="preserve">
+    <value>9</value>
+  </data>
+  <data name="IntervalsK.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="IntervalsK.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 376</value>
+  </data>
+  <data name="IntervalsK.Size" type="System.Drawing.Size, System.Drawing">
+    <value>54, 13</value>
+  </data>
+  <data name="IntervalsK.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="IntervalsK.Text" xml:space="preserve">
+    <value>IntervalsK</value>
+  </data>
+  <data name="&gt;&gt;IntervalsK.Name" xml:space="preserve">
+    <value>IntervalsK</value>
+  </data>
+  <data name="&gt;&gt;IntervalsK.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;IntervalsK.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;IntervalsK.ZOrder" xml:space="preserve">
+    <value>11</value>
+  </data>
+  <data name="AbonentsK.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="AbonentsK.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 329</value>
+  </data>
+  <data name="AbonentsK.Size" type="System.Drawing.Size, System.Drawing">
+    <value>59, 13</value>
+  </data>
+  <data name="AbonentsK.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="AbonentsK.Text" xml:space="preserve">
+    <value>AbonentsK</value>
+  </data>
+  <data name="&gt;&gt;AbonentsK.Name" xml:space="preserve">
+    <value>AbonentsK</value>
+  </data>
+  <data name="&gt;&gt;AbonentsK.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;AbonentsK.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;AbonentsK.ZOrder" xml:space="preserve">
+    <value>13</value>
+  </data>
+  <data name="SmoothValueUpDown.Location" type="System.Drawing.Point, System.Drawing">
+    <value>331, 436</value>
+  </data>
+  <data name="SmoothValueUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="SmoothValueUpDown.Size" type="System.Drawing.Size, System.Drawing">
+    <value>83, 20</value>
+  </data>
+  <data name="SmoothValueUpDown.TabIndex" type="System.Int32, mscorlib">
+    <value>31</value>
+  </data>
+  <data name="&gt;&gt;SmoothValueUpDown.Name" xml:space="preserve">
+    <value>SmoothValueUpDown</value>
+  </data>
+  <data name="&gt;&gt;SmoothValueUpDown.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;SmoothValueUpDown.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;SmoothValueUpDown.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="WorkingChartIntervalUpDown.Location" type="System.Drawing.Point, System.Drawing">
+    <value>331, 217</value>
+  </data>
+  <data name="WorkingChartIntervalUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="WorkingChartIntervalUpDown.Size" type="System.Drawing.Size, System.Drawing">
+    <value>83, 20</value>
+  </data>
+  <data name="WorkingChartIntervalUpDown.TabIndex" type="System.Int32, mscorlib">
+    <value>30</value>
+  </data>
+  <data name="&gt;&gt;WorkingChartIntervalUpDown.Name" xml:space="preserve">
+    <value>WorkingChartIntervalUpDown</value>
+  </data>
+  <data name="&gt;&gt;WorkingChartIntervalUpDown.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;WorkingChartIntervalUpDown.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;WorkingChartIntervalUpDown.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="IntervalsKUpDown.Location" type="System.Drawing.Point, System.Drawing">
+    <value>331, 392</value>
+  </data>
+  <data name="IntervalsKUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="IntervalsKUpDown.Size" type="System.Drawing.Size, System.Drawing">
+    <value>83, 20</value>
+  </data>
+  <data name="IntervalsKUpDown.TabIndex" type="System.Int32, mscorlib">
+    <value>30</value>
+  </data>
+  <data name="&gt;&gt;IntervalsKUpDown.Name" xml:space="preserve">
+    <value>IntervalsKUpDown</value>
+  </data>
+  <data name="&gt;&gt;IntervalsKUpDown.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;IntervalsKUpDown.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;IntervalsKUpDown.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="SynchronizeCounterLimitUpDown.Location" type="System.Drawing.Point, System.Drawing">
+    <value>331, 191</value>
+  </data>
+  <data name="SynchronizeCounterLimitUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="SynchronizeCounterLimitUpDown.Size" type="System.Drawing.Size, System.Drawing">
+    <value>83, 20</value>
+  </data>
+  <data name="SynchronizeCounterLimitUpDown.TabIndex" type="System.Int32, mscorlib">
+    <value>29</value>
+  </data>
+  <data name="&gt;&gt;SynchronizeCounterLimitUpDown.Name" xml:space="preserve">
+    <value>SynchronizeCounterLimitUpDown</value>
+  </data>
+  <data name="&gt;&gt;SynchronizeCounterLimitUpDown.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;SynchronizeCounterLimitUpDown.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;SynchronizeCounterLimitUpDown.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="AbonentsKUpDown.Location" type="System.Drawing.Point, System.Drawing">
+    <value>331, 337</value>
+  </data>
+  <data name="AbonentsKUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="AbonentsKUpDown.Size" type="System.Drawing.Size, System.Drawing">
+    <value>83, 20</value>
+  </data>
+  <data name="AbonentsKUpDown.TabIndex" type="System.Int32, mscorlib">
+    <value>29</value>
+  </data>
+  <data name="&gt;&gt;AbonentsKUpDown.Name" xml:space="preserve">
+    <value>AbonentsKUpDown</value>
+  </data>
+  <data name="&gt;&gt;AbonentsKUpDown.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;AbonentsKUpDown.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;AbonentsKUpDown.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="MinutesToAwaitAfterEndUpDown.Location" type="System.Drawing.Point, System.Drawing">
+    <value>331, 462</value>
+  </data>
+  <data name="MinutesToAwaitAfterEndUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="MinutesToAwaitAfterEndUpDown.Size" type="System.Drawing.Size, System.Drawing">
+    <value>83, 20</value>
+  </data>
+  <data name="MinutesToAwaitAfterEndUpDown.TabIndex" type="System.Int32, mscorlib">
+    <value>28</value>
+  </data>
+  <data name="&gt;&gt;MinutesToAwaitAfterEndUpDown.Name" xml:space="preserve">
+    <value>MinutesToAwaitAfterEndUpDown</value>
+  </data>
+  <data name="&gt;&gt;MinutesToAwaitAfterEndUpDown.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;MinutesToAwaitAfterEndUpDown.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;MinutesToAwaitAfterEndUpDown.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="CopyCounterLimitUpDown.Location" type="System.Drawing.Point, System.Drawing">
+    <value>331, 165</value>
+  </data>
+  <data name="CopyCounterLimitUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="CopyCounterLimitUpDown.Size" type="System.Drawing.Size, System.Drawing">
+    <value>83, 20</value>
+  </data>
+  <data name="CopyCounterLimitUpDown.TabIndex" type="System.Int32, mscorlib">
+    <value>28</value>
+  </data>
+  <data name="&gt;&gt;CopyCounterLimitUpDown.Name" xml:space="preserve">
+    <value>CopyCounterLimitUpDown</value>
+  </data>
+  <data name="&gt;&gt;CopyCounterLimitUpDown.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;CopyCounterLimitUpDown.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;CopyCounterLimitUpDown.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="UpdateCounterLimitUpDown.Location" type="System.Drawing.Point, System.Drawing">
+    <value>331, 139</value>
+  </data>
+  <data name="UpdateCounterLimitUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="UpdateCounterLimitUpDown.Size" type="System.Drawing.Size, System.Drawing">
+    <value>83, 20</value>
+  </data>
+  <data name="UpdateCounterLimitUpDown.TabIndex" type="System.Int32, mscorlib">
+    <value>27</value>
+  </data>
+  <data name="&gt;&gt;UpdateCounterLimitUpDown.Name" xml:space="preserve">
+    <value>UpdateCounterLimitUpDown</value>
+  </data>
+  <data name="&gt;&gt;UpdateCounterLimitUpDown.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;UpdateCounterLimitUpDown.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;UpdateCounterLimitUpDown.ZOrder" xml:space="preserve">
+    <value>8</value>
+  </data>
+  <data name="CopyPercentTrasholdUpDown.Location" type="System.Drawing.Point, System.Drawing">
+    <value>331, 295</value>
+  </data>
+  <data name="CopyPercentTrasholdUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="CopyPercentTrasholdUpDown.Size" type="System.Drawing.Size, System.Drawing">
+    <value>83, 20</value>
+  </data>
+  <data name="CopyPercentTrasholdUpDown.TabIndex" type="System.Int32, mscorlib">
+    <value>26</value>
+  </data>
+  <data name="&gt;&gt;CopyPercentTrasholdUpDown.Name" xml:space="preserve">
+    <value>CopyPercentTrasholdUpDown</value>
+  </data>
+  <data name="&gt;&gt;CopyPercentTrasholdUpDown.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;CopyPercentTrasholdUpDown.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;CopyPercentTrasholdUpDown.ZOrder" xml:space="preserve">
+    <value>10</value>
+  </data>
+  <data name="CopyLengthTrasholdUpDown.Location" type="System.Drawing.Point, System.Drawing">
+    <value>331, 269</value>
+  </data>
+  <data name="CopyLengthTrasholdUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="CopyLengthTrasholdUpDown.Size" type="System.Drawing.Size, System.Drawing">
+    <value>83, 20</value>
+  </data>
+  <data name="CopyLengthTrasholdUpDown.TabIndex" type="System.Int32, mscorlib">
+    <value>25</value>
+  </data>
+  <data name="&gt;&gt;CopyLengthTrasholdUpDown.Name" xml:space="preserve">
+    <value>CopyLengthTrasholdUpDown</value>
+  </data>
+  <data name="&gt;&gt;CopyLengthTrasholdUpDown.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;CopyLengthTrasholdUpDown.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;CopyLengthTrasholdUpDown.ZOrder" xml:space="preserve">
+    <value>12</value>
+  </data>
+  <data name="CopyPercentTrashold.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="CopyPercentTrashold.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 298</value>
+  </data>
+  <data name="CopyPercentTrashold.Size" type="System.Drawing.Size, System.Drawing">
+    <value>151, 13</value>
+  </data>
+  <data name="CopyPercentTrashold.TabIndex" type="System.Int32, mscorlib">
+    <value>24</value>
+  </data>
+  <data name="CopyPercentTrashold.Text" xml:space="preserve">
+    <value>CopyPercentTrashold(percent)</value>
+  </data>
+  <data name="&gt;&gt;CopyPercentTrashold.Name" xml:space="preserve">
+    <value>CopyPercentTrashold</value>
+  </data>
+  <data name="&gt;&gt;CopyPercentTrashold.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;CopyPercentTrashold.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;CopyPercentTrashold.ZOrder" xml:space="preserve">
+    <value>14</value>
+  </data>
+  <data name="CopyLengthTrashold.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="CopyLengthTrashold.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 272</value>
+  </data>
+  <data name="CopyLengthTrashold.Size" type="System.Drawing.Size, System.Drawing">
+    <value>136, 13</value>
+  </data>
+  <data name="CopyLengthTrashold.TabIndex" type="System.Int32, mscorlib">
+    <value>22</value>
+  </data>
+  <data name="CopyLengthTrashold.Text" xml:space="preserve">
+    <value>CopyLengthTrashold(bytes)</value>
+  </data>
+  <data name="&gt;&gt;CopyLengthTrashold.Name" xml:space="preserve">
+    <value>CopyLengthTrashold</value>
+  </data>
+  <data name="&gt;&gt;CopyLengthTrashold.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;CopyLengthTrashold.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;CopyLengthTrashold.ZOrder" xml:space="preserve">
+    <value>15</value>
+  </data>
+  <data name="EmptySeansesTrasholdUpDown.Location" type="System.Drawing.Point, System.Drawing">
+    <value>331, 243</value>
+  </data>
+  <data name="EmptySeansesTrasholdUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="EmptySeansesTrasholdUpDown.Size" type="System.Drawing.Size, System.Drawing">
+    <value>83, 20</value>
+  </data>
+  <data name="EmptySeansesTrasholdUpDown.TabIndex" type="System.Int32, mscorlib">
+    <value>21</value>
+  </data>
+  <data name="&gt;&gt;EmptySeansesTrasholdUpDown.Name" xml:space="preserve">
+    <value>EmptySeansesTrasholdUpDown</value>
+  </data>
+  <data name="&gt;&gt;EmptySeansesTrasholdUpDown.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;EmptySeansesTrasholdUpDown.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;EmptySeansesTrasholdUpDown.ZOrder" xml:space="preserve">
+    <value>16</value>
+  </data>
+  <data name="EmptySeansesTrashold.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="EmptySeansesTrashold.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 246</value>
+  </data>
+  <data name="EmptySeansesTrashold.Size" type="System.Drawing.Size, System.Drawing">
+    <value>118, 13</value>
+  </data>
+  <data name="EmptySeansesTrashold.TabIndex" type="System.Int32, mscorlib">
+    <value>20</value>
+  </data>
+  <data name="EmptySeansesTrashold.Text" xml:space="preserve">
+    <value>EmptySeansesTrashold</value>
+  </data>
+  <data name="&gt;&gt;EmptySeansesTrashold.Name" xml:space="preserve">
+    <value>EmptySeansesTrashold</value>
+  </data>
+  <data name="&gt;&gt;EmptySeansesTrashold.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;EmptySeansesTrashold.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;EmptySeansesTrashold.ZOrder" xml:space="preserve">
+    <value>17</value>
+  </data>
+  <data name="HideEmptySeanses.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="HideEmptySeanses.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 490</value>
+  </data>
+  <data name="HideEmptySeanses.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="HideEmptySeanses.Size" type="System.Drawing.Size, System.Drawing">
+    <value>156, 17</value>
+  </data>
+  <data name="HideEmptySeanses.TabIndex" type="System.Int32, mscorlib">
+    <value>19</value>
+  </data>
+  <data name="HideEmptySeanses.Text" xml:space="preserve">
+    <value>Скрывать пустые сеансы</value>
+  </data>
+  <data name="&gt;&gt;HideEmptySeanses.Name" xml:space="preserve">
+    <value>HideEmptySeanses</value>
+  </data>
+  <data name="&gt;&gt;HideEmptySeanses.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;HideEmptySeanses.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;HideEmptySeanses.ZOrder" xml:space="preserve">
+    <value>18</value>
+  </data>
+  <data name="VenturFileExplore.Location" type="System.Drawing.Point, System.Drawing">
+    <value>331, 113</value>
+  </data>
+  <data name="VenturFileExplore.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="VenturFileExplore.Size" type="System.Drawing.Size, System.Drawing">
+    <value>83, 20</value>
+  </data>
+  <data name="VenturFileExplore.TabIndex" type="System.Int32, mscorlib">
+    <value>17</value>
+  </data>
+  <data name="VenturFileExplore.Text" xml:space="preserve">
+    <value>Обзор...</value>
+  </data>
+  <data name="&gt;&gt;VenturFileExplore.Name" xml:space="preserve">
+    <value>VenturFileExplore</value>
+  </data>
+  <data name="&gt;&gt;VenturFileExplore.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;VenturFileExplore.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;VenturFileExplore.ZOrder" xml:space="preserve">
+    <value>19</value>
+  </data>
+  <data name="InitialDestPathExplore.Location" type="System.Drawing.Point, System.Drawing">
+    <value>331, 74</value>
+  </data>
+  <data name="InitialDestPathExplore.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="InitialDestPathExplore.Size" type="System.Drawing.Size, System.Drawing">
+    <value>83, 20</value>
+  </data>
+  <data name="InitialDestPathExplore.TabIndex" type="System.Int32, mscorlib">
+    <value>16</value>
+  </data>
+  <data name="InitialDestPathExplore.Text" xml:space="preserve">
+    <value>Обзор...</value>
+  </data>
+  <data name="&gt;&gt;InitialDestPathExplore.Name" xml:space="preserve">
+    <value>InitialDestPathExplore</value>
+  </data>
+  <data name="&gt;&gt;InitialDestPathExplore.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;InitialDestPathExplore.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;InitialDestPathExplore.ZOrder" xml:space="preserve">
+    <value>20</value>
+  </data>
+  <data name="InitialSeansesPathExplore.Location" type="System.Drawing.Point, System.Drawing">
+    <value>331, 35</value>
+  </data>
+  <data name="InitialSeansesPathExplore.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="InitialSeansesPathExplore.Size" type="System.Drawing.Size, System.Drawing">
+    <value>83, 20</value>
+  </data>
+  <data name="InitialSeansesPathExplore.TabIndex" type="System.Int32, mscorlib">
+    <value>15</value>
+  </data>
+  <data name="InitialSeansesPathExplore.Text" xml:space="preserve">
+    <value>Обзор...</value>
+  </data>
+  <data name="&gt;&gt;InitialSeansesPathExplore.Name" xml:space="preserve">
+    <value>InitialSeansesPathExplore</value>
+  </data>
+  <data name="&gt;&gt;InitialSeansesPathExplore.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;InitialSeansesPathExplore.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;InitialSeansesPathExplore.ZOrder" xml:space="preserve">
+    <value>21</value>
+  </data>
+  <data name="WorkingChartInterval.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="WorkingChartInterval.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 220</value>
+  </data>
+  <data name="WorkingChartInterval.Size" type="System.Drawing.Size, System.Drawing">
+    <value>107, 13</value>
+  </data>
+  <data name="WorkingChartInterval.TabIndex" type="System.Int32, mscorlib">
+    <value>13</value>
+  </data>
+  <data name="WorkingChartInterval.Text" xml:space="preserve">
+    <value>WorkingChartInterval</value>
+  </data>
+  <data name="&gt;&gt;WorkingChartInterval.Name" xml:space="preserve">
+    <value>WorkingChartInterval</value>
+  </data>
+  <data name="&gt;&gt;WorkingChartInterval.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;WorkingChartInterval.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;WorkingChartInterval.ZOrder" xml:space="preserve">
+    <value>22</value>
+  </data>
+  <data name="SynchronizeCounterLimit.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="SynchronizeCounterLimit.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 194</value>
+  </data>
+  <data name="SynchronizeCounterLimit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>123, 13</value>
+  </data>
+  <data name="SynchronizeCounterLimit.TabIndex" type="System.Int32, mscorlib">
+    <value>11</value>
+  </data>
+  <data name="SynchronizeCounterLimit.Text" xml:space="preserve">
+    <value>SynchronizeCounterLimit</value>
+  </data>
+  <data name="&gt;&gt;SynchronizeCounterLimit.Name" xml:space="preserve">
+    <value>SynchronizeCounterLimit</value>
+  </data>
+  <data name="&gt;&gt;SynchronizeCounterLimit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;SynchronizeCounterLimit.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;SynchronizeCounterLimit.ZOrder" xml:space="preserve">
+    <value>23</value>
+  </data>
+  <data name="CopyCounterLimit.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="CopyCounterLimit.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 168</value>
+  </data>
+  <data name="CopyCounterLimit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>89, 13</value>
+  </data>
+  <data name="CopyCounterLimit.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="CopyCounterLimit.Text" xml:space="preserve">
+    <value>CopyCounterLimit</value>
+  </data>
+  <data name="&gt;&gt;CopyCounterLimit.Name" xml:space="preserve">
+    <value>CopyCounterLimit</value>
+  </data>
+  <data name="&gt;&gt;CopyCounterLimit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;CopyCounterLimit.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;CopyCounterLimit.ZOrder" xml:space="preserve">
+    <value>24</value>
+  </data>
+  <data name="UpdateCounterLimit.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="UpdateCounterLimit.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 142</value>
+  </data>
+  <data name="UpdateCounterLimit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 13</value>
+  </data>
+  <data name="UpdateCounterLimit.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="UpdateCounterLimit.Text" xml:space="preserve">
+    <value>UpdateCounterLimit</value>
+  </data>
+  <data name="&gt;&gt;UpdateCounterLimit.Name" xml:space="preserve">
+    <value>UpdateCounterLimit</value>
+  </data>
+  <data name="&gt;&gt;UpdateCounterLimit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;UpdateCounterLimit.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;UpdateCounterLimit.ZOrder" xml:space="preserve">
+    <value>25</value>
+  </data>
+  <data name="VenturFileTextBox.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 113</value>
+  </data>
+  <data name="VenturFileTextBox.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="VenturFileTextBox.Size" type="System.Drawing.Size, System.Drawing">
+    <value>315, 20</value>
+  </data>
+  <data name="VenturFileTextBox.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;VenturFileTextBox.Name" xml:space="preserve">
+    <value>VenturFileTextBox</value>
+  </data>
+  <data name="&gt;&gt;VenturFileTextBox.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;VenturFileTextBox.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;VenturFileTextBox.ZOrder" xml:space="preserve">
+    <value>26</value>
+  </data>
+  <data name="VenturFile.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="VenturFile.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 98</value>
+  </data>
+  <data name="VenturFile.Size" type="System.Drawing.Size, System.Drawing">
+    <value>54, 13</value>
+  </data>
+  <data name="VenturFile.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="VenturFile.Text" xml:space="preserve">
+    <value>VenturFile</value>
+  </data>
+  <data name="&gt;&gt;VenturFile.Name" xml:space="preserve">
+    <value>VenturFile</value>
+  </data>
+  <data name="&gt;&gt;VenturFile.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;VenturFile.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;VenturFile.ZOrder" xml:space="preserve">
+    <value>27</value>
+  </data>
+  <data name="InitialDestPathTextBox.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 74</value>
+  </data>
+  <data name="InitialDestPathTextBox.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="InitialDestPathTextBox.Size" type="System.Drawing.Size, System.Drawing">
+    <value>315, 20</value>
+  </data>
+  <data name="InitialDestPathTextBox.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;InitialDestPathTextBox.Name" xml:space="preserve">
+    <value>InitialDestPathTextBox</value>
+  </data>
+  <data name="&gt;&gt;InitialDestPathTextBox.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;InitialDestPathTextBox.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;InitialDestPathTextBox.ZOrder" xml:space="preserve">
+    <value>28</value>
+  </data>
+  <data name="InitialDestPath.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="InitialDestPath.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 59</value>
+  </data>
+  <data name="InitialDestPath.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 13</value>
+  </data>
+  <data name="InitialDestPath.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="InitialDestPath.Text" xml:space="preserve">
+    <value>InitialDestPath</value>
+  </data>
+  <data name="&gt;&gt;InitialDestPath.Name" xml:space="preserve">
+    <value>InitialDestPath</value>
+  </data>
+  <data name="&gt;&gt;InitialDestPath.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;InitialDestPath.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;InitialDestPath.ZOrder" xml:space="preserve">
+    <value>29</value>
+  </data>
+  <data name="InitialSeansesPathTextBox.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 35</value>
+  </data>
+  <data name="InitialSeansesPathTextBox.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="InitialSeansesPathTextBox.Size" type="System.Drawing.Size, System.Drawing">
+    <value>315, 20</value>
+  </data>
+  <data name="InitialSeansesPathTextBox.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;InitialSeansesPathTextBox.Name" xml:space="preserve">
+    <value>InitialSeansesPathTextBox</value>
+  </data>
+  <data name="&gt;&gt;InitialSeansesPathTextBox.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;InitialSeansesPathTextBox.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;InitialSeansesPathTextBox.ZOrder" xml:space="preserve">
+    <value>30</value>
+  </data>
+  <data name="InitialSeansesPath.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="InitialSeansesPath.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 20</value>
+  </data>
+  <data name="InitialSeansesPath.Size" type="System.Drawing.Size, System.Drawing">
+    <value>94, 13</value>
+  </data>
+  <data name="InitialSeansesPath.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="InitialSeansesPath.Text" xml:space="preserve">
+    <value>InitialSeansesPath</value>
+  </data>
+  <data name="&gt;&gt;InitialSeansesPath.Name" xml:space="preserve">
+    <value>InitialSeansesPath</value>
+  </data>
+  <data name="&gt;&gt;InitialSeansesPath.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;InitialSeansesPath.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;InitialSeansesPath.ZOrder" xml:space="preserve">
+    <value>31</value>
+  </data>
+  <data name="groupBox2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 12</value>
+  </data>
+  <data name="groupBox2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="groupBox2.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="groupBox2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>420, 519</value>
+  </data>
+  <data name="groupBox2.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="groupBox2.Text" xml:space="preserve">
+    <value>Настройки приложения</value>
+  </data>
+  <data name="&gt;&gt;groupBox2.Name" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;groupBox2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;groupBox2.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;groupBox2.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>6, 13</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>445, 572</value>
+  </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAEAgIAAAAEAIAAoCAEAFgAAACgAAACAAAAAAAEAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
@@ -1249,5 +2169,17 @@
         AAAAAAB/////////////////////////////////////////////////////////////////////////
         //////////////////////////////////8=
 </value>
+  </data>
+  <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>SettingsForm</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

@@ -507,6 +507,11 @@ namespace Link11.Core
 
         public void SetConfuguration(Configuration config)
         {
+            // Если усреднение графика расстройки изменилось, то перерасчитать значения
+            if (this.config.SmoothValue != config.SmoothValue)
+                TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
+
+            // Установить конфигурацию
             this.config = config;
         }
 

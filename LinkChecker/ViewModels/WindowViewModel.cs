@@ -401,6 +401,7 @@ namespace Link11Checker.ViewModels
                 window.workingChart.ChartAreas[0].AxisX.Interval = IoC.Settings.WorkingChartInterval;
                 window.workingChart.Invalidate();
                 await SeanseManager.UpdateSeansesAsync();
+                UpdateTuningChart();
             });
 
             About = new RelayCommand(() => {
