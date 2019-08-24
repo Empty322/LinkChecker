@@ -40,8 +40,8 @@ namespace Link11Report
 
                 line.Abonents = seanse.GetAbonents(currentTime, nextTime, config.AbonentsK).Count;
                 line.AbonentsWithInterval = seanse.GetAbonentsWithInterval(currentTime, nextTime, interval, 0.15f, 0.2f).Count;
-                line.MaxSizeInFrames = seanse.MaxSize;
-                line.MaxSizeInBytes = seanse.MaxSizeInBytes;
+                line.MaxSizeInFrames = seanse.GetMaxInFrames(currentTime, nextTime);
+                line.MaxSizeInBytes = line.MaxSizeInFrames * 3.75f;
 
                 report.Add(line);
 

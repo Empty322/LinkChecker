@@ -505,6 +505,54 @@ namespace Link11.Core
             return intervalEntries;
         }
 
+        public int GetMaxInFrames()
+        {
+            int maxInFrames = 0;
+            if (signalEntries.Count != 0)
+                maxInFrames = GetMaxInFrames(signalEntries.First().Time, signalEntries.Last().Time);
+            return maxInFrames;
+        }
+
+        public int GetMaxInFrames(DateTime start, DateTime end)
+        {
+            int maxInFrames = 0;
+            if (signalEntries.Count != 0)
+            {
+                List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && x.Type != EntryType.Error).ToList();
+                int[] sizeWihoutErrors = CurrentEntries.Select(x => x.Size - x.Errors).ToArray();
+
+                if (sizeWihoutErrors.Count() != 0)
+                    maxInFrames = sizeWihoutErrors.Max();
+                if (maxInFrames < 0)
+                    maxInFrames = 0;
+            }
+            return maxInFrames;
+        }
+
+        public float GetAverageSizeInFrames()
+        {
+            float avgInFrames = 0;
+            if (signalEntries.Count != 0)
+                avgInFrames = GetAverageSizeInFrames(signalEntries.First().Time, signalEntries.Last().Time);
+            return avgInFrames;
+        }
+
+        public float GetAverageSizeInFrames(DateTime start, DateTime end)
+        {
+            float avgInFrames = 0;
+            if (signalEntries.Count != 0)
+            {
+                List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && (x.Type == EntryType.Message || x.Type == EntryType.Answer)).ToList();
+                int[] sizeWihoutErrors = CurrentEntries.Select(x => x.Size - x.Errors).ToArray();
+
+                if (sizeWihoutErrors.Count() != 0)
+                    avgInFrames = (float)sizeWihoutErrors.Average();
+                if (avgInFrames < 0)
+                    avgInFrames = 0;
+            }
+            return avgInFrames;
+        }
+
         public void SetConfuguration(Configuration config)
         {
             // Если усреднение графика расстройки изменилось, то перерасчитать значения
@@ -514,7 +562,7 @@ namespace Link11.Core
             // Установить конфигурацию
             this.config = config;
         }
-
+        
         public object Clone()
         {
             return this.MemberwiseClone();
@@ -608,54 +656,6 @@ namespace Link11.Core
                 result.Add(info);
             }
             return result.OrderByDescending(x => x.Count).ToList();
-        }
-
-        private int GetMaxInFrames()
-        {
-            int maxInFrames = 0;
-            if (signalEntries.Count != 0)
-                maxInFrames = GetMaxInFrames(signalEntries.First().Time, signalEntries.Last().Time);
-            return maxInFrames;
-        }
-
-        private int GetMaxInFrames(DateTime start, DateTime end)
-        {
-            int maxInFrames = 0;
-            if (signalEntries.Count != 0)
-            {
-                List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && x.Type != EntryType.Error).ToList();
-                int[] sizeWihoutErrors = CurrentEntries.Select(x => x.Size - x.Errors).ToArray();
-
-                if (sizeWihoutErrors.Count() != 0)
-                    maxInFrames = sizeWihoutErrors.Max();
-                if (maxInFrames < 0)
-                    maxInFrames = 0;
-            }
-            return maxInFrames;
-        }
-
-        private float GetAverageSizeInFrames()
-        {
-            float avgInFrames = 0;
-            if (signalEntries.Count != 0)
-                avgInFrames = GetAverageSizeInFrames(signalEntries.First().Time, signalEntries.Last().Time);
-            return avgInFrames;
-        }
-
-        private float GetAverageSizeInFrames(DateTime start, DateTime end)
-        {
-            float avgInFrames = 0;
-            if (signalEntries.Count != 0)
-            {
-                List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && (x.Type == EntryType.Message || x.Type == EntryType.Answer)).ToList();
-                int[] sizeWihoutErrors = CurrentEntries.Select(x => x.Size - x.Errors).ToArray();
-
-                if (sizeWihoutErrors.Count() != 0)
-                    avgInFrames = (float)sizeWihoutErrors.Average();
-                if (avgInFrames < 0)
-                    avgInFrames = 0;
-            }
-            return avgInFrames;
         }
 
         private SeanseState GetState() {
