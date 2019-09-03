@@ -62,41 +62,75 @@ namespace Link11.Core
         public DateTime StartWorkingTime
         {
             get {
-                if (signalEntries.Count != 0)
-                    return signalEntries.First().Time;
-                else
-                    return new DateTime();
+                return startWorkingTime;
+            }
+            set
+            {
+                startWorkingTime = value;
+                OnPropertyChanged("StartWorkingTime");
             }
         }
         public DateTime LastWorkingTime
         {
             get {
-                IEnumerable<SignalEntry> withoutErrors = signalEntries.Where(x => x.Type != EntryType.Error).ToList();
-                if (withoutErrors.Count() != 0)
-                    return withoutErrors.Last().Time;
-                return new DateTime();
+                return lastWorkingTime;
+            }
+            set
+            {
+                lastWorkingTime = value;
+                OnPropertyChanged("LastWorkingTime");
             }
         }
-        public string Intervals { 
+        public string Intervals {
             get {
-                string result = "";
-                Dictionary<int, int> intervalEntries = GetIntervals();
-                int i = 0;
-                while (i < intervalEntries.Count && i < 3)
-                {
-                    int max = intervalEntries.Max(x => x.Value);
-                    result += intervalEntries.Where(x => x.Value == max).First() + " ";
-                    intervalEntries.Remove(intervalEntries.Where(x => x.Value == max).First().Key);
-                    i++;
-                }
-                return result; 
-            } 
+                return intervals;
+            }
+            set
+            {
+                intervals = value;
+                OnPropertyChanged("Intervals");
+            }
         }
-        public int MaxSize { get { return GetMaxInFrames(); } }
-        public float MaxSizeInBytes { get { return (float)Math.Round(MaxSize * 3.75f, 2); } }
-        public float AverageSizeInBytes { get { return (float)Math.Round(AverageSize * 3.75f, 2); } }
-        public float AverageSize { get { return (float)Math.Round(GetAverageSizeInFrames()); } }
-        public SeanseState State { 
+        public int MaxSize { 
+            get {
+                return maxSize;
+            }
+            set
+            {
+                maxSize = value;
+                OnPropertyChanged("MaxSize");
+            }
+        }
+        public float MaxSizeInBytes { 
+            get { 
+                return maxSizeInBytes; 
+            }
+            set
+            {
+                maxSizeInBytes = value;
+                OnPropertyChanged("MaxSizeInBytes");
+            }
+        }
+        public float AverageSize { 
+            get { 
+                return averageSize; 
+            }
+            set {
+                averageSize = value;
+                OnPropertyChanged("AverageSize");
+            }
+        }
+        public float AverageSizeInBytes { 
+            get { 
+                return averageSizeInBytes;
+            }
+            set {
+                averageSizeInBytes = value;
+                OnPropertyChanged("AverageSizeInBytes");
+            }
+        }
+        public SeanseState State
+        { 
             get { 
                 return state; 
             }
@@ -106,7 +140,16 @@ namespace Link11.Core
                 OnPropertyChanged("State");
             }
         }
-        public List<ActiveEntry> ActiveEntries { get; set; }
+        public List<ActiveEntry> ActiveEntries { 
+            get
+            {
+                return activeEntries;
+            }
+            set {
+                activeEntries = value;
+                OnPropertyChanged("ActiveEntries");
+            }
+        }
         public string Remark
         {
             get
@@ -119,8 +162,27 @@ namespace Link11.Core
                 OnPropertyChanged("Remark");
             }
         }
-        public string LastCopy { get { return lastCopy.ToShortTimeString(); } }
-        public string LastUpdate {get { return lastUpdate.ToShortTimeString(); } }
+        public DateTime LastCopy {
+            get { 
+                return lastCopy; 
+            } 
+            set
+            {
+                lastCopy = value;
+                OnPropertyChanged("LastCopy");
+            }
+        }
+        public DateTime LastUpdate
+        {
+            get { 
+                return lastUpdate;
+            }
+            set
+            {
+                lastUpdate = value;
+                OnPropertyChanged("LastUpdate");
+            }
+        }
         public bool Visible {
             get {
                 return visible;
@@ -135,12 +197,13 @@ namespace Link11.Core
         {
             get
             {
-                int notErrorsCount = signalEntries.Where(x => x.Type != EntryType.Error).Count();
-                if (notErrorsCount > 0)
-                    return (int)Math.Round(100f / signalEntries.Count() * notErrorsCount);
-                else
-                    return 0;
+                return percentReceiving;
             }
+            set 
+            {
+                percentReceiving = value;
+                OnPropertyChanged("Percentreceiving");
+            }                
         }
         public List<TuningChartUnit> TuningChartUnits { get; set; }
         public List<WorkingChartUnit> WorkingChartUnits { get; set; }
@@ -150,21 +213,14 @@ namespace Link11.Core
         {
             get
             {
-                return GetActualAbonentsCount(Abonents);
+                return abonentsCount;
             }
-        }
-
-        private DateTime ServerTime
-        {
-            get
+            set
             {
-                DateTime lastEntryTime = signalEntries.Last().Time;
-                TimeSpan delay = lastModified - lastEntryTime;
-                return DateTime.Now - delay;
+                abonentsCount = value;
+                OnPropertyChanged("AbonentsCount");
             }
         }
-
-        public bool HasEntries { get { return signalEntries.Any(); } }
 
         #endregion
 
@@ -180,6 +236,17 @@ namespace Link11.Core
         private DateTime lastUpdate;
         private long lastUpdateLogFileLength;
         private long lastCopyLogFileLenght;
+        private DateTime startWorkingTime;
+        private DateTime lastWorkingTime;
+        private string intervals;
+        private int maxSize;
+        private float maxSizeInBytes;
+        private float averageSize;
+        private float averageSizeInBytes;
+        private List<ActiveEntry> activeEntries;
+        private int percentReceiving;
+        private int abonentsCount;
+        private DateTime serverTime;
 
         private ILogger logger;   
         private Configuration config;
@@ -190,17 +257,11 @@ namespace Link11.Core
         private bool isActiveEnded;
         private bool visible;
 
-        // Исправить
         private const int countForWorkingLevel5 = 200;
         private const int countForWorkingLevel4 = 100;
         private const int countForWorkingLevel3 = 40;
         private const int countForWorkingLevel2 = 10;
         private const int countForWorkingLevel1 = 1;
-        private const int kForWorkingChartWorkingLevel5 = 10002000;
-        private const int kForWorkingChartWorkingLevel4 = 20004000;
-        private const int kForWorkingChartWorkingLevel3 = 40008000;
-        private const int kForWorkingChartWorkingLevel2 = 80016000;
-        private const int kForWorkingChartWorkingLevel1 = 160032000;
                 
         #endregion
 
@@ -214,10 +275,10 @@ namespace Link11.Core
             this.DirectoryExists = Directory.Exists;
             if (!DirectoryExists)
                 throw new LogFileNotFoundException();
-            this.ActiveEntries = new List<ActiveEntry>();
             this.TuningChartUnits = new List<TuningChartUnit>();
             this.WorkingChartUnits = new List<WorkingChartUnit>();
             this.Abonents = new List<AbonentInfo>();
+            this.activeEntries = new List<ActiveEntry>();
             this.lastModified = new DateTime();
             this.remark = "";
             this.logger = logger;
@@ -231,6 +292,7 @@ namespace Link11.Core
             this.isActiveEnded = true;
             this.lastCopyLogFileLenght = -1;
             this.lastUpdateLogFileLength = -1;
+            this.serverTime = new DateTime();
             Update();
         }
 
@@ -256,16 +318,21 @@ namespace Link11.Core
 
                     // Загрузить log.txt
                     LoadAllLog();
-                    logger.LogMessage(" + Загрузка оллога", LogLevel.Info);
+                    logger.LogMessage(" + Загрузка 'alllog.txt'", LogLevel.Info);
 
                     // Загрузить allLog.txt
                     LoadLog();
-                    logger.LogMessage(" + Загрузка лога", LogLevel.Info);
+                    logger.LogMessage(" + Загрузка 'log.txt'", LogLevel.Info);
 
                     // Если это не пустой сеанс
                     if (signalEntries.Any())
                     {
                         logger.LogMessage(" + Сеананс не пустой " + signalEntries.Count, LogLevel.Info);
+
+                        // Обновить время сервера
+                        DateTime lastEntryTime = signalEntries.Last().Time;
+                        TimeSpan delay = lastModified - lastEntryTime;
+                        serverTime = DateTime.Now - delay;      
 
                         // Получить данные для графика расстройки
                         TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
@@ -279,21 +346,64 @@ namespace Link11.Core
                         logger.LogMessage(" + Единицы графиков вычислины " + TuningChartUnits.Count + " " + SizeChartUnits.Count + " " + WorkingChartUnits.Count, LogLevel.Info);
 
                         // Получить вхождения с объемом, превышающим норму
-                        ActiveEntries = signalEntries.Where(x => x.Type != EntryType.Error &&
-                                ((x.Size - x.Errors) > (int)Mode)).Select(x => new ActiveEntry { Time = x.Time.ToShortTimeString(), Size = x.Size - x.Errors }).ToList();
+                        List<ActiveEntry> newActiveEntries = signalEntries
+                            .Where(x =>
+                                x.Type != EntryType.Error &&
+                                ((x.Size - x.Errors) > (int)Mode))
+                            .Select(x =>
+                                new ActiveEntry { Time = x.Time, Size = x.Size - x.Errors })
+                            .ToList();
+                        ActiveEntries = newActiveEntries;
                         logger.LogMessage(" + Активные сообщения получены " + ActiveEntries.Count, LogLevel.Info);
 
                         // Получить абонентов
                         Abonents = GetAbonentsInfo();
+                        AbonentsCount = GetActualAbonentsCount(Abonents);
                         logger.LogMessage(" + Абоненты получены " + Abonents.Count, LogLevel.Info);
 
+                        // Установить время начала
+                        if (startWorkingTime == null)
+                            StartWorkingTime = signalEntries.First().Time;
 
+                        // Обновить конечное время
+                        for (int index = signalEntries.Count - 1; index >= 0; index--)
+                            if (signalEntries[index].Type != EntryType.Error)
+                            {
+                                lastWorkingTime = signalEntries[index].Time;
+                                break;
+                            }
+
+                        // Обновить сторку с интервалами
+                        string intervals = "";
+                        var intervalEntries = GetIntervals().OrderByDescending(interval => interval.Value).Take(3);
+                        foreach (var interval in intervalEntries)
+                            intervals += interval.Key + "(" + interval.Value + ") ";
+                        this.intervals = intervals; 
+
+                        // Обновить процент приема
+                        int notErrorsCount = signalEntries.Where(x => x.Type != EntryType.Error).Count();
+                        if (notErrorsCount > 0)
+                            PercentReceiving = (int)Math.Round(100f / signalEntries.Count() * notErrorsCount);
+                        else
+                            PercentReceiving = 0;
+                        
+                        // Обновить переменные объема
+                        MaxSize = GetMaxInFrames();
+                        MaxSizeInBytes = (float)Math.Round(MaxSize * 3.75f, 2);
+                        AverageSize = (float)Math.Round(GetAverageSizeInFrames());
+                        AverageSizeInBytes = (float)Math.Round(AverageSize * 3.75f, 2);
+
+                        // Обновить время последнего изменения
                         lastModified = File.GetLastWriteTime(Directory + "\\log.txt");
                         logger.LogMessage(" + lastModified = " + lastModified, LogLevel.Info);
-                        lastUpdate = DateTime.Now;
+                        // Обновить время последнего обновления
+                        LastUpdate = DateTime.Now;
                         logger.LogMessage(" + lastUpdate = " + lastUpdate, LogLevel.Info);
+                        // Обновить размер лога при последнем обновлении
                         lastUpdateLogFileLength = logFileLength;
                         logger.LogMessage(" + lastUpdateLogFileLength = " + lastUpdateLogFileLength, LogLevel.Info);
+
+
 
                         Type df = this.GetType();
                         foreach (PropertyInfo pi in df.GetProperties())
@@ -313,7 +423,7 @@ namespace Link11.Core
                 logger.LogMessage(" + State = " + State, LogLevel.Info);
 
                 // Запустить уведомления
-                FireEvents();
+                FireEvents(prevState, state);
 
                 prevState = state;
             }
@@ -364,7 +474,7 @@ namespace Link11.Core
                                     file.CopyTo(dest.FullName + '\\' + file.Name, true);
                                     if (file.Name == "log.txt")
                                     {
-                                        lastCopy = DateTime.Now;
+                                        LastCopy = DateTime.Now;
                                         result = true;
                                     }
                                 }
@@ -686,7 +796,7 @@ namespace Link11.Core
 
             if (signalEntries.Count != 0)
             {
-                List<SignalEntry> lastEntries = signalEntries.Where(x => x.Time > ServerTime - new TimeSpan(0, 3, 0) && x.Time < ServerTime).ToList();
+                List<SignalEntry> lastEntries = signalEntries.Where(x => x.Time > serverTime - new TimeSpan(0, 3, 0) && x.Time < serverTime).ToList();
                 if (lastEntries.Where(x => x.Type != EntryType.Error && ((x.Size - x.Errors) > (int)Mode)).Any())
                     result = SeanseState.Active;
                 else if (lastEntries.Count >= countForWorkingLevel5)
@@ -703,7 +813,7 @@ namespace Link11.Core
             return result;
         }
 
-        private void FireEvents()
+        private void FireEvents(SeanseState prevState, SeanseState state)
         {
             // Eсли перешел в активный
             if (isActiveEnded && prevState != SeanseState.Active && state == SeanseState.Active)
@@ -714,7 +824,7 @@ namespace Link11.Core
 
             // Если Вышел из активного
             IEnumerable<SignalEntry> activeEntries = signalEntries.Where(x => x.Type != EntryType.Error && x.Size - x.Errors > (int)Mode);
-            if (!isActiveEnded && activeEntries.Any() && !(activeEntries.Last().Time > ServerTime.AddMinutes(-config.MinutesToAwaitAfterEnd) && activeEntries.Last().Time <= ServerTime))
+            if (!isActiveEnded && activeEntries.Any() && !(activeEntries.Last().Time > serverTime.AddMinutes(-config.MinutesToAwaitAfterEnd) && activeEntries.Last().Time <= serverTime))
             {
                 isActiveEnded = true;
                 ActiveEnd.Invoke(this, new EventArgs());
@@ -727,7 +837,7 @@ namespace Link11.Core
                 WorkingStart.Invoke(this, new EventArgs());
             }
             // Если окончил работу
-            if (!isEnded && signalEntries.Where(x => x.Time > ServerTime.AddMinutes(-config.MinutesToAwaitAfterEnd) && x.Time <= ServerTime).Count() == 0)
+            if (!isEnded && signalEntries.Where(x => x.Time > serverTime.AddMinutes(-config.MinutesToAwaitAfterEnd) && x.Time <= serverTime).Count() == 0)
             {
                 isEnded = true;
                 WorkingEnd.Invoke(this, new EventArgs());

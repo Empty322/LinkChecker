@@ -6,6 +6,7 @@
 
     <converters:StateToColorConverter x:Key="StateToColorConverter"></converters:StateToColorConverter>
     <converters:BoolToColorConverter x:Key="BoolToColorConverter"></converters:BoolToColorConverter>
+    <converters:DateTimeToShortTimeStringConverter x:Key="DateTimeToShortTimeStringConverter"></converters:DateTimeToShortTimeStringConverter>
     <standartConverters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></standartConverters:BooleanToVisibilityConverter>
 
     <Style TargetType="{x:Type DataGridCell}">

@@ -125,7 +125,7 @@
                     <ListView.View>
                         <GridView>
                             <GridView.Columns>
-                                <GridViewColumn Header="Время" Width="68" DisplayMemberBinding="{Binding Time}" />
+                                <GridViewColumn Header="Время" Width="68" DisplayMemberBinding="{Binding Time, Converter={StaticResource DateTimeToShortTimeStringConverter}}" />
                                 <GridViewColumn Header="Объем" Width="68" DisplayMemberBinding="{Binding Size}" />
                             </GridView.Columns>
                         </GridView>
