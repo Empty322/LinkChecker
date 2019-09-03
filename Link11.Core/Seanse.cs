@@ -59,36 +59,28 @@ namespace Link11.Core
                 mode = value;
                 OnPropertyChanged("Mode");
             } }
-        public DateTime StartWorkingTime
+        public SeanseState State
         {
-            get {
-                return startWorkingTime;
-            }
-            set
+            get
             {
-                startWorkingTime = value;
-                OnPropertyChanged("StartWorkingTime");
+                return state;
+            }
+            private set
+            {
+                state = value;
+                OnPropertyChanged("State");
             }
         }
-        public DateTime LastWorkingTime
+        public bool Visible
         {
-            get {
-                return lastWorkingTime;
+            get
+            {
+                return visible;
             }
             set
             {
-                lastWorkingTime = value;
-                OnPropertyChanged("LastWorkingTime");
-            }
-        }
-        public string Intervals {
-            get {
-                return intervals;
-            }
-            set
-            {
-                intervals = value;
-                OnPropertyChanged("Intervals");
+                visible = value;
+                OnPropertyChanged("Visible");
             }
         }
         public int MaxSize { 
@@ -129,68 +121,28 @@ namespace Link11.Core
                 OnPropertyChanged("AverageSizeInBytes");
             }
         }
-        public SeanseState State
-        { 
-            get { 
-                return state; 
-            }
-            private set
-            {
-                state = value;
-                OnPropertyChanged("State");
-            }
-        }
-        public List<ActiveEntry> ActiveEntries { 
-            get
-            {
-                return activeEntries;
-            }
-            set {
-                activeEntries = value;
-                OnPropertyChanged("ActiveEntries");
-            }
-        }
-        public string Remark
+        public int AbonentsCount
         {
             get
             {
-                return remark;
+                return abonentsCount;
             }
             set
             {
-                remark = value;
-                OnPropertyChanged("Remark");
+                abonentsCount = value;
+                OnPropertyChanged("AbonentsCount");
             }
         }
-        public DateTime LastCopy {
-            get { 
-                return lastCopy; 
-            } 
-            set
-            {
-                lastCopy = value;
-                OnPropertyChanged("LastCopy");
-            }
-        }
-        public DateTime LastUpdate
+        public string Intervals
         {
-            get { 
-                return lastUpdate;
+            get
+            {
+                return intervals;
             }
             set
             {
-                lastUpdate = value;
-                OnPropertyChanged("LastUpdate");
-            }
-        }
-        public bool Visible {
-            get {
-                return visible;
-            }
-            set
-            {
-                visible = value;
-                OnPropertyChanged("Visible");
+                intervals = value;
+                OnPropertyChanged("Intervals");
             }
         }
         public int PercentReceiving
@@ -205,22 +157,82 @@ namespace Link11.Core
                 OnPropertyChanged("Percentreceiving");
             }                
         }
-        public List<TuningChartUnit> TuningChartUnits { get; set; }
-        public List<WorkingChartUnit> WorkingChartUnits { get; set; }
-        public List<SizeChartUnit> SizeChartUnits { get; set; }
-        public List<AbonentInfo> Abonents { get; set; }
-        public int AbonentsCount
+        public string Remark
         {
             get
             {
-                return abonentsCount;
+                return remark;
             }
             set
             {
-                abonentsCount = value;
-                OnPropertyChanged("AbonentsCount");
+                remark = value;
+                OnPropertyChanged("Remark");
             }
         }
+        public DateTime StartWorkingTime
+        {
+            get
+            {
+                return startWorkingTime;
+            }
+            set
+            {
+                startWorkingTime = value;
+                OnPropertyChanged("StartWorkingTime");
+            }
+        }
+        public DateTime LastWorkingTime
+        {
+            get
+            {
+                return lastWorkingTime;
+            }
+            set
+            {
+                lastWorkingTime = value;
+                OnPropertyChanged("LastWorkingTime");
+            }
+        }
+        public DateTime LastCopy
+        {
+            get
+            {
+                return lastCopy;
+            }
+            set
+            {
+                lastCopy = value;
+                OnPropertyChanged("LastCopy");
+            }
+        }
+        public DateTime LastUpdate
+        {
+            get
+            {
+                return lastUpdate;
+            }
+            set
+            {
+                lastUpdate = value;
+                OnPropertyChanged("LastUpdate");
+            }
+        }
+        public List<TuningChartUnit> TuningChartUnits { get; set; }
+        public List<WorkingChartUnit> WorkingChartUnits { get; set; }
+        public List<SizeChartUnit> SizeChartUnits { get; set; }
+        public List<ActiveEntry> ActiveEntries
+        {
+            get
+            {
+                return activeEntries;
+            }
+            set
+            {
+                activeEntries = value;
+                OnPropertyChanged("ActiveEntries");
+            }
+        }
+        public List<AbonentInfo> Abonents { get; set; }
 
         #endregion
 
@@ -230,32 +242,32 @@ namespace Link11.Core
         private bool directoryExists;
         private float freq;
         private Mode mode;
+        private SeanseState state;
+        private bool visible;
         private string remark;
-        private DateTime lastModified;
-        private DateTime lastCopy;
-        private DateTime lastUpdate;
-        private long lastUpdateLogFileLength;
-        private long lastCopyLogFileLenght;
         private DateTime startWorkingTime;
         private DateTime lastWorkingTime;
-        private string intervals;
+        private DateTime lastCopy;
+        private DateTime lastUpdate;
         private int maxSize;
         private float maxSizeInBytes;
         private float averageSize;
         private float averageSizeInBytes;
-        private List<ActiveEntry> activeEntries;
-        private int percentReceiving;
         private int abonentsCount;
-        private DateTime serverTime;
+        private string intervals;
+        private int percentReceiving;
+        private List<ActiveEntry> activeEntries;
 
+        private IParser parser;
         private ILogger logger;   
         private Configuration config;
-        private IParser parser;
         private SeanseState prevState;
-        private SeanseState state;
         private bool isEnded;
         private bool isActiveEnded;
-        private bool visible;
+        private long lastUpdateLogFileLength;
+        private long lastCopyLogFileLenght;
+        private DateTime lastModified;
+        private DateTime serverTime;
 
         private const int countForWorkingLevel5 = 200;
         private const int countForWorkingLevel4 = 100;
