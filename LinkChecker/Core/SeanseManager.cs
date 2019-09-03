@@ -231,6 +231,7 @@ namespace Link11Checker.Core
             lock (Seanses)
             {
                 UpdatingStarted.Invoke(this);
+                logger.LogMessage("=========================   ОБНОВЛЕНИЕ СЕАНСОВ   =========================", LogLevel.Info);
                 foreach (Seanse seanse in Seanses)
                 {
                     try
@@ -300,12 +301,12 @@ namespace Link11Checker.Core
         private bool LoadSeanse(string directory)
         {
             bool result = false;
+            Seanse newSeanse = null;
             try
             {
                 SeanseAdding.Invoke(this, directory);
-                Seanse newSeanse = new Seanse(directory, IoC.Settings.Configuration);
+                newSeanse = new Seanse(directory, IoC.Settings.Configuration);
                 Seanses.Add(newSeanse);
-                SeanseAdded.Invoke(this, newSeanse);
                 result = true;
             }
             catch (Seanse.LogFileNotFoundException e)
@@ -315,6 +316,10 @@ namespace Link11Checker.Core
             catch (Exception e)
             {
                 logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
+            }
+            finally
+            {
+                SeanseAdded.Invoke(this, newSeanse);
             }
             return result;
         }

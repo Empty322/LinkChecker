@@ -73,20 +73,5 @@ namespace Link11Checker
             InitializeComponent();
             DataContext = new WindowViewModel(this, new SeanseManager(new Parser(), logger), logger);
         }
-
-        public Chart GetTuningChart()
-        {
-            return tuningChart;
-        }
-
-        public Chart GetWorkingChart()
-        {
-            return workingChart;
-        }
-
-        public Chart GetSizeChart()
-        {
-            return sizeChart;
-        }
     }
 }

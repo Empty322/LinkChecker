@@ -28,13 +28,9 @@ namespace Link11Report
                     config = JsonConvert.DeserializeObject<Configuration>(configFile);
                     return true;
                 }
-                catch (IOException e)
+                catch (Exception e)
                 {
-                    logger.LogMessage(e.Message, LogLevel.Error);
-                }
-                catch
-                {
-                    logger.LogMessage("Не удалось загрузить файл конфигурации", LogLevel.Error);
+                    logger.LogMessage("Не удалось загрузить файл конфигурации \n" + e.Message, LogLevel.Error);
                 }
             }
             return false;
@@ -74,10 +70,10 @@ namespace Link11Report
                         excel.StartInfo = new ProcessStartInfo("excel", '"' + reportFile + '"');
                         excel.Start();
                     }
-                    catch (IOException e)
+                    catch (Exception e)
                     {
                         logger.LogMessage(e.Message, LogLevel.Error);
-                    }
+                    }   
                 }        
             }
             else {

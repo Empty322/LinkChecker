@@ -255,7 +255,7 @@ namespace Link11Checker.ViewModels
 
             #region Charts initialization
 
-            Chart tuningChart = window.GetTuningChart();
+            Chart tuningChart = window.tuningChart;
             ChartArea tuningArea = new ChartArea("TuningArea");
             tuningChart.ChartAreas.Add(tuningArea);
 
@@ -270,7 +270,7 @@ namespace Link11Checker.ViewModels
             tuningChart.Series.Add(tuningSeries);
 
 
-            Chart sizeChart = window.GetSizeChart();
+            Chart sizeChart = window.sizeChart;
             ChartArea sizeArea = new ChartArea("SizeArea");
             sizeChart.ChartAreas.Add(sizeArea);
 
@@ -285,7 +285,7 @@ namespace Link11Checker.ViewModels
             sizeChart.Series.Add(sizeSeries);
 
 
-            Chart workingChart = window.GetWorkingChart();
+            Chart workingChart = window.workingChart;
             ChartArea workingArea = new ChartArea("WorkingArea");
             workingArea.AxisX.IntervalType = DateTimeIntervalType.Auto;
             workingArea.AxisX.Interval = IoC.Settings.WorkingChartInterval;
@@ -398,10 +398,17 @@ namespace Link11Checker.ViewModels
                 SettingsForm sf = new SettingsForm(logger);
                 sf.ShowDialog();
                 SeanseManager.SetConfiguration(IoC.Settings.Configuration);
-                window.workingChart.ChartAreas[0].AxisX.Interval = IoC.Settings.WorkingChartInterval;
-                window.workingChart.Invalidate();
-                await SeanseManager.UpdateSeansesAsync();
-                UpdateTuningChart();
+                try
+                {
+                    window.workingChart.ChartAreas[0].AxisX.Interval = IoC.Settings.WorkingChartInterval;
+                    window.workingChart.Invalidate();
+                    await SeanseManager.UpdateSeansesAsync();
+                    UpdateTuningChart();
+                }
+                catch (Exception e)
+                {
+                    logger.LogMessage(e.Message, LogLevel.Error);
+                }
             });
 
             About = new RelayCommand(() => {
@@ -502,15 +509,18 @@ namespace Link11Checker.ViewModels
         private void SeanseManager_SeanseAdded(object sender, Seanse newSeanse)
         {
             IsLoading = false;
-            newSeanse.WorkingStart += Seanse_WorkingStart;
-            newSeanse.ActiveStart += Seanse_ActiveStart;
-            newSeanse.WorkingEnd += Seanse_WorkingEnd;
-            newSeanse.ActiveEnd += newSeanse_ActiveEnd;
-            window.Dispatcher.BeginInvoke((ThreadStart)delegate()
+            if (newSeanse != null)
             {
-                Seanses.Add(newSeanse);
-                SelectedSeanse = newSeanse;
-            });
+                newSeanse.WorkingStart += Seanse_WorkingStart;
+                newSeanse.ActiveStart += Seanse_ActiveStart;
+                newSeanse.WorkingEnd += Seanse_WorkingEnd;
+                newSeanse.ActiveEnd += newSeanse_ActiveEnd;
+                window.Dispatcher.BeginInvoke((ThreadStart)delegate()
+                {
+                    Seanses.Add(newSeanse);
+                    SelectedSeanse = newSeanse;
+                });
+            }
         }
 
         private void SeanseManager_CopyingStarted(object sender)
@@ -599,10 +609,10 @@ namespace Link11Checker.ViewModels
                   
         private void UpdateTuningChart()
         {
-            if (SelectedSeanse != null)
+            if (SelectedSeanse != null && SelectedSeanse.TuningChartUnits != null)
             {
-                window.GetTuningChart().DataSource = SelectedSeanse.TuningChartUnits;
-                window.GetTuningChart().Invalidate();
+                window.tuningChart.DataSource = SelectedSeanse.TuningChartUnits;
+                window.tuningChart.Invalidate();
             }
         }
 
@@ -610,8 +620,8 @@ namespace Link11Checker.ViewModels
         {
             if (SelectedSeanse != null)
             {
-                window.GetSizeChart().DataSource = SelectedSeanse.SizeChartUnits;
-                window.GetSizeChart().Invalidate();
+                window.sizeChart.DataSource = SelectedSeanse.SizeChartUnits;
+                window.sizeChart.Invalidate();
             }
         }
 
@@ -619,8 +629,8 @@ namespace Link11Checker.ViewModels
         {
             if (SelectedSeanse != null)
             {
-                window.GetWorkingChart().DataSource = SelectedSeanse.WorkingChartUnits;
-                window.GetWorkingChart().Invalidate();
+                window.workingChart.DataSource = SelectedSeanse.WorkingChartUnits;
+                window.workingChart.Invalidate();
             }
         }
     }

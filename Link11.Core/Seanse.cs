@@ -178,7 +178,7 @@ namespace Link11.Core
         private DateTime lastModified;
         private DateTime lastCopy;
         private DateTime lastUpdate;
-        private long lastUpdateFileLenght;
+        private long lastUpdateLogFileLength;
         private long lastCopyLogFileLenght;
 
         private ILogger logger;   
@@ -230,7 +230,7 @@ namespace Link11.Core
             this.isEnded = true;
             this.isActiveEnded = true;
             this.lastCopyLogFileLenght = -1;
-            this.lastUpdateFileLenght = -1;
+            this.lastUpdateLogFileLength = -1;
             Update();
         }
 
@@ -240,24 +240,33 @@ namespace Link11.Core
 
         public void Update()
         {
+            logger.LogMessage("ОБНОВЛЕНИЕ СЕАНСА " + Directory, LogLevel.Info);
             // Если директория существует
             if (System.IO.Directory.Exists(Directory.FullName))
             {
+                logger.LogMessage(" + Директория существует", LogLevel.Info);
+
                 DirectoryExists = true;
 
                 // Размер лог файла
                 long logFileLength = new FileInfo(Directory + "\\log.txt").Length;
-                if (logFileLength != lastUpdateFileLenght)
+                if (logFileLength != lastUpdateLogFileLength)
                 {
+                    logger.LogMessage(" + logFileLength != lastUpdateLogFileLenght (" + logFileLength + " != " + lastUpdateLogFileLength + ")", LogLevel.Info);
+
                     // Загрузить log.txt
                     LoadAllLog();
+                    logger.LogMessage(" + Загрузка оллога", LogLevel.Info);
 
                     // Загрузить allLog.txt
                     LoadLog();
+                    logger.LogMessage(" + Загрузка лога", LogLevel.Info);
 
                     // Если это не пустой сеанс
                     if (signalEntries.Any())
                     {
+                        logger.LogMessage(" + Сеананс не пустой " + signalEntries.Count, LogLevel.Info);
+
                         // Получить данные для графика расстройки
                         TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
 
@@ -267,16 +276,24 @@ namespace Link11.Core
                         // Получить данные для графика работы
                         WorkingChartUnits = GetWorkingChartUnits(new TimeSpan(0, 1, 0));
 
+                        logger.LogMessage(" + Единицы графиков вычислины " + TuningChartUnits.Count + " " + SizeChartUnits.Count + " " + WorkingChartUnits.Count, LogLevel.Info);
+
                         // Получить вхождения с объемом, превышающим норму
                         ActiveEntries = signalEntries.Where(x => x.Type != EntryType.Error &&
                                 ((x.Size - x.Errors) > (int)Mode)).Select(x => new ActiveEntry { Time = x.Time.ToShortTimeString(), Size = x.Size - x.Errors }).ToList();
+                        logger.LogMessage(" + Активные сообщения получены " + ActiveEntries.Count, LogLevel.Info);
 
                         // Получить абонентов
                         Abonents = GetAbonentsInfo();
+                        logger.LogMessage(" + Абоненты получены " + Abonents.Count, LogLevel.Info);
+
 
                         lastModified = File.GetLastWriteTime(Directory + "\\log.txt");
+                        logger.LogMessage(" + lastModified = " + lastModified, LogLevel.Info);
                         lastUpdate = DateTime.Now;
-                        lastUpdateFileLenght = logFileLength;
+                        logger.LogMessage(" + lastUpdate = " + lastUpdate, LogLevel.Info);
+                        lastUpdateLogFileLength = logFileLength;
+                        logger.LogMessage(" + lastUpdateLogFileLength = " + lastUpdateLogFileLength, LogLevel.Info);
 
                         Type df = this.GetType();
                         foreach (PropertyInfo pi in df.GetProperties())
@@ -292,6 +309,8 @@ namespace Link11.Core
 
                 // Узнать состояние сеанса
                 State = GetState();
+                logger.LogMessage(" + prevState = " + prevState, LogLevel.Info);
+                logger.LogMessage(" + State = " + State, LogLevel.Info);
 
                 // Запустить уведомления
                 FireEvents();
@@ -622,6 +641,10 @@ namespace Link11.Core
                 catch (FileNotFoundException)
                 {
                     throw new LogFileNotFoundException();
+                }
+                catch (Exception e)
+                {
+                    logger.LogMessage(e.Message, LogLevel.Warning);
                 }
 
                 // Прочитать временный файл с логом
