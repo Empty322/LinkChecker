@@ -4,6 +4,6 @@
     <StartArguments>d:\Bespalov\logs\4548.7__10_50_12\log.txt</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <StartArguments>23 d:\Bespalov\Link11Report\Link11Report\bin\Release\logs\6501.8__15_29_38\</StartArguments>
+    <StartArguments>46 d:\Bespalov\logs\16день\5469.8__21_15_08\</StartArguments>
   </PropertyGroup>
 </Project>

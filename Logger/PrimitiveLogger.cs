@@ -4,6 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Security.Permissions;
+using System.Runtime.Versioning;
+using System.Runtime.InteropServices;
+using System.Runtime.ConstrainedExecution;
+using Microsoft.Win32.SafeHandles;
 
 namespace Logger
 {
@@ -15,7 +20,7 @@ namespace Logger
 
         public PrimitiveLogger(LogLevel level) : this("log.txt", level) 
         {
-            logInFile = false;
+            this.logInFile = false;
         }
 
         public PrimitiveLogger(string path, LogLevel level)
@@ -49,8 +54,11 @@ namespace Logger
             {
                 if (logInFile)
                 {
-                    File.AppendAllText(logFile.FullName, message + '\n', Encoding.Default);
-                }                
+                    lock (logFile)
+                    {
+                        File.AppendAllText(logFile.FullName, message + '\n', Encoding.Default);
+                    }
+                }
                 Console.WriteLine(message);
             }
             Console.ForegroundColor = ConsoleColor.Red;

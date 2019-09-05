@@ -314,193 +314,189 @@ namespace Link11.Core
 
         public void Update()
         {
-            logger.LogMessage("ОБНОВЛЕНИЕ СЕАНСА " + Directory, LogLevel.Info);
+            StringBuilder messageToLog = new StringBuilder();
+            messageToLog.Append("ОБНОВЛЕНИЕ СЕАНСА " + Directory + Environment.NewLine);
             // Если директория существует
-            if (System.IO.Directory.Exists(Directory.FullName))
-            {
-                logger.LogMessage(" + Директория существует", LogLevel.Info);
-
-                DirectoryExists = true;
-
-                // Размер лог файла
-                long logFileLength = new FileInfo(Directory + "\\log.txt").Length;
-                if (logFileLength != lastUpdateLogFileLength)
-                {
-                    logger.LogMessage(" + logFileLength != lastUpdateLogFileLenght (" + logFileLength + " != " + lastUpdateLogFileLength + ")", LogLevel.Info);
-
-                    // Загрузить log.txt
-                    LoadAllLog();
-                    logger.LogMessage(" + Загрузка 'alllog.txt'", LogLevel.Info);
-
-                    // Загрузить allLog.txt
-                    LoadLog();
-                    logger.LogMessage(" + Загрузка 'log.txt'", LogLevel.Info);
-
-                    // Если это не пустой сеанс
-                    if (signalEntries.Any())
-                    {
-                        logger.LogMessage(" + Сеананс не пустой " + signalEntries.Count, LogLevel.Info);
-
-                        // Обновить время сервера
-                        DateTime lastEntryTime = signalEntries.Last().Time;
-                        TimeSpan delay = lastModified - lastEntryTime;
-                        serverTime = DateTime.Now - delay;      
-
-                        // Получить данные для графика расстройки
-                        TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
-
-                        // Получить данные для графика объема
-                        SizeChartUnits = GetSizeChartUnits();
-
-                        // Получить данные для графика работы
-                        WorkingChartUnits = GetWorkingChartUnits(new TimeSpan(0, 1, 0));
-
-                        logger.LogMessage(" + Единицы графиков вычислины " + TuningChartUnits.Count + " " + SizeChartUnits.Count + " " + WorkingChartUnits.Count, LogLevel.Info);
-
-                        // Получить вхождения с объемом, превышающим норму
-                        List<ActiveEntry> newActiveEntries = signalEntries
-                            .Where(x =>
-                                x.Type != EntryType.Error &&
-                                ((x.Size - x.Errors) > (int)Mode))
-                            .Select(x =>
-                                new ActiveEntry { Time = x.Time, Size = x.Size - x.Errors })
-                            .ToList();
-                        ActiveEntries = newActiveEntries;
-                        logger.LogMessage(" + Активные сообщения получены " + ActiveEntries.Count, LogLevel.Info);
-
-                        // Получить абонентов
-                        Abonents = GetAbonentsInfo();
-                        AbonentsCount = GetActualAbonentsCount(Abonents);
-                        logger.LogMessage(" + Абоненты получены " + Abonents.Count, LogLevel.Info);
-
-                        // Установить время начала
-                        if (startWorkingTime == null)
-                            StartWorkingTime = signalEntries.First().Time;
-
-                        // Обновить конечное время
-                        for (int index = signalEntries.Count - 1; index >= 0; index--)
-                            if (signalEntries[index].Type != EntryType.Error)
-                            {
-                                lastWorkingTime = signalEntries[index].Time;
-                                break;
-                            }
-
-                        // Обновить сторку с интервалами
-                        string intervals = "";
-                        var intervalEntries = GetIntervals().OrderByDescending(interval => interval.Value).Take(3);
-                        foreach (var interval in intervalEntries)
-                            intervals += interval.Key + "(" + interval.Value + ") ";
-                        this.intervals = intervals; 
-
-                        // Обновить процент приема
-                        int notErrorsCount = signalEntries.Where(x => x.Type != EntryType.Error).Count();
-                        if (notErrorsCount > 0)
-                            PercentReceiving = (int)Math.Round(100f / signalEntries.Count() * notErrorsCount);
-                        else
-                            PercentReceiving = 0;
-                        
-                        // Обновить переменные объема
-                        MaxSize = GetMaxInFrames();
-                        MaxSizeInBytes = (float)Math.Round(MaxSize * 3.75f, 2);
-                        AverageSize = (float)Math.Round(GetAverageSizeInFrames());
-                        AverageSizeInBytes = (float)Math.Round(AverageSize * 3.75f, 2);
-
-                        // Обновить время последнего изменения
-                        lastModified = File.GetLastWriteTime(Directory + "\\log.txt");
-                        logger.LogMessage(" + lastModified = " + lastModified, LogLevel.Info);
-                        // Обновить время последнего обновления
-                        LastUpdate = DateTime.Now;
-                        logger.LogMessage(" + lastUpdate = " + lastUpdate, LogLevel.Info);
-                        // Обновить размер лога при последнем обновлении
-                        lastUpdateLogFileLength = logFileLength;
-                        logger.LogMessage(" + lastUpdateLogFileLength = " + lastUpdateLogFileLength, LogLevel.Info);
-
-
-
-                        Type df = this.GetType();
-                        foreach (PropertyInfo pi in df.GetProperties())
-                            OnPropertyChanged(pi.Name);
-                    }
-                }
-
-                // Обновить видимость
-                if (config.HideEmptySeanses && !(signalEntries.Where(e => e.Type != EntryType.Error).Count() > config.Trashold))
-                    Visible = false;
-                else
-                    Visible = true; 
-
-                // Узнать состояние сеанса
-                State = GetState();
-                logger.LogMessage(" + prevState = " + prevState, LogLevel.Info);
-                logger.LogMessage(" + State = " + State, LogLevel.Info);
-
-                // Запустить уведомления
-                FireEvents(prevState, state);
-
-                prevState = state;
-            }
-            else
+            if (!System.IO.Directory.Exists(Directory.FullName))
             {
                 DirectoryExists = false;
-            }            
+                return;
+            }
+            messageToLog.Append(" + Директория существует" + Environment.NewLine);
+
+            DirectoryExists = true;
+
+            // Размер лог файла
+            long logFileLength = new FileInfo(Directory + "\\log.txt").Length;
+            if (logFileLength != lastUpdateLogFileLength)
+            {
+                messageToLog.Append(" + logFileLength != lastUpdateLogFileLenght (" + logFileLength + " != " + lastUpdateLogFileLength + ")" + Environment.NewLine);
+
+                // Загрузить log.txt
+                LoadAllLog();
+                messageToLog.Append(" + Загрузка 'alllog.txt'" + Environment.NewLine);
+
+                // Загрузить allLog.txt
+                LoadLog();
+                messageToLog.Append(" + Загрузка 'log.txt'" + Environment.NewLine);
+
+                // Если это не пустой сеанс
+                if (signalEntries.Any())
+                {
+                    messageToLog.Append(" + Сеананс не пустой " + signalEntries.Count + Environment.NewLine);
+
+                    // Обновить время сервера
+                    DateTime lastEntryTime = signalEntries.Last().Time;
+                    TimeSpan delay = lastModified - lastEntryTime;
+                    serverTime = DateTime.Now - delay;      
+
+                    // Получить данные для графика расстройки
+                    TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
+
+                    // Получить данные для графика объема
+                    SizeChartUnits = GetSizeChartUnits();
+
+                    // Получить данные для графика работы
+                    WorkingChartUnits = GetWorkingChartUnits(new TimeSpan(0, 1, 0));
+
+                    messageToLog.Append(" + Единицы графиков вычислины " + TuningChartUnits.Count + " " + SizeChartUnits.Count + " " + WorkingChartUnits.Count + Environment.NewLine);
+
+                    // Получить вхождения с объемом, превышающим норму
+                    List<ActiveEntry> newActiveEntries = signalEntries
+                        .Where(x =>
+                            x.Type != EntryType.Error &&
+                            ((x.Size - x.Errors) > (int)Mode))
+                        .Select(x =>
+                            new ActiveEntry { Time = x.Time, Size = x.Size - x.Errors })
+                        .ToList();
+                    ActiveEntries = newActiveEntries;
+                    messageToLog.Append(" + Активные сообщения получены " + ActiveEntries.Count + Environment.NewLine);
+
+                    // Получить абонентов
+                    Abonents = GetAbonentsInfo();
+                    AbonentsCount = GetActualAbonentsCount(Abonents);
+                    messageToLog.Append(" + Абоненты получены " + Abonents.Count + Environment.NewLine);
+
+                    // Установить время начала
+                    StartWorkingTime = signalEntries.First().Time;
+
+                    // Обновить конечное время
+                    for (int index = signalEntries.Count - 1; index >= 0; index--)
+                        if (signalEntries[index].Type != EntryType.Error)
+                        {
+                            lastWorkingTime = signalEntries[index].Time;
+                            break;
+                        }
+
+                    // Обновить сторку с интервалами
+                    string intervals = "";
+                    var intervalEntries = GetIntervals().OrderByDescending(interval => interval.Value).Take(3);
+                    foreach (var interval in intervalEntries)
+                        intervals += interval.Key + "(" + interval.Value + ") ";
+                    this.intervals = intervals; 
+
+                    // Обновить процент приема
+                    int notErrorsCount = signalEntries.Where(x => x.Type != EntryType.Error).Count();
+                    if (notErrorsCount > 0)
+                        PercentReceiving = (int)Math.Round(100f / signalEntries.Count() * notErrorsCount);
+                    else
+                        PercentReceiving = 0;
+                        
+                    // Обновить переменные объема
+                    MaxSize = GetMaxInFrames();
+                    MaxSizeInBytes = (float)Math.Round(MaxSize * 3.75f, 2);
+                    AverageSize = (float)Math.Round(GetAverageSizeInFrames());
+                    AverageSizeInBytes = (float)Math.Round(AverageSize * 3.75f, 2);
+
+                    // Обновить время последнего изменения
+                    lastModified = File.GetLastWriteTime(Directory + "\\log.txt");
+                    messageToLog.Append(" + lastModified = " + lastModified + Environment.NewLine);
+                    // Обновить время последнего обновления
+                    LastUpdate = DateTime.Now;
+                    messageToLog.Append(" + lastUpdate = " + lastUpdate + Environment.NewLine);
+                    // Обновить размер лога при последнем обновлении
+                    lastUpdateLogFileLength = logFileLength;
+                    messageToLog.Append(" + lastUpdateLogFileLength = " + lastUpdateLogFileLength + Environment.NewLine);
+                }
+            }
+
+            // Обновить видимость
+            if (config.HideEmptySeanses && !(signalEntries.Where(e => e.Type != EntryType.Error).Count() > config.Trashold))
+                Visible = false;
+            else
+                Visible = true; 
+
+            // Узнать состояние сеанса
+            State = GetState();
+            messageToLog.Append(" + prevState = " + prevState + Environment.NewLine);
+            messageToLog.Append(" + State = " + State + Environment.NewLine);
+
+            logger.LogMessage(messageToLog.ToString(), LogLevel.Info);
+
+            // Запустить уведомления
+            FireEvents(prevState, state);
+
+            prevState = state; 
         }
 
         public bool Copy(DirectoryInfo destination)
         {
             bool result = false;
-            // Если есть вхождения
-            if (signalEntries.Count != 0)
+
+            // Если директория не существует выйти
+            if (!System.IO.Directory.Exists(Directory.FullName))
             {
-                // Если директория существует
-                if (Directory.Exists)
+                DirectoryExists = false;
+                return result;
+            }
+
+            // Если нет вхождений выйти
+            if (!signalEntries.Any())
+            {
+                return result;
+            }
+
+            FileInfo logInfo = new FileInfo(Directory + "/log.txt");
+            // Его размер не равен размеру при прошлом копировании
+            // Если размер лога больше порога размера и
+            // Превышает порог приема и
+            bool seanseNeedsToUpdate = logInfo.Length != lastCopyLogFileLenght &&
+                                        logInfo.Length >= config.CopyLengthTrashold &&
+                                        PercentReceiving >= config.CopyPercentTrashold;
+
+            // Если сигнал не работает и он нуждается в копировании
+            if (!seanseNeedsToUpdate)
+            {
+                return result;
+            }
+
+            // Получить файлы сеанса
+            FileInfo[] files = Directory.GetFiles();
+
+            // Создать папку назначения, если ее нет
+            if (!destination.Exists)
+                destination.Create();
+            DirectoryInfo dest = new DirectoryInfo(destination.ToString() + '\\' + Directory.Name);
+            dest.Create();
+
+            // Скопировать файлы сеанса в папку назначения
+            foreach (FileInfo file in files)
+            {
+                try
                 {
-                    directoryExists = true;
-                    // Если размер лога больше 40000 байт и
-                    // Превышает порог и
-                    // Его размер не равен размеру при прошлом копировании
-                    FileInfo logInfo = new FileInfo(Directory + "/log.txt");
-                    if (logInfo.Length >= config.CopyLengthTrashold &&
-                        logInfo.Length != lastCopyLogFileLenght &&
-                        PercentReceiving >= config.CopyPercentTrashold) 
+                    file.CopyTo(dest.FullName + '\\' + file.Name, true);
+                    if (file.Name == "log.txt")
                     {
+                        // Обновить время последнего копирования
+                        LastCopy = DateTime.Now;
                         // Обновить размер лог файла при последнем копировании
                         lastCopyLogFileLenght = logInfo.Length;
-
-                        // Если есть изменения в log.txt
-                        if (lastModified != Directory.LastWriteTime)
-                        {
-                            // Получить файлы сеанса
-                            FileInfo[] files = Directory.GetFiles();
-
-                            // Создать папку назначения, если ее нет
-                            if (!destination.Exists)
-                                destination.Create();
-                            DirectoryInfo dest = new DirectoryInfo(destination.ToString() + '\\' + Directory.Name);
-                            dest.Create();
-
-                            // Скопировать файлы сеанса в папку назначения
-                            foreach (FileInfo file in files)
-                            {
-                                try
-                                {
-                                    file.CopyTo(dest.FullName + '\\' + file.Name, true);
-                                    if (file.Name == "log.txt")
-                                    {
-                                        LastCopy = DateTime.Now;
-                                        result = true;
-                                    }
-                                }
-                                catch (Exception e)
-                                {
-                                    logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
-                                }
-                            }
-                        }
+                        result = true;
                     }
                 }
-                else
+                catch (Exception e)
                 {
-                    directoryExists = false;
+                    logger.LogMessage(e.ToString() + " " + e.Message, LogLevel.Error);
                 }
             }
             return result;

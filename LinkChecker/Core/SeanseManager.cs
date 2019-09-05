@@ -27,7 +27,7 @@ namespace Link11Checker.Core
         public event Action<object> UpdatingStarted = (sender) => { };
         public event Action<object> UpdatingEnded = (sender) => { };
         public event Action<object> CopyingStarted = (sender) => { };
-        public event Action<object, int, int> SeanseCopyed = (sender, num, count) => { };
+        public event Action<object, Seanse> SeanseCopyed = (sender, seanse) => { };
         public event Action<object> CopyingEnded = (sender) => { };
         
 
@@ -88,13 +88,13 @@ namespace Link11Checker.Core
         {
             lock (Seanses) {
                 List<ch> channels = GetChannelsFromVentursFile(file);
-                foreach (ch channel in channels)
+                Parallel.ForEach(channels, channel =>
                 {
                     if (!Seanses.Select(x => x.Directory.FullName.ToLower()).Contains(channel.Directory.ToLower()) && (channel.Trakt == "slew" || channel.Trakt == "link11"))
                     {
                         LoadSeanse(channel.Directory);
                     }
-                }
+                });
                 SaveDirectories();
             }
         }
@@ -113,12 +113,11 @@ namespace Link11Checker.Core
                 DirectoryInfo[] childDirs = di.GetDirectories();
 
                 List<string> dirsInStock = Seanses.Select(x => x.Directory.FullName.ToLower()).ToList();
-                foreach (DirectoryInfo directory in childDirs)
+                Parallel.ForEach(childDirs, directory =>
                 {
-                    if (dirsInStock.Contains(directory.FullName.ToLower()))
-                        continue;
-                    LoadSeanse(directory.FullName);
-                }
+                    if (!dirsInStock.Contains(directory.FullName.ToLower()))
+                        LoadSeanse(directory.FullName);
+                });
                 SaveDirectories();
             }
         }
@@ -200,12 +199,12 @@ namespace Link11Checker.Core
             lock (Seanses)
             {
                 CopyingStarted.Invoke(this);
-                for (int i = 0; i < Seanses.Count; i++)
+                Parallel.ForEach(Seanses, seanse =>
                 {
                     bool result = false;
                     try
                     {
-                        result = Seanses[i].Copy(new DirectoryInfo(DestinationPath));
+                        result = seanse.Copy(new DirectoryInfo(DestinationPath));
                     }
                     catch (Exception e)
                     {
@@ -213,9 +212,9 @@ namespace Link11Checker.Core
                     }
                     finally
                     {
-                        SeanseCopyed.Invoke(this, i+1, Seanses.Count);
+                        SeanseCopyed.Invoke(this, seanse);
                     }
-                }
+                });
                 CopyingEnded.Invoke(this);
             }
         }
@@ -232,7 +231,11 @@ namespace Link11Checker.Core
             {
                 UpdatingStarted.Invoke(this);
                 logger.LogMessage("=========================   ОБНОВЛЕНИЕ СЕАНСОВ   =========================", LogLevel.Info);
-                foreach (Seanse seanse in Seanses)
+                string seansesToUpdate = "";
+                foreach (var seanse in Seanses)
+                    seansesToUpdate += '\t' + seanse.Directory.Name + Environment.NewLine;
+                logger.LogMessage(seansesToUpdate, LogLevel.Info);
+                Parallel.ForEach(Seanses, seanse =>
                 {
                     try
                     {
@@ -251,7 +254,7 @@ namespace Link11Checker.Core
                     {
                         logger.LogMessage(e.Message, LogLevel.Error);
                     }
-                }
+                });                
                 UpdatingEnded.Invoke(this);
             }
         }

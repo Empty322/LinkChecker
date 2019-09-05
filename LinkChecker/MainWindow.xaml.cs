@@ -69,7 +69,7 @@ namespace Link11Checker
 
             #endregion
 
-            ILogger logger = new PrimitiveLogger("log.txt", LogLevel.Error);
+            ILogger logger = new PrimitiveLogger("log.txt", LogLevel.Info);
             InitializeComponent();
             DataContext = new WindowViewModel(this, new SeanseManager(new Parser(), logger), logger);
         }
