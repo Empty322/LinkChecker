@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Link11Checker
 {
-    public static class IoC
+    public static class IoCContainer
     {
         public static Settings Settings { get; set; }
     }

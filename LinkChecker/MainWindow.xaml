@@ -89,7 +89,14 @@
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Ellipse Stroke="Black" Fill="{Binding DirectoryExists, Converter={StaticResource BoolToColorConverter}}" Height="12" Width="12"/>
+                                <Ellipse Stroke="Black" Fill="{Binding DirectoryExists, Converter={StaticResource BoolToColorConverter}}" Height="12" Width="12">
+                                    <Ellipse.ToolTip>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding LastUpdate, StringFormat={}Последнее обновление: {0}, Converter={StaticResource DateTimeToShortTimeStringConverter}}"></TextBlock>
+                                            <TextBlock Text="{Binding LastCopy, StringFormat={}Последнее копирование: {0}, Converter={StaticResource DateTimeToShortTimeStringConverter}}"></TextBlock>
+                                        </StackPanel>
+                                    </Ellipse.ToolTip>
+                                </Ellipse>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>    
                     </DataGridTemplateColumn>

@@ -170,7 +170,7 @@ namespace Link11Checker.Core
         {
             lock (Seanses)
             {
-                List<ch> channels = GetChannelsFromVentursFile(IoC.Settings.VenturFile);
+                List<ch> channels = GetChannelsFromVentursFile(IoCContainer.Settings.VenturFile);
                 string[] ventursDirs = channels.Where(x => x.Trakt == "slew" || x.Trakt == "link11").Select(x => x.Directory.ToLower()).ToArray();
                 List<Seanse> seansesToRemove = new List<Seanse>();
                 foreach (Seanse seanse in Seanses)
@@ -308,7 +308,7 @@ namespace Link11Checker.Core
             try
             {
                 SeanseAdding.Invoke(this, directory);
-                newSeanse = new Seanse(directory, IoC.Settings.Configuration);
+                newSeanse = new Seanse(directory, IoCContainer.Settings.Configuration);
                 Seanses.Add(newSeanse);
                 result = true;
             }
@@ -331,9 +331,12 @@ namespace Link11Checker.Core
 
         public void SetConfiguration(Configuration configuration)
         {
-            foreach (Seanse seanse in Seanses)
+            lock (Seanses)
             {
-                seanse.SetConfuguration(configuration);
+                foreach (Seanse seanse in Seanses)
+                {
+                    seanse.SetConfuguration(configuration);
+                }
             }
         }
 
@@ -344,7 +347,7 @@ namespace Link11Checker.Core
             int synchronizeCounter = 1;
             while (true)
             {
-                if (UpdateTimerOn && updateCounter >= IoC.Settings.UpdateCounterLimit)
+                if (UpdateTimerOn && updateCounter >= IoCContainer.Settings.UpdateCounterLimit)
                 {
                     try
                     {
@@ -356,7 +359,7 @@ namespace Link11Checker.Core
                     }
                     updateCounter = 0;
                 }
-                if (CopyTimerOn && copyCounter >= IoC.Settings.CopyCounterLimit)
+                if (CopyTimerOn && copyCounter >= IoCContainer.Settings.CopyCounterLimit)
                 {
                     if (!string.IsNullOrWhiteSpace(DestinationPath))
                         try
@@ -369,12 +372,12 @@ namespace Link11Checker.Core
                         }
                     copyCounter = 0;
                 }
-                if (SynchronyzeWithVenturOn && synchronizeCounter >= IoC.Settings.SynchronizeCounterLimit)
+                if (SynchronyzeWithVenturOn && synchronizeCounter >= IoCContainer.Settings.SynchronizeCounterLimit)
                 {
                     try
                     {
                         await RemoveExcessSeansesAsync();
-                        await AddSeansesFromVentursFileAsync(IoC.Settings.VenturFile);
+                        await AddSeansesFromVentursFileAsync(IoCContainer.Settings.VenturFile);
                     }
                     catch (Exception e)
                     {

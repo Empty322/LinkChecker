@@ -38,30 +38,30 @@ namespace Link11Checker
             CopyLengthTrashold.Text = "Минимальный размер копируемых сеансов (байты)";
             CopyPercentTrashold.Text = "Минимальный процент ошибок копируемых сеансов";
 
-            AbonentsKUpDown.Value = (decimal)IoC.Settings.Configuration.AbonentsK * 100;
-            IntervalsKUpDown.Value = (decimal)IoC.Settings.Configuration.IntervalsK * 100;
-            SmoothValueUpDown.Value = IoC.Settings.Configuration.SmoothValue;
-            MinutesToAwaitAfterEndUpDown.Value = IoC.Settings.Configuration.MinutesToAwaitAfterEnd;
+            AbonentsKUpDown.Value = (decimal)IoCContainer.Settings.Configuration.AbonentsK * 100;
+            IntervalsKUpDown.Value = (decimal)IoCContainer.Settings.Configuration.IntervalsK * 100;
+            SmoothValueUpDown.Value = IoCContainer.Settings.Configuration.SmoothValue;
+            MinutesToAwaitAfterEndUpDown.Value = IoCContainer.Settings.Configuration.MinutesToAwaitAfterEnd;
 
-            InitialSeansesPathTextBox.Text = IoC.Settings.InitialSeansesPath;
-            InitialDestPathTextBox.Text = IoC.Settings.InitialDestPath;
-            VenturFileTextBox.Text = IoC.Settings.VenturFile;
-            UpdateCounterLimitUpDown.Value = IoC.Settings.UpdateCounterLimit;
-            CopyCounterLimitUpDown.Value = IoC.Settings.CopyCounterLimit;
-            SynchronizeCounterLimitUpDown.Value = IoC.Settings.SynchronizeCounterLimit;
-            WorkingChartIntervalUpDown.Value = IoC.Settings.WorkingChartInterval;
-            HideEmptySeanses.Checked = IoC.Settings.Configuration.HideEmptySeanses;
+            InitialSeansesPathTextBox.Text = IoCContainer.Settings.InitialSeansesPath;
+            InitialDestPathTextBox.Text = IoCContainer.Settings.InitialDestPath;
+            VenturFileTextBox.Text = IoCContainer.Settings.VenturFile;
+            UpdateCounterLimitUpDown.Value = IoCContainer.Settings.UpdateCounterLimit;
+            CopyCounterLimitUpDown.Value = IoCContainer.Settings.CopyCounterLimit;
+            SynchronizeCounterLimitUpDown.Value = IoCContainer.Settings.SynchronizeCounterLimit;
+            WorkingChartIntervalUpDown.Value = IoCContainer.Settings.WorkingChartInterval;
+            HideEmptySeanses.Checked = IoCContainer.Settings.Configuration.HideEmptySeanses;
 
             EmptySeansesTrasholdUpDown.Minimum = 0;
             EmptySeansesTrasholdUpDown.Maximum = decimal.MaxValue;
-            EmptySeansesTrasholdUpDown.Value = IoC.Settings.Configuration.Trashold < 0 ? 0 : IoC.Settings.Configuration.Trashold;
+            EmptySeansesTrasholdUpDown.Value = IoCContainer.Settings.Configuration.Trashold < 0 ? 0 : IoCContainer.Settings.Configuration.Trashold;
 
             CopyLengthTrasholdUpDown.Minimum = 0;
             CopyLengthTrasholdUpDown.Maximum = decimal.MaxValue;
-            CopyLengthTrasholdUpDown.Value = IoC.Settings.Configuration.CopyLengthTrashold < 0 ? 0 : IoC.Settings.Configuration.CopyLengthTrashold;
+            CopyLengthTrasholdUpDown.Value = IoCContainer.Settings.Configuration.CopyLengthTrashold < 0 ? 0 : IoCContainer.Settings.Configuration.CopyLengthTrashold;
 
             CopyPercentTrasholdUpDown.Minimum = 0;
-            CopyPercentTrasholdUpDown.Value = IoC.Settings.Configuration.CopyPercentTrashold < 0 ? 0 : IoC.Settings.Configuration.CopyPercentTrashold;
+            CopyPercentTrasholdUpDown.Value = IoCContainer.Settings.Configuration.CopyPercentTrashold < 0 ? 0 : IoCContainer.Settings.Configuration.CopyPercentTrashold;
         }
 
         private void CanselBtn_Click(object sender, EventArgs e)
@@ -109,7 +109,7 @@ namespace Link11Checker
                 DialogResult dialogResult = MessageBox.Show("Применить настройки?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (dialogResult == DialogResult.Yes)
                 {
-                    IoC.Settings = newSettings;
+                    IoCContainer.Settings = newSettings;
                     result = true;
                 }
             }
@@ -124,36 +124,36 @@ namespace Link11Checker
         private void InitialSeansesPathExplore_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-            if (Directory.Exists(IoC.Settings.InitialSeansesPath))
-                fbd.SelectedPath = IoC.Settings.InitialSeansesPath;
+            if (Directory.Exists(IoCContainer.Settings.InitialSeansesPath))
+                fbd.SelectedPath = IoCContainer.Settings.InitialSeansesPath;
             DialogResult result = fbd.ShowDialog();
             if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
             {
-                IoC.Settings.InitialSeansesPath = InitialSeansesPathTextBox.Text = fbd.SelectedPath;
+                IoCContainer.Settings.InitialSeansesPath = InitialSeansesPathTextBox.Text = fbd.SelectedPath;
             }
         }
 
         private void InitialDestPathExplore_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-            if (Directory.Exists(IoC.Settings.InitialDestPath))
-                fbd.SelectedPath = IoC.Settings.InitialDestPath;
+            if (Directory.Exists(IoCContainer.Settings.InitialDestPath))
+                fbd.SelectedPath = IoCContainer.Settings.InitialDestPath;
             DialogResult result = fbd.ShowDialog();
             if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
             {
-                IoC.Settings.InitialDestPath = InitialDestPathTextBox.Text = fbd.SelectedPath;
+                IoCContainer.Settings.InitialDestPath = InitialDestPathTextBox.Text = fbd.SelectedPath;
             }
         }
 
         private void VenturFileExplore_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            if (Directory.Exists(IoC.Settings.InitialDestPath))
-                ofd.FileName = IoC.Settings.VenturFile;
+            if (Directory.Exists(IoCContainer.Settings.InitialDestPath))
+                ofd.FileName = IoCContainer.Settings.VenturFile;
             DialogResult result = ofd.ShowDialog();
             if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(ofd.FileName))
             {
-                IoC.Settings.VenturFile = VenturFileTextBox.Text = ofd.FileName;
+                IoCContainer.Settings.VenturFile = VenturFileTextBox.Text = ofd.FileName;
             }
         }
     }

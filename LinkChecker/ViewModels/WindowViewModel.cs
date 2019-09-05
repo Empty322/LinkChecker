@@ -42,13 +42,12 @@ namespace Link11Checker.ViewModels
                 UpdateWorkingChart();
                 OnPropertyChanged("IsSeanceSelected");
                 OnPropertyChanged("SelectedSeanse");
-            } }
-        public SeanseManager SeanseManager { 
-            get { return seanseManager; }
-            set {
-                seanseManager = value;
-                OnPropertyChanged("SeanseManager");
-            } }
+            } 
+        }
+        public bool IsSeanceSelected
+        {
+            get { return selectedSeanse == null ? false : true; }
+        }
         public bool UpdateTimerOn {
             get { return seanseManager.UpdateTimerOn; }
             set
@@ -64,7 +63,6 @@ namespace Link11Checker.ViewModels
             {
                 seanseManager.CopyTimerOn = value;
                 OnPropertyChanged("CopyTimerOn");
-                OnPropertyChanged("CanEditCollection");
             }
         }
         public bool SynchronyzeWithVenturOn
@@ -78,26 +76,21 @@ namespace Link11Checker.ViewModels
             }
         }
         public bool CanEditCollection { 
-            get {
-                return !SynchronyzeWithVenturOn;
-            }
+            get { return !SynchronyzeWithVenturOn; }
         }
         public DirectoryInfo DestPath
         {
             get
             {
                 if (!string.IsNullOrWhiteSpace(seanseManager.DestinationPath))
-                    return new DirectoryInfo(SeanseManager.DestinationPath);
+                    return new DirectoryInfo(seanseManager.DestinationPath);
                 return null;
             }
         }
         public bool DestPathSelected {
-            get { return !string.IsNullOrWhiteSpace(SeanseManager.DestinationPath); } 
+            get { return !string.IsNullOrWhiteSpace(seanseManager.DestinationPath); } 
         }
-        public bool IsSeanceSelected
-        {
-            get { return selectedSeanse == null ? false : true; }
-        }
+
         public bool NotifyWhenStartWorking
         {
             get
@@ -147,6 +140,8 @@ namespace Link11Checker.ViewModels
 
         #region StatusBarProps
 
+        public int ActiveCount { get { return Seanses.Where(x => x.State == SeanseState.Active && x.Visible).Count(); } }
+        public int WorkingCount { get { return Seanses.Where(x => x.State != SeanseState.WorkingLevel0).Count(); } }
         public string Version { get { return version; } }
         public bool IsLoading {
             get
@@ -182,10 +177,7 @@ namespace Link11Checker.ViewModels
                 isUpdating = value;
                 OnPropertyChanged("IsUpdating");
             }
-        }
-        public int ActiveCount { get { return Seanses.Where(x => x.State == SeanseState.Active).Count(); } }
-        public int WorkingCount { get { return Seanses.Where(x => x.State != SeanseState.WorkingLevel0).Count(); } }
-        
+        }      
 
         #endregion
 
@@ -288,7 +280,7 @@ namespace Link11Checker.ViewModels
             Chart workingChart = window.workingChart;
             ChartArea workingArea = new ChartArea("WorkingArea");
             workingArea.AxisX.IntervalType = DateTimeIntervalType.Auto;
-            workingArea.AxisX.Interval = IoC.Settings.WorkingChartInterval;
+            workingArea.AxisX.Interval = IoCContainer.Settings.WorkingChartInterval;
             workingArea.AxisY.Interval = 1;
             workingChart.ChartAreas.Add(workingArea);
             
@@ -309,12 +301,12 @@ namespace Link11Checker.ViewModels
             SelectDestinationPath = new RelayCommand(() =>
             {
                 FolderBrowserDialog fbd = new FolderBrowserDialog();
-                if (Directory.Exists(IoC.Settings.InitialDestPath))
-                    fbd.SelectedPath = IoC.Settings.InitialDestPath;
+                if (Directory.Exists(IoCContainer.Settings.InitialDestPath))
+                    fbd.SelectedPath = IoCContainer.Settings.InitialDestPath;
                 DialogResult result = fbd.ShowDialog();
                 if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
                 {
-                    SeanseManager.DestinationPath = fbd.SelectedPath;
+                    seanseManager.DestinationPath = fbd.SelectedPath;
                     OnPropertyChanged("DestPath");
                     OnPropertyChanged("DestPathSelected");
                 }
@@ -325,12 +317,12 @@ namespace Link11Checker.ViewModels
                 FolderBrowserDialog fbd = new FolderBrowserDialog();
                 if (!string.IsNullOrWhiteSpace(lastSelectedPathWithLinks))
                     fbd.SelectedPath = lastSelectedPathWithLinks;
-                else if (Directory.Exists(IoC.Settings.InitialSeansesPath))
-                    fbd.SelectedPath = IoC.Settings.InitialSeansesPath;
+                else if (Directory.Exists(IoCContainer.Settings.InitialSeansesPath))
+                    fbd.SelectedPath = IoCContainer.Settings.InitialSeansesPath;
                 DialogResult result = fbd.ShowDialog();
                 if (result == DialogResult.OK && fbd.SelectedPath != null)
                 {
-                    if (!await SeanseManager.AddSeanseAsync(fbd.SelectedPath))
+                    if (!await seanseManager.AddSeanseAsync(fbd.SelectedPath))
                         logger.LogMessage("Не удалось добавить сеанс: \n" + fbd.SelectedPath, LogLevel.Warning);
                 }
                 lastSelectedPathWithLinks = fbd.SelectedPath;
@@ -338,17 +330,17 @@ namespace Link11Checker.ViewModels
 
             AddSeansesFromVentur = new RelayCommand(async () =>
             {
-                await SeanseManager.AddSeansesFromVentursFileAsync(IoC.Settings.VenturFile);
+                await seanseManager.AddSeansesFromVentursFileAsync(IoCContainer.Settings.VenturFile);
             });
 
             AddAllSeanses = new RelayCommand(async () =>
             {
                 FolderBrowserDialog fbd = new FolderBrowserDialog();
-                if (Directory.Exists(IoC.Settings.InitialDestPath))
-                    fbd.SelectedPath = IoC.Settings.InitialDestPath;
+                if (Directory.Exists(IoCContainer.Settings.InitialDestPath))
+                    fbd.SelectedPath = IoCContainer.Settings.InitialDestPath;
                 DialogResult result = fbd.ShowDialog();
                 if (result == DialogResult.OK && fbd.SelectedPath != null)
-                    await SeanseManager.AddAllSeansesFromFolderAsync(fbd.SelectedPath);
+                    await seanseManager.AddAllSeansesFromFolderAsync(fbd.SelectedPath);
             });
 
             RemoveSeanse = new RelayCommand(async () =>
@@ -356,7 +348,7 @@ namespace Link11Checker.ViewModels
                 try
                 {
                     if (SelectedSeanse != null)
-                        await SeanseManager.RemoveSeanseAsync(SelectedSeanse);
+                        await seanseManager.RemoveSeanseAsync(SelectedSeanse);
                     else
                         MessageBox.Show("Выбирете сеанс", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
@@ -371,7 +363,7 @@ namespace Link11Checker.ViewModels
                 try {
                     DialogResult result = MessageBox.Show("Удалить все сеансы?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result == DialogResult.Yes)
-                        await SeanseManager.RemoveAllSeansesAsync();                                 
+                        await seanseManager.RemoveAllSeansesAsync();                                 
                 }
                 catch (Exception e)
                 {
@@ -381,8 +373,8 @@ namespace Link11Checker.ViewModels
 
             CopySeanses = new RelayCommand(async () =>
             {
-                    if (!string.IsNullOrWhiteSpace(SeanseManager.DestinationPath)){
-                        await SeanseManager.CopySeansesAsync();
+                    if (!string.IsNullOrWhiteSpace(seanseManager.DestinationPath)){
+                        await seanseManager.CopySeansesAsync();
                     }
                     else
                         MessageBox.Show("Папка для накопления не выбрана", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -390,24 +382,20 @@ namespace Link11Checker.ViewModels
 
             UpdateSeanses = new RelayCommand(async () =>
             {
-                await SeanseManager.UpdateSeansesAsync();
+                await seanseManager.UpdateSeansesAsync();
             });
 
-            OpenSettings = new RelayCommand(async () =>
+            OpenSettings = new RelayCommand(() =>
             {
                 SettingsForm sf = new SettingsForm(logger);
                 sf.ShowDialog();
-                SeanseManager.SetConfiguration(IoC.Settings.Configuration);
-                try
+
+                seanseManager.SetConfiguration(IoCContainer.Settings.Configuration);
+                window.workingChart.ChartAreas[0].AxisX.Interval = IoCContainer.Settings.WorkingChartInterval;
+                window.workingChart.Invalidate();
+                if (!UpdateTimerOn)
                 {
-                    window.workingChart.ChartAreas[0].AxisX.Interval = IoC.Settings.WorkingChartInterval;
-                    window.workingChart.Invalidate();
-                    await SeanseManager.UpdateSeansesAsync();
-                    UpdateTuningChart();
-                }
-                catch (Exception e)
-                {
-                    logger.LogMessage(e.Message, LogLevel.Error);
+                    seanseManager.UpdateSeanses();
                 }
             });
 
@@ -555,7 +543,7 @@ namespace Link11Checker.ViewModels
 
         private void newSeanse_ActiveEnd(Seanse seanse, EventArgs args)
         {
-            string msg = string.Format("Линк {0} {1} вышел из активного режима " + IoC.Settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode);
+            string msg = string.Format("Линк {0} {1} вышел из активного режима " + IoCContainer.Settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode);
             if (NotifyWhenEndActive)
             {
                 System.Windows.Forms.MessageBox.Show(msg, "Выход из активного режима", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -575,7 +563,7 @@ namespace Link11Checker.ViewModels
 
         private void Seanse_WorkingEnd(Seanse seanse, EventArgs args)
         {
-            string msg = string.Format("Линк {0} {1} окончил свою работу " + IoC.Settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode);
+            string msg = string.Format("Линк {0} {1} окончил свою работу " + IoCContainer.Settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode);
             if (NotifyWhenEndWorking)
             {
                 System.Windows.Forms.MessageBox.Show(msg, "Окончание работы", MessageBoxButtons.OK, MessageBoxIcon.Information);

@@ -15,7 +15,7 @@ using Newtonsoft.Json;
 
 namespace Link11.Core
 {
-    public class Seanse : INotifyPropertyChanged, ICloneable
+    public class Seanse : INotifyPropertyChanged
     {
         #region Events
 
@@ -302,8 +302,8 @@ namespace Link11.Core
             this.state = SeanseState.WorkingLevel0;
             this.isEnded = true;
             this.isActiveEnded = true;
-            this.lastCopyLogFileLenght = -1;
-            this.lastUpdateLogFileLength = -1;
+            this.lastCopyLogFileLenght = 0;
+            this.lastUpdateLogFileLength = 0;
             this.serverTime = new DateTime();
             Update();
         }
@@ -340,84 +340,82 @@ namespace Link11.Core
                 LoadLog();
                 messageToLog.Append(" + Загрузка 'log.txt'" + Environment.NewLine);
 
-                // Если это не пустой сеанс
-                if (signalEntries.Any())
+                messageToLog.Append(" + Сеананс не пустой " + signalEntries.Count + Environment.NewLine);
+
+                // Обновить время сервера
+                DateTime lastEntryTime = signalEntries.Last().Time;
+                TimeSpan delay = lastModified - lastEntryTime;
+                serverTime = DateTime.Now - delay;      
+
+                // Получить данные для графика расстройки
+                TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
+
+                // Получить данные для графика объема
+                SizeChartUnits = GetSizeChartUnits();
+
+                // Получить данные для графика работы
+                WorkingChartUnits = GetWorkingChartUnits(new TimeSpan(0, 1, 0));
+
+                messageToLog.Append(" + Единицы графиков вычислины " + TuningChartUnits.Count + " " + SizeChartUnits.Count + " " + WorkingChartUnits.Count + Environment.NewLine);
+
+                // Получить вхождения с объемом, превышающим норму
+                List<ActiveEntry> newActiveEntries = signalEntries
+                    .Where(x =>
+                        x.Type != EntryType.Error &&
+                        ((x.Size - x.Errors) > (int)Mode))
+                    .Select(x =>
+                        new ActiveEntry { Time = x.Time, Size = x.Size - x.Errors })
+                    .ToList();
+                ActiveEntries = newActiveEntries;
+                messageToLog.Append(" + Активные сообщения получены " + ActiveEntries.Count + Environment.NewLine);
+
+                // Получить абонентов
+                Abonents = GetAbonentsInfo();
+                AbonentsCount = GetActualAbonentsCount(Abonents);
+                messageToLog.Append(" + Абоненты получены " + Abonents.Count + Environment.NewLine);
+
+                // Установить время начала
+                StartWorkingTime = signalEntries.First().Time;
+
+                // Обновить конечное время
+                for (int index = signalEntries.Count - 1; index >= 0; index--)
                 {
-                    messageToLog.Append(" + Сеананс не пустой " + signalEntries.Count + Environment.NewLine);
-
-                    // Обновить время сервера
-                    DateTime lastEntryTime = signalEntries.Last().Time;
-                    TimeSpan delay = lastModified - lastEntryTime;
-                    serverTime = DateTime.Now - delay;      
-
-                    // Получить данные для графика расстройки
-                    TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
-
-                    // Получить данные для графика объема
-                    SizeChartUnits = GetSizeChartUnits();
-
-                    // Получить данные для графика работы
-                    WorkingChartUnits = GetWorkingChartUnits(new TimeSpan(0, 1, 0));
-
-                    messageToLog.Append(" + Единицы графиков вычислины " + TuningChartUnits.Count + " " + SizeChartUnits.Count + " " + WorkingChartUnits.Count + Environment.NewLine);
-
-                    // Получить вхождения с объемом, превышающим норму
-                    List<ActiveEntry> newActiveEntries = signalEntries
-                        .Where(x =>
-                            x.Type != EntryType.Error &&
-                            ((x.Size - x.Errors) > (int)Mode))
-                        .Select(x =>
-                            new ActiveEntry { Time = x.Time, Size = x.Size - x.Errors })
-                        .ToList();
-                    ActiveEntries = newActiveEntries;
-                    messageToLog.Append(" + Активные сообщения получены " + ActiveEntries.Count + Environment.NewLine);
-
-                    // Получить абонентов
-                    Abonents = GetAbonentsInfo();
-                    AbonentsCount = GetActualAbonentsCount(Abonents);
-                    messageToLog.Append(" + Абоненты получены " + Abonents.Count + Environment.NewLine);
-
-                    // Установить время начала
-                    StartWorkingTime = signalEntries.First().Time;
-
-                    // Обновить конечное время
-                    for (int index = signalEntries.Count - 1; index >= 0; index--)
-                        if (signalEntries[index].Type != EntryType.Error)
-                        {
-                            lastWorkingTime = signalEntries[index].Time;
-                            break;
-                        }
-
-                    // Обновить сторку с интервалами
-                    string intervals = "";
-                    var intervalEntries = GetIntervals().OrderByDescending(interval => interval.Value).Take(3);
-                    foreach (var interval in intervalEntries)
-                        intervals += interval.Key + "(" + interval.Value + ") ";
-                    this.intervals = intervals; 
-
-                    // Обновить процент приема
-                    int notErrorsCount = signalEntries.Where(x => x.Type != EntryType.Error).Count();
-                    if (notErrorsCount > 0)
-                        PercentReceiving = (int)Math.Round(100f / signalEntries.Count() * notErrorsCount);
-                    else
-                        PercentReceiving = 0;
-                        
-                    // Обновить переменные объема
-                    MaxSize = GetMaxInFrames();
-                    MaxSizeInBytes = (float)Math.Round(MaxSize * 3.75f, 2);
-                    AverageSize = (float)Math.Round(GetAverageSizeInFrames());
-                    AverageSizeInBytes = (float)Math.Round(AverageSize * 3.75f, 2);
-
-                    // Обновить время последнего изменения
-                    lastModified = File.GetLastWriteTime(Directory + "\\log.txt");
-                    messageToLog.Append(" + lastModified = " + lastModified + Environment.NewLine);
-                    // Обновить время последнего обновления
-                    LastUpdate = DateTime.Now;
-                    messageToLog.Append(" + lastUpdate = " + lastUpdate + Environment.NewLine);
-                    // Обновить размер лога при последнем обновлении
-                    lastUpdateLogFileLength = logFileLength;
-                    messageToLog.Append(" + lastUpdateLogFileLength = " + lastUpdateLogFileLength + Environment.NewLine);
+                    if (signalEntries[index].Type != EntryType.Error)
+                    {
+                        lastWorkingTime = signalEntries[index].Time;
+                        break;
+                    }
                 }
+
+                // Обновить сторку с интервалами
+                string calculatedIntervals = "";
+                var intervalEntries = GetIntervals().OrderByDescending(interval => interval.Value).Take(3);
+                foreach (var interval in intervalEntries)
+                    calculatedIntervals += interval.Key + "(" + interval.Value + ") ";
+                this.Intervals = calculatedIntervals; 
+
+                // Обновить процент приема
+                int notErrorsCount = signalEntries.Where(x => x.Type != EntryType.Error).Count();
+                if (notErrorsCount > 0)
+                    PercentReceiving = (int)Math.Round(100f / signalEntries.Count() * notErrorsCount);
+                else
+                    PercentReceiving = 0;
+                        
+                // Обновить переменные объема
+                MaxSize = GetMaxInFrames();
+                MaxSizeInBytes = (float)Math.Round(MaxSize * 3.75f, 2);
+                AverageSize = (float)Math.Round(GetAverageSizeInFrames());
+                AverageSizeInBytes = (float)Math.Round(AverageSize * 3.75f, 2);
+
+                // Обновить время последнего изменения
+                lastModified = File.GetLastWriteTime(Directory + "\\log.txt");
+                messageToLog.Append(" + lastModified = " + lastModified + Environment.NewLine);
+                // Обновить время последнего обновления
+                LastUpdate = DateTime.Now;
+                messageToLog.Append(" + lastUpdate = " + lastUpdate + Environment.NewLine);
+                // Обновить размер лога при последнем обновлении
+                lastUpdateLogFileLength = logFileLength;
+                messageToLog.Append(" + lastUpdateLogFileLength = " + lastUpdateLogFileLength + Environment.NewLine);
             }
 
             // Обновить видимость
@@ -692,17 +690,8 @@ namespace Link11.Core
 
         public void SetConfuguration(Configuration config)
         {
-            // Если усреднение графика расстройки изменилось, то перерасчитать значения
-            if (this.config.SmoothValue != config.SmoothValue)
-                TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
-
             // Установить конфигурацию
             this.config = config;
-        }
-        
-        public object Clone()
-        {
-            return this.MemberwiseClone();
         }
 
         #endregion

@@ -80,7 +80,7 @@
     <Compile Include="Converters\StateToColorConverter.cs" />
     <Compile Include="Core\SeanseManager.cs" />
     <Compile Include="Core\Settings.cs" />
-    <Compile Include="IoC.cs" />
+    <Compile Include="IoCContainer.cs" />
     <Compile Include="SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>

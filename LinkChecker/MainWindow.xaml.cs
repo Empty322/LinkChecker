@@ -65,7 +65,7 @@ namespace Link11Checker
                 File.WriteAllText("settings.json", settingsFile, Encoding.Default);
             }
 
-            IoC.Settings = settings;
+            IoCContainer.Settings = settings;
 
             #endregion
 
