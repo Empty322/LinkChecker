@@ -19,6 +19,7 @@ using Link11Checker.Core;
 using Newtonsoft.Json;
 using Link11.Core;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Diagnostics;
 
 namespace Link11Checker
 {

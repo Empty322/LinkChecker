@@ -23,7 +23,7 @@ namespace Link11.Core
 
         public List<SignalEntry> ParseLog(List<string> lines)
         {
-            List<SignalEntry> signal = new List<SignalEntry>();
+            List<SignalEntry> entries = new List<SignalEntry>();
             for (int i = 0; i < lines.Count(); i++)
             {
                 string[] lineData = lines[i].Split('\t');
@@ -123,16 +123,16 @@ namespace Link11.Core
                         }
                         
                         // Корректирование даты
-                        if (signal.Any() && signal.Last().Time > se.Time)
-                            dayNumber++;
+                        if (entries.Any() && entries.Last().Time > se.Time)
+                            DecrementDay(entries);
                         se.Time = se.Time.AddDays((double)dayNumber);
 
-                        signal.Add(se);
+                        entries.Add(se);
                     }
                 }
             }
                         
-            return signal;
+            return entries;
         }
 
         public void ParseAllLog(string content, out float freq, out Mode mode)
@@ -147,6 +147,14 @@ namespace Link11.Core
                 mode = Mode.Unknown;
             // Частота
             freq = float.Parse(content.Substring(25, 6).Replace('.', ','));
+        }
+
+        private void DecrementDay(List<SignalEntry> entries)
+        {
+            foreach (var entry in entries)
+            {
+                entry.Time = entry.Time.AddDays(-1);
+            }
         }
     }
 }

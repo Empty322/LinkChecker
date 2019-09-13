@@ -18,9 +18,11 @@ namespace Link11Checker.Core
     {
         #region Events
 
+        public event Action<object> LoadingStarted = (sender) => { };
+        public event Action<object> LoadingEnded = (sender) => { };
         public event Action<object, string> SeanseAdding = (sender, direcory) => { };
-        public event Action<object, Seanse> SeanseUpdated = (sender, e) => { };
         public event Action<object, Seanse> SeanseAdded = (sender, e) => { };
+        public event Action<object, Seanse> SeanseUpdated = (sender, e) => { };
         public event Action<object, Seanse> SeanseRemoved = (sender, e) => { };
         public event Action<object> StartCopying = (sender) => { };
         public event Action<object> EndCopying = (sender) => { };
@@ -72,8 +74,9 @@ namespace Link11Checker.Core
             bool result = false;
             lock (Seanses)
             {
+                LoadingStarted.Invoke(this);
                 result = LoadSeanse(seanseDir);
-                SaveDirectories();
+                LoadingEnded.Invoke(this);
             }
             return result;
         }
@@ -87,15 +90,21 @@ namespace Link11Checker.Core
         public void AddSeansesFromVentursFile(string file)
         {
             lock (Seanses) {
-                List<ch> channels = GetChannelsFromVentursFile(file);
-                Parallel.ForEach(channels, channel =>
+                List<Channel> channels = GetChannelsFromVentursFile(file);
+                LoadingStarted.Invoke(this);
+                Parallel.ForEach(channels, channelInfo =>
                 {
-                    if (!Seanses.Select(x => x.Directory.FullName.ToLower()).Contains(channel.Directory.ToLower()) && (channel.Trakt == "slew" || channel.Trakt == "link11"))
+                    Seanse currentSeanse = Seanses.FirstOrDefault(x => x.Directory.FullName.ToLower() == channelInfo.Directory.ToLower());
+                    if (currentSeanse == null)
                     {
-                        LoadSeanse(channel.Directory);
+                        LoadSeanse(channelInfo.Directory);
+                    }
+                    if (currentSeanse != null)
+                    {
+                        currentSeanse.ChannelInfo = channelInfo;
                     }
                 });
-                SaveDirectories();
+                LoadingEnded(this);
             }
         }
 
@@ -113,12 +122,13 @@ namespace Link11Checker.Core
                 DirectoryInfo[] childDirs = di.GetDirectories();
 
                 List<string> dirsInStock = Seanses.Select(x => x.Directory.FullName.ToLower()).ToList();
+                LoadingStarted.Invoke(this);
                 Parallel.ForEach(childDirs, directory =>
                 {
                     if (!dirsInStock.Contains(directory.FullName.ToLower()))
                         LoadSeanse(directory.FullName);
                 });
-                SaveDirectories();
+                LoadingEnded.Invoke(this);
             }
         }
 
@@ -135,7 +145,6 @@ namespace Link11Checker.Core
                 if (Seanses.Remove(seanse))
                 {
                     SeanseRemoved(this, seanse);
-                    SaveDirectories();
                 }
             }
         }
@@ -156,7 +165,6 @@ namespace Link11Checker.Core
                     Seanses.RemoveAt(0);
                     SeanseRemoved(this, removedSeanse);
                 }
-                SaveDirectories();
             }
         }
 
@@ -170,7 +178,7 @@ namespace Link11Checker.Core
         {
             lock (Seanses)
             {
-                List<ch> channels = GetChannelsFromVentursFile(IoCContainer.Settings.VenturFile);
+                List<Channel> channels = GetChannelsFromVentursFile(IoCContainer.Settings.VenturFile);
                 string[] ventursDirs = channels.Where(x => x.Trakt == "slew" || x.Trakt == "link11").Select(x => x.Directory.ToLower()).ToArray();
                 List<Seanse> seansesToRemove = new List<Seanse>();
                 foreach (Seanse seanse in Seanses)
@@ -183,7 +191,9 @@ namespace Link11Checker.Core
                 foreach (Seanse seanseToRemove in seansesToRemove)
                 {
                     if (Seanses.Remove(seanseToRemove))
+                    {
                         SeanseRemoved.Invoke(this, seanseToRemove);
+                    }
                 }
             }
         }
@@ -230,11 +240,6 @@ namespace Link11Checker.Core
             lock (Seanses)
             {
                 UpdatingStarted.Invoke(this);
-                logger.LogMessage("=========================   ОБНОВЛЕНИЕ СЕАНСОВ   =========================", LogLevel.Info);
-                string seansesToUpdate = "";
-                foreach (var seanse in Seanses)
-                    seansesToUpdate += '\t' + seanse.Directory.Name + Environment.NewLine;
-                logger.LogMessage(seansesToUpdate, LogLevel.Info);
                 Parallel.ForEach(Seanses, seanse =>
                 {
                     try
@@ -264,24 +269,10 @@ namespace Link11Checker.Core
             await updateTask;
         }
 
-        private void SaveDirectories()
+        private List<Channel> GetChannelsFromVentursFile(string file)
         {
-            lock (Seanses)
-            {
-                List<string> seansesToSave = new List<string>();
-                foreach (Seanse s in Seanses)
-                {
-                    seansesToSave.Add(s.Directory.FullName);
-                };
-                string json = JsonConvert.SerializeObject(seansesToSave);
-                File.WriteAllText("seanses.json", json, Encoding.Default);
-            }
-        }
-
-        private List<ch> GetChannelsFromVentursFile(string file)
-        {
-            List<ch> result = new List<ch>();
-            XmlSerializer ser = new XmlSerializer(typeof(ch));
+            List<Channel> result = new List<Channel>();
+            XmlSerializer ser = new XmlSerializer(typeof(Channel));
             try
             {
                 string[] channels = File.ReadAllLines(file, Encoding.Default);
@@ -289,8 +280,12 @@ namespace Link11Checker.Core
                 for (int i = 1; i < channels.Count(); i++)
                 {
                     using (StringReader sr = new StringReader(channels[i]))
-                    {                
-                        result.Add((ch)ser.Deserialize(sr));
+                    {   
+                        Channel channel = (Channel)ser.Deserialize(sr);
+                        if (channel.Trakt == "link11" || channel.Trakt == "slew")
+                        {
+                            result.Add(channel);
+                        }
                     }
                 }
             }

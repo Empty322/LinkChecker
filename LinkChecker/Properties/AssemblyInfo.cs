@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("2 отдел в\\ч 41480")]
 [assembly: AssemblyProduct("Link11Checker")]
-[assembly: AssemblyCopyright("Беспалов М. С. Copyright © 2019")]
+[assembly: AssemblyCopyright("© 2019 Беспалов М.С.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.16.10")]
-[assembly: AssemblyFileVersion("0.16.10")]
+[assembly: AssemblyVersion("1.0.0")]
+[assembly: AssemblyFileVersion("1.0.0")]

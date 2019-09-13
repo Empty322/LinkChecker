@@ -4,7 +4,7 @@
         xmlns:charting="clr-namespace:System.Windows.Forms.DataVisualization.Charting;assembly=System.Windows.Forms.DataVisualization"
         xmlns:winforms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         Title="Link11Checker" MinHeight="600" MinWidth="950" 
-        Icon="Resources/btnSonogr.png" Height="600" Width="950">
+        Icon="Resources/btnSonogr.png" Height="710" Width="950">
     <DockPanel>
         <Menu DockPanel.Dock="Top" VerticalAlignment="Top" Grid.Row="0" Grid.ColumnSpan="2">
             <MenuItem Header="Сеанс">
@@ -63,7 +63,7 @@
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
                 <TextBlock Text="{Binding Version, StringFormat=Версия: {0}}" />
-            </StatusBarItem>                   
+            </StatusBarItem>
         </StatusBar>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -98,7 +98,7 @@
                                     </Ellipse.ToolTip>
                                 </Ellipse>
                             </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>    
+                        </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Частота" Binding="{Binding Freq, Mode=OneWay}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Режим" Binding="{Binding Mode, Mode=OneWay}"></DataGridTextColumn>
@@ -127,8 +127,12 @@
                     </WindowsFormsHost>
                 </TabItem>
             </TabControl>
-            <DockPanel Grid.Column="2" Margin="5">
-                <ListView ItemsSource="{Binding SelectedSeanse.ActiveEntries}" DockPanel.Dock="Left" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+            <Grid Grid.Column="2" Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <ListView Grid.Column="0" ItemsSource="{Binding SelectedSeanse.ActiveEntries}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Grid.ColumnSpan="2">
                     <ListView.View>
                         <GridView>
                             <GridView.Columns>
@@ -138,7 +142,7 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
-                <ListView ItemsSource="{Binding SelectedSeanse.Abonents}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                <ListView Grid.Column="1" ItemsSource="{Binding SelectedSeanse.Abonents}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Grid.ColumnSpan="2">
                     <ListView.View>
                         <GridView>
                             <GridView.Columns>
@@ -148,7 +152,7 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
-            </DockPanel>
+            </Grid>
             <DockPanel Grid.Row="1" Margin="5" Grid.Column="1">
                 <Button Margin="0,0,0,5" Command="{Binding OpenLog}" IsEnabled="{Binding SelectedSeanse.DirectoryExists, FallbackValue=false}" DockPanel.Dock="Top">Открыть log.txt</Button>
                 <Button Margin="0,0,0,5" Command="{Binding DeleteSeanseDirectory}" IsEnabled="{Binding SelectedSeanse.DirectoryExists, FallbackValue=false}" DockPanel.Dock="Top">Удалить папку с сеансом</Button>
@@ -161,6 +165,8 @@
                 </DockPanel>
                 <TextBlock Text="{Binding SelectedSeanse.MaxSizeInBytes, StringFormat=Макс. объем в байтах: {0:F2}}" TextWrapping="Wrap" DockPanel.Dock="Top"/>
                 <TextBlock Text="{Binding SelectedSeanse.AverageSizeInBytes, StringFormat=Средний. объем в байтах: {0:F2}}" TextWrapping="Wrap" DockPanel.Dock="Top"/>
+                <TextBlock Text="{Binding SelectedSeanse.ChannelInfo.Server, StringFormat=Сервер: {0}}" TextWrapping="Wrap" DockPanel.Dock="Top"/>
+                <TextBlock Text="{Binding SelectedSeanse.ChannelInfo.Id, StringFormat=Номер тракта: {0}}" TextWrapping="Wrap" DockPanel.Dock="Top"/>
             </DockPanel>
         </Grid>
     </DockPanel>

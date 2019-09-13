@@ -12,6 +12,8 @@ using Link11.Core.Charting;
 using Link11.Core;
 using Logger;
 using Newtonsoft.Json;
+using Microsoft.Win32.SafeHandles;
+using System.Diagnostics;
 
 namespace Link11.Core
 {
@@ -169,6 +171,17 @@ namespace Link11.Core
                 OnPropertyChanged("Remark");
             }
         }
+        public Channel ChannelInfo
+        {
+            get
+            {
+                return channelInfo;
+            }
+            set { 
+                channelInfo = value; 
+                OnPropertyChanged("ChannelInfo");
+            }
+        }
         public DateTime StartWorkingTime
         {
             get
@@ -232,7 +245,18 @@ namespace Link11.Core
                 OnPropertyChanged("ActiveEntries");
             }
         }
-        public List<AbonentInfo> Abonents { get; set; }
+        public List<AbonentInfo> Abonents
+        {
+            get
+            {
+                return abonents;
+            }
+            set
+            {
+                abonents = value;
+                OnPropertyChanged("Abonents");
+            }
+        }
 
         #endregion
 
@@ -257,6 +281,8 @@ namespace Link11.Core
         private string intervals;
         private int percentReceiving;
         private List<ActiveEntry> activeEntries;
+        private List<AbonentInfo> abonents;
+        private Channel channelInfo;
 
         private IParser parser;
         private ILogger logger;   
@@ -265,9 +291,7 @@ namespace Link11.Core
         private bool isEnded;
         private bool isActiveEnded;
         private long lastUpdateLogFileLength;
-        private long lastCopyLogFileLenght;
-        private DateTime lastModified;
-        private DateTime serverTime;
+        private TimeSpan delay;
 
         private const int countForWorkingLevel5 = 200;
         private const int countForWorkingLevel4 = 100;
@@ -289,9 +313,7 @@ namespace Link11.Core
                 throw new LogFileNotFoundException();
             this.TuningChartUnits = new List<TuningChartUnit>();
             this.WorkingChartUnits = new List<WorkingChartUnit>();
-            this.Abonents = new List<AbonentInfo>();
             this.activeEntries = new List<ActiveEntry>();
-            this.lastModified = new DateTime();
             this.remark = "";
             this.logger = logger;
             this.signalEntries = new List<SignalEntry>();
@@ -302,9 +324,9 @@ namespace Link11.Core
             this.state = SeanseState.WorkingLevel0;
             this.isEnded = true;
             this.isActiveEnded = true;
-            this.lastCopyLogFileLenght = 0;
             this.lastUpdateLogFileLength = 0;
-            this.serverTime = new DateTime();
+            this.abonents = new List<AbonentInfo>();
+            this.ChannelInfo = new Channel { Server = "не известен" };
             Update();
         }
 
@@ -314,15 +336,12 @@ namespace Link11.Core
 
         public void Update()
         {
-            StringBuilder messageToLog = new StringBuilder();
-            messageToLog.Append("ОБНОВЛЕНИЕ СЕАНСА " + Directory + Environment.NewLine);
             // Если директория существует
             if (!System.IO.Directory.Exists(Directory.FullName))
             {
                 DirectoryExists = false;
                 return;
             }
-            messageToLog.Append(" + Директория существует" + Environment.NewLine);
 
             DirectoryExists = true;
 
@@ -330,23 +349,12 @@ namespace Link11.Core
             long logFileLength = new FileInfo(Directory + "\\log.txt").Length;
             if (logFileLength != lastUpdateLogFileLength)
             {
-                messageToLog.Append(" + logFileLength != lastUpdateLogFileLenght (" + logFileLength + " != " + lastUpdateLogFileLength + ")" + Environment.NewLine);
-
                 // Загрузить log.txt
                 LoadAllLog();
-                messageToLog.Append(" + Загрузка 'alllog.txt'" + Environment.NewLine);
 
                 // Загрузить allLog.txt
                 LoadLog();
-                messageToLog.Append(" + Загрузка 'log.txt'" + Environment.NewLine);
-
-                messageToLog.Append(" + Сеананс не пустой " + signalEntries.Count + Environment.NewLine);
-
-                // Обновить время сервера
-                DateTime lastEntryTime = signalEntries.Last().Time;
-                TimeSpan delay = lastModified - lastEntryTime;
-                serverTime = DateTime.Now - delay;      
-
+                             
                 // Получить данные для графика расстройки
                 TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
 
@@ -355,8 +363,6 @@ namespace Link11.Core
 
                 // Получить данные для графика работы
                 WorkingChartUnits = GetWorkingChartUnits(new TimeSpan(0, 1, 0));
-
-                messageToLog.Append(" + Единицы графиков вычислины " + TuningChartUnits.Count + " " + SizeChartUnits.Count + " " + WorkingChartUnits.Count + Environment.NewLine);
 
                 // Получить вхождения с объемом, превышающим норму
                 List<ActiveEntry> newActiveEntries = signalEntries
@@ -367,12 +373,10 @@ namespace Link11.Core
                         new ActiveEntry { Time = x.Time, Size = x.Size - x.Errors })
                     .ToList();
                 ActiveEntries = newActiveEntries;
-                messageToLog.Append(" + Активные сообщения получены " + ActiveEntries.Count + Environment.NewLine);
 
                 // Получить абонентов
                 Abonents = GetAbonentsInfo();
                 AbonentsCount = GetActualAbonentsCount(Abonents);
-                messageToLog.Append(" + Абоненты получены " + Abonents.Count + Environment.NewLine);
 
                 // Установить время начала
                 StartWorkingTime = signalEntries.First().Time;
@@ -400,6 +404,13 @@ namespace Link11.Core
                     PercentReceiving = (int)Math.Round(100f / signalEntries.Count() * notErrorsCount);
                 else
                     PercentReceiving = 0;
+
+                // Обновить задержку
+                DateTime lastEntryTime = signalEntries.Last().Time;
+
+                //   В ОТДЕЛЬНЫХ СЛУЧАЯХ НЕ ВЕРНО ВРЕМЯ ПОСЛЕДНЕЙ ЗАПИСИ В ФАЙЛ
+                var lastWriteTime = File.GetLastWriteTime(Path.Combine(Directory.FullName, "log.txt"));
+                delay = lastWriteTime - lastEntryTime;
                         
                 // Обновить переменные объема
                 MaxSize = GetMaxInFrames();
@@ -407,29 +418,20 @@ namespace Link11.Core
                 AverageSize = (float)Math.Round(GetAverageSizeInFrames());
                 AverageSizeInBytes = (float)Math.Round(AverageSize * 3.75f, 2);
 
-                // Обновить время последнего изменения
-                lastModified = File.GetLastWriteTime(Directory + "\\log.txt");
-                messageToLog.Append(" + lastModified = " + lastModified + Environment.NewLine);
                 // Обновить время последнего обновления
                 LastUpdate = DateTime.Now;
-                messageToLog.Append(" + lastUpdate = " + lastUpdate + Environment.NewLine);
                 // Обновить размер лога при последнем обновлении
                 lastUpdateLogFileLength = logFileLength;
-                messageToLog.Append(" + lastUpdateLogFileLength = " + lastUpdateLogFileLength + Environment.NewLine);
             }
 
             // Обновить видимость
             if (config.HideEmptySeanses && !(signalEntries.Where(e => e.Type != EntryType.Error).Count() > config.Trashold))
                 Visible = false;
             else
-                Visible = true; 
+                Visible = true;
 
             // Узнать состояние сеанса
             State = GetState();
-            messageToLog.Append(" + prevState = " + prevState + Environment.NewLine);
-            messageToLog.Append(" + State = " + State + Environment.NewLine);
-
-            logger.LogMessage(messageToLog.ToString(), LogLevel.Info);
 
             // Запустить уведомления
             FireEvents(prevState, state);
@@ -441,36 +443,14 @@ namespace Link11.Core
         {
             bool result = false;
 
-            // Если директория не существует выйти
-            if (!System.IO.Directory.Exists(Directory.FullName))
-            {
-                DirectoryExists = false;
-                return result;
-            }
-
-            // Если нет вхождений выйти
-            if (!signalEntries.Any())
-            {
-                return result;
-            }
-
-            FileInfo logInfo = new FileInfo(Directory + "/log.txt");
-            // Его размер не равен размеру при прошлом копировании
-            // Если размер лога больше порога размера и
-            // Превышает порог приема и
-            bool seanseNeedsToUpdate = logInfo.Length != lastCopyLogFileLenght &&
-                                        logInfo.Length >= config.CopyLengthTrashold &&
-                                        PercentReceiving >= config.CopyPercentTrashold;
-
-            // Если сигнал не работает и он нуждается в копировании
-            if (!seanseNeedsToUpdate)
+            if (!NeedToCopy(destination))
             {
                 return result;
             }
 
             // Получить файлы сеанса
             FileInfo[] files = Directory.GetFiles();
-
+            
             // Создать папку назначения, если ее нет
             if (!destination.Exists)
                 destination.Create();
@@ -487,8 +467,6 @@ namespace Link11.Core
                     {
                         // Обновить время последнего копирования
                         LastCopy = DateTime.Now;
-                        // Обновить размер лог файла при последнем копировании
-                        lastCopyLogFileLenght = logInfo.Length;
                         result = true;
                     }
                 }
@@ -498,6 +476,34 @@ namespace Link11.Core
                 }
             }
             return result;
+        }
+
+        private bool NeedToCopy(DirectoryInfo destination)
+        {
+            // Если директория не существует, то выйти
+            if (!System.IO.Directory.Exists(Directory.FullName))
+            {
+                DirectoryExists = false;
+                return false;
+            }
+
+            FileInfo logInfo = new FileInfo(Directory + "/log.txt");
+            string destinationLogFile = Path.Combine(destination.FullName, Directory.Name, "log.txt");
+            bool needToCopy =
+                // Если размер лога больше порога размера и
+                logInfo.Length >= config.CopyLengthTrashold &&
+                // Если превышает порог приема
+                PercentReceiving >= config.CopyPercentTrashold;
+
+            // Если сеанс копировался в данную директорию
+            if (needToCopy && System.IO.File.Exists(destinationLogFile))
+            {
+                FileInfo destLog = new FileInfo(destinationLogFile);
+                // Его размер не равен размеру скопированного лога, то сеанс необходимо скопировать
+                needToCopy = logInfo.Length != destLog.Length;
+            }
+
+            return needToCopy;
         }
 
         public void Delete()
@@ -525,7 +531,7 @@ namespace Link11.Core
                 int i = 0;
                 while (i < abonents.Count)
                 {
-                    if (Abonents[i].Count > max * config.AbonentsK)
+                    if (abonents[i].Count > max * config.AbonentsK)
                         resCount++;
                     i++;
                 }
@@ -735,34 +741,30 @@ namespace Link11.Core
         {
             FileInfo fi = new FileInfo(Directory + "\\log.txt");
                               
-            // Если файл был изменен
-            if (lastModified != fi.LastWriteTime)
-            {
-                // Скопировать log.txt во временный файл 
-                if (File.Exists(fi.DirectoryName + "\\temp.txt"))
-                    File.Delete(fi.DirectoryName + "\\temp.txt");
-                try
-                {
-                    File.Copy(fi.FullName, fi.DirectoryName + "\\temp.txt");
-                }
-                catch (FileNotFoundException)
-                {
-                    throw new LogFileNotFoundException();
-                }
-                catch (Exception e)
-                {
-                    logger.LogMessage(e.Message, LogLevel.Warning);
-                }
-
-                // Прочитать временный файл с логом
-                List<string> lines = new List<string>();
-                lines.AddRange(File.ReadAllLines(fi.DirectoryName + "\\temp.txt", Encoding.Default));                                                                                                             
-                // Удалить временный файл
+            // Скопировать log.txt во временный файл 
+            if (File.Exists(fi.DirectoryName + "\\temp.txt"))
                 File.Delete(fi.DirectoryName + "\\temp.txt");
+            try
+            {
+                File.Copy(fi.FullName, fi.DirectoryName + "\\temp.txt");
+            }
+            catch (FileNotFoundException)
+            {
+                throw new LogFileNotFoundException();
+            }
+            catch (Exception e)
+            {
+                logger.LogMessage(e.Message, LogLevel.Warning);
+            }
 
-                // Парсить log.txt
-                signalEntries = parser.ParseLog(lines);
-            }    
+            // Прочитать временный файл с логом
+            List<string> lines = new List<string>();
+            lines.AddRange(File.ReadAllLines(fi.DirectoryName + "\\temp.txt", Encoding.Default));                                                                                                             
+            // Удалить временный файл
+            File.Delete(fi.DirectoryName + "\\temp.txt");
+
+            // Парсить log.txt
+            signalEntries = parser.ParseLog(lines);
         }
 
         private List<AbonentInfo> GetAbonentsInfo()
@@ -793,7 +795,9 @@ namespace Link11.Core
 
             if (signalEntries.Count != 0)
             {
-                List<SignalEntry> lastEntries = signalEntries.Where(x => x.Time > serverTime - new TimeSpan(0, 3, 0) && x.Time < serverTime).ToList();
+                List<SignalEntry> lastEntries = signalEntries.Where(x => 
+                    (DateTime.Now - delay - new TimeSpan(0, 3, 0)) < x.Time && 
+                    x.Time <= (DateTime.Now - delay)).ToList();
                 if (lastEntries.Where(x => x.Type != EntryType.Error && ((x.Size - x.Errors) > (int)Mode)).Any())
                     result = SeanseState.Active;
                 else if (lastEntries.Count >= countForWorkingLevel5)
@@ -804,7 +808,7 @@ namespace Link11.Core
                     result = SeanseState.WorkingLevel3;
                 else if (lastEntries.Count >= countForWorkingLevel2)
                     result = SeanseState.WorkingLevel2;
-                else if (lastEntries.Count >= 1)
+                else if (lastEntries.Count >= 1 && signalEntries.Where(x => x.Type != EntryType.Error).Count() > config.Trashold)
                     result = SeanseState.WorkingLevel1;
             }
             return result;
@@ -821,7 +825,7 @@ namespace Link11.Core
 
             // Если Вышел из активного
             IEnumerable<SignalEntry> activeEntries = signalEntries.Where(x => x.Type != EntryType.Error && x.Size - x.Errors > (int)Mode);
-            if (!isActiveEnded && activeEntries.Any() && !(activeEntries.Last().Time > serverTime.AddMinutes(-config.MinutesToAwaitAfterEnd) && activeEntries.Last().Time <= serverTime))
+            if (!isActiveEnded && activeEntries.Any() && !(activeEntries.Last().Time > (DateTime.Now - delay).AddMinutes(-config.MinutesToAwaitAfterEnd) && activeEntries.Last().Time <= (DateTime.Now - delay)))
             {
                 isActiveEnded = true;
                 ActiveEnd.Invoke(this, new EventArgs());
@@ -834,7 +838,7 @@ namespace Link11.Core
                 WorkingStart.Invoke(this, new EventArgs());
             }
             // Если окончил работу
-            if (!isEnded && signalEntries.Where(x => x.Time > serverTime.AddMinutes(-config.MinutesToAwaitAfterEnd) && x.Time <= serverTime).Count() == 0)
+            if (!isEnded && signalEntries.Where(x => x.Time > (DateTime.Now - delay).AddMinutes(-config.MinutesToAwaitAfterEnd) && x.Time <= DateTime.Now - delay).Count() == 0)
             {
                 isEnded = true;
                 WorkingEnd.Invoke(this, new EventArgs());

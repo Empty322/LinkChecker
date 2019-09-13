@@ -8,7 +8,8 @@ using System.Xml.Serialization;
 namespace Link11.Core
 {
     [Serializable] 
-    public class ch
+    [XmlRoot("ch")]
+    public class Channel
     {
         [XmlAttribute("id")]
         public int Id { get; set; }
@@ -30,6 +31,6 @@ namespace Link11.Core
         public int Filter { get; set; }
         [XmlAttribute("invert")]
         public bool Invert { get; set; }
-        public ch() { }
+        public Channel() { }
     }
 }

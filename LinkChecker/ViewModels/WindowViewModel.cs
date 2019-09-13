@@ -234,7 +234,8 @@ namespace Link11Checker.ViewModels
             this.notifyWhenStartActive = false;
             this.lastSelectedPathWithLinks = "";
 
-            seanseManager.SeanseAdding += SeanseManager_SeanseAdding;
+            seanseManager.LoadingStarted += SeanseManager_LoadingStarted;
+            seanseManager.LoadingEnded += SeanseManager_LoadingEnded;
             seanseManager.SeanseAdded += SeanseManager_SeanseAdded;
             seanseManager.SeanseRemoved += SeanseManager_SeanseRemoved;
             seanseManager.SeanseUpdated += SeanseManager_SeanseUpdated;
@@ -242,8 +243,6 @@ namespace Link11Checker.ViewModels
             seanseManager.CopyingEnded += SeanseManager_CopyingEnded;
             seanseManager.UpdatingStarted += SeanseManager_UpdatingStarted;
             seanseManager.UpdatingEnded += SeanseManager_UpdatingEnded;
-
-            window.Loaded += Window_Loaded;
 
             #region Charts initialization
 
@@ -322,10 +321,10 @@ namespace Link11Checker.ViewModels
                 DialogResult result = fbd.ShowDialog();
                 if (result == DialogResult.OK && fbd.SelectedPath != null)
                 {
+                    lastSelectedPathWithLinks = fbd.SelectedPath;
                     if (!await seanseManager.AddSeanseAsync(fbd.SelectedPath))
                         logger.LogMessage("Не удалось добавить сеанс: \n" + fbd.SelectedPath, LogLevel.Warning);
                 }
-                lastSelectedPathWithLinks = fbd.SelectedPath;
             });
 
             AddSeansesFromVentur = new RelayCommand(async () =>
@@ -414,13 +413,16 @@ namespace Link11Checker.ViewModels
                 }
             });
 
-            DeleteSeanseDirectory = new RelayCommand(() =>
+            DeleteSeanseDirectory = new RelayCommand(async () =>
             {
                 if (SelectedSeanse != null)
                 {
                     DialogResult res = MessageBox.Show("Удалить папку с сеансом?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (res == DialogResult.Yes)
+                    {
                         SelectedSeanse.Delete();
+                        await seanseManager.RemoveSeanseAsync(SelectedSeanse);
+                    }
                 }
             });
 
@@ -461,10 +463,19 @@ namespace Link11Checker.ViewModels
 
             #endregion
         }
-    
+        
         #endregion
 
         #region EventHandlers
+
+        private void SeanseManager_LoadingStarted(object obj)
+        {
+            IsLoading = true;
+        }
+        private void SeanseManager_LoadingEnded(object obj)
+        {
+            IsLoading = false;
+        }
 
         private void SeanseManager_SeanseUpdated(object sender, Seanse seanse)
         {
@@ -489,14 +500,8 @@ namespace Link11Checker.ViewModels
             });
         }
 
-        void SeanseManager_SeanseAdding(object sender, string directory)
-        {
-            IsLoading = true;
-        }
-
         private void SeanseManager_SeanseAdded(object sender, Seanse newSeanse)
         {
-            IsLoading = false;
             if (newSeanse != null)
             {
                 newSeanse.WorkingStart += Seanse_WorkingStart;
@@ -536,7 +541,8 @@ namespace Link11Checker.ViewModels
             string msg = string.Format("Линк {0} {1} преходит в активный режим.", seanse.Freq, seanse.Mode);
             if (NotifyWhenStartActive)
             {
-                System.Windows.Forms.MessageBox.Show(msg, "Переход в активный", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                window.Focus();
+                MessageBox.Show(msg, "Переход в активный", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             logger.LogMessage(msg, LogLevel.Info);
         }
@@ -546,7 +552,8 @@ namespace Link11Checker.ViewModels
             string msg = string.Format("Линк {0} {1} вышел из активного режима " + IoCContainer.Settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode);
             if (NotifyWhenEndActive)
             {
-                System.Windows.Forms.MessageBox.Show(msg, "Выход из активного режима", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                window.Focus();
+                MessageBox.Show(msg, "Выход из активного режима", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             logger.LogMessage(msg, LogLevel.Info);
         }
@@ -556,7 +563,8 @@ namespace Link11Checker.ViewModels
             string msg = string.Format("Линк {0} {1} начинает свою работу.", seanse.Freq, seanse.Mode);
             if (NotifyWhenStartWorking)
             {
-                System.Windows.Forms.MessageBox.Show(msg, "Начало работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                window.Focus();
+                MessageBox.Show(msg, "Начало работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             logger.LogMessage(msg, LogLevel.Info);
         }
@@ -566,31 +574,10 @@ namespace Link11Checker.ViewModels
             string msg = string.Format("Линк {0} {1} окончил свою работу " + IoCContainer.Settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode);
             if (NotifyWhenEndWorking)
             {
-                System.Windows.Forms.MessageBox.Show(msg, "Окончание работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                window.Focus();
+                MessageBox.Show(msg, "Окончание работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             logger.LogMessage(msg, LogLevel.Info);
-        }
-
-        private async void Window_Loaded(object sender, System.Windows.RoutedEventArgs args)
-        {
-            if (File.Exists("seanses.json"))
-            {
-                string jsonFile = "";
-                List<String> dirs = new List<string>();
-                try
-                {
-                    jsonFile = File.ReadAllText("seanses.json", Encoding.Default);
-                    dirs = JsonConvert.DeserializeObject<List<string>>(jsonFile);
-                }
-                catch (Exception e)
-                {
-                    logger.LogMessage(e.Message, LogLevel.Error);
-                }
-                foreach (string dir in dirs)
-                {
-                    await seanseManager.AddSeanseAsync(dir);
-                }
-            }
         }
 
         #endregion
