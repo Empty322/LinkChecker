@@ -58,12 +58,13 @@
             this.SynchronizeCounterLimit = new System.Windows.Forms.Label();
             this.CopyCounterLimit = new System.Windows.Forms.Label();
             this.UpdateCounterLimit = new System.Windows.Forms.Label();
-            this.VenturFileTextBox = new System.Windows.Forms.TextBox();
             this.VenturFile = new System.Windows.Forms.Label();
             this.InitialDestPathTextBox = new System.Windows.Forms.TextBox();
             this.InitialDestPath = new System.Windows.Forms.Label();
             this.InitialSeansesPathTextBox = new System.Windows.Forms.TextBox();
             this.InitialSeansesPath = new System.Windows.Forms.Label();
+            this.LastFilesListBox = new System.Windows.Forms.ListBox();
+            this.RemoveLastFileBtn = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SmoothValueUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.WorkingChartIntervalUpDown)).BeginInit();
@@ -115,6 +116,8 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.RemoveLastFileBtn);
+            this.groupBox2.Controls.Add(this.LastFilesListBox);
             this.groupBox2.Controls.Add(this.SmoothValueUpDown);
             this.groupBox2.Controls.Add(this.WorkingChartIntervalUpDown);
             this.groupBox2.Controls.Add(this.IntervalsKUpDown);
@@ -141,7 +144,6 @@
             this.groupBox2.Controls.Add(this.SynchronizeCounterLimit);
             this.groupBox2.Controls.Add(this.CopyCounterLimit);
             this.groupBox2.Controls.Add(this.UpdateCounterLimit);
-            this.groupBox2.Controls.Add(this.VenturFileTextBox);
             this.groupBox2.Controls.Add(this.VenturFile);
             this.groupBox2.Controls.Add(this.InitialDestPathTextBox);
             this.groupBox2.Controls.Add(this.InitialDestPath);
@@ -398,11 +400,6 @@
             resources.ApplyResources(this.UpdateCounterLimit, "UpdateCounterLimit");
             this.UpdateCounterLimit.Name = "UpdateCounterLimit";
             // 
-            // VenturFileTextBox
-            // 
-            resources.ApplyResources(this.VenturFileTextBox, "VenturFileTextBox");
-            this.VenturFileTextBox.Name = "VenturFileTextBox";
-            // 
             // VenturFile
             // 
             resources.ApplyResources(this.VenturFile, "VenturFile");
@@ -427,6 +424,19 @@
             // 
             resources.ApplyResources(this.InitialSeansesPath, "InitialSeansesPath");
             this.InitialSeansesPath.Name = "InitialSeansesPath";
+            // 
+            // LastFilesListBox
+            // 
+            this.LastFilesListBox.FormattingEnabled = true;
+            resources.ApplyResources(this.LastFilesListBox, "LastFilesListBox");
+            this.LastFilesListBox.Name = "LastFilesListBox";
+            // 
+            // RemoveLastFileBtn
+            // 
+            resources.ApplyResources(this.RemoveLastFileBtn, "RemoveLastFileBtn");
+            this.RemoveLastFileBtn.Name = "RemoveLastFileBtn";
+            this.RemoveLastFileBtn.UseVisualStyleBackColor = true;
+            this.RemoveLastFileBtn.Click += new System.EventHandler(this.RemoveLastFileBtn_Click);
             // 
             // SettingsForm
             // 
@@ -469,7 +479,6 @@
         private System.Windows.Forms.Label SynchronizeCounterLimit;
         private System.Windows.Forms.Label CopyCounterLimit;
         private System.Windows.Forms.Label UpdateCounterLimit;
-        private System.Windows.Forms.TextBox VenturFileTextBox;
         private System.Windows.Forms.Label VenturFile;
         private System.Windows.Forms.TextBox InitialDestPathTextBox;
         private System.Windows.Forms.Label InitialDestPath;
@@ -493,5 +502,7 @@
         private System.Windows.Forms.NumericUpDown IntervalsKUpDown;
         private System.Windows.Forms.NumericUpDown AbonentsKUpDown;
         private System.Windows.Forms.NumericUpDown MinutesToAwaitAfterEndUpDown;
+        private System.Windows.Forms.Button RemoveLastFileBtn;
+        private System.Windows.Forms.ListBox LastFilesListBox;
     }
 }

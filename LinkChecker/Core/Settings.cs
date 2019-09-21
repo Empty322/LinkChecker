@@ -12,7 +12,7 @@ namespace Link11Checker.Core
         public Configuration Configuration { get; set; }
         public string InitialSeansesPath { get; set; }
         public string InitialDestPath { get; set; }
-        public string VenturFile { get; set; }
+        public List<string> LastFiles { get; set; }
         public int UpdateCounterLimit { get; set; }
         public int CopyCounterLimit { get; set; }
         public int SynchronizeCounterLimit { get; set; }

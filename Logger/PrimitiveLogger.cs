@@ -50,7 +50,7 @@ namespace Logger
             }
 
             message = DateTime.Now.ToString() + '\t' + level.ToString() + "\t" + message;
-            if (level >= this.level)
+            if (this.level >= level)
             {
                 if (logInFile)
                 {

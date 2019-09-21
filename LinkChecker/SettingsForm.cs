@@ -45,7 +45,10 @@ namespace Link11Checker
 
             InitialSeansesPathTextBox.Text = IoCContainer.Settings.InitialSeansesPath;
             InitialDestPathTextBox.Text = IoCContainer.Settings.InitialDestPath;
-            VenturFileTextBox.Text = IoCContainer.Settings.VenturFile;
+            foreach (string file in IoCContainer.Settings.LastFiles) 
+            {
+                LastFilesListBox.Items.Add(file);
+            }
             UpdateCounterLimitUpDown.Value = IoCContainer.Settings.UpdateCounterLimit;
             CopyCounterLimitUpDown.Value = IoCContainer.Settings.CopyCounterLimit;
             SynchronizeCounterLimitUpDown.Value = IoCContainer.Settings.SynchronizeCounterLimit;
@@ -97,7 +100,10 @@ namespace Link11Checker
 
                 newSettings.InitialSeansesPath = InitialSeansesPathTextBox.Text;
                 newSettings.InitialDestPath = InitialDestPathTextBox.Text;
-                newSettings.VenturFile = VenturFileTextBox.Text;
+                List<string> lastFiles = new List<string>();
+                foreach (var item in LastFilesListBox.Items)
+                    lastFiles.Add(item.ToString());
+                newSettings.LastFiles = lastFiles;
                 newSettings.UpdateCounterLimit = (int)UpdateCounterLimitUpDown.Value;
                 newSettings.CopyCounterLimit = (int)CopyCounterLimitUpDown.Value;
                 newSettings.SynchronizeCounterLimit = (int)SynchronizeCounterLimitUpDown.Value;
@@ -148,12 +154,19 @@ namespace Link11Checker
         private void VenturFileExplore_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            if (Directory.Exists(IoCContainer.Settings.InitialDestPath))
-                ofd.FileName = IoCContainer.Settings.VenturFile;
+            ofd.Filter = "last file (*.lf) | *.lf";
             DialogResult result = ofd.ShowDialog();
             if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(ofd.FileName))
             {
-                IoCContainer.Settings.VenturFile = VenturFileTextBox.Text = ofd.FileName;
+                LastFilesListBox.Items.Add(ofd.FileName);
+            }
+        }
+
+        private void RemoveLastFileBtn_Click(object sender, EventArgs e)
+        {
+            if (LastFilesListBox.SelectedItem != null)
+            {
+                LastFilesListBox.Items.RemoveAt(LastFilesListBox.SelectedIndex);
             }
         }
     }

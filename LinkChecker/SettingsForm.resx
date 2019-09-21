@@ -119,7 +119,7 @@
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="OkBtn.Location" type="System.Drawing.Point, System.Drawing">
-    <value>277, 537</value>
+    <value>276, 627</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="OkBtn.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
@@ -148,7 +148,7 @@
     <value>2</value>
   </data>
   <data name="CanselBtn.Location" type="System.Drawing.Point, System.Drawing">
-    <value>358, 537</value>
+    <value>357, 627</value>
   </data>
   <data name="CanselBtn.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 4, 3, 4</value>
@@ -178,7 +178,7 @@
     <value>True</value>
   </data>
   <data name="MinetsToAwaitAfterEnd.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 464</value>
+    <value>7, 554</value>
   </data>
   <data name="MinetsToAwaitAfterEnd.Size" type="System.Drawing.Size, System.Drawing">
     <value>118, 13</value>
@@ -199,13 +199,13 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;MinetsToAwaitAfterEnd.ZOrder" xml:space="preserve">
-    <value>7</value>
+    <value>9</value>
   </data>
   <data name="SmoothValue.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="SmoothValue.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 438</value>
+    <value>7, 528</value>
   </data>
   <data name="SmoothValue.Size" type="System.Drawing.Size, System.Drawing">
     <value>70, 13</value>
@@ -226,13 +226,13 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;SmoothValue.ZOrder" xml:space="preserve">
-    <value>9</value>
+    <value>11</value>
   </data>
   <data name="IntervalsK.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="IntervalsK.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 376</value>
+    <value>7, 466</value>
   </data>
   <data name="IntervalsK.Size" type="System.Drawing.Size, System.Drawing">
     <value>54, 13</value>
@@ -253,13 +253,13 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;IntervalsK.ZOrder" xml:space="preserve">
-    <value>11</value>
+    <value>13</value>
   </data>
   <data name="AbonentsK.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="AbonentsK.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 329</value>
+    <value>7, 419</value>
   </data>
   <data name="AbonentsK.Size" type="System.Drawing.Size, System.Drawing">
     <value>59, 13</value>
@@ -280,10 +280,61 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;AbonentsK.ZOrder" xml:space="preserve">
-    <value>13</value>
+    <value>15</value>
+  </data>
+  <data name="RemoveLastFileBtn.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="RemoveLastFileBtn.Location" type="System.Drawing.Point, System.Drawing">
+    <value>331, 141</value>
+  </data>
+  <data name="RemoveLastFileBtn.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 4, 3, 4</value>
+  </data>
+  <data name="RemoveLastFileBtn.Size" type="System.Drawing.Size, System.Drawing">
+    <value>83, 20</value>
+  </data>
+  <data name="RemoveLastFileBtn.TabIndex" type="System.Int32, mscorlib">
+    <value>33</value>
+  </data>
+  <data name="RemoveLastFileBtn.Text" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="&gt;&gt;RemoveLastFileBtn.Name" xml:space="preserve">
+    <value>RemoveLastFileBtn</value>
+  </data>
+  <data name="&gt;&gt;RemoveLastFileBtn.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;RemoveLastFileBtn.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;RemoveLastFileBtn.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="LastFilesListBox.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 114</value>
+  </data>
+  <data name="LastFilesListBox.Size" type="System.Drawing.Size, System.Drawing">
+    <value>315, 95</value>
+  </data>
+  <data name="LastFilesListBox.TabIndex" type="System.Int32, mscorlib">
+    <value>32</value>
+  </data>
+  <data name="&gt;&gt;LastFilesListBox.Name" xml:space="preserve">
+    <value>LastFilesListBox</value>
+  </data>
+  <data name="&gt;&gt;LastFilesListBox.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ListBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;LastFilesListBox.Parent" xml:space="preserve">
+    <value>groupBox2</value>
+  </data>
+  <data name="&gt;&gt;LastFilesListBox.ZOrder" xml:space="preserve">
+    <value>1</value>
   </data>
   <data name="SmoothValueUpDown.Location" type="System.Drawing.Point, System.Drawing">
-    <value>331, 436</value>
+    <value>331, 526</value>
   </data>
   <data name="SmoothValueUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 4, 3, 4</value>
@@ -304,10 +355,10 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;SmoothValueUpDown.ZOrder" xml:space="preserve">
-    <value>0</value>
+    <value>2</value>
   </data>
   <data name="WorkingChartIntervalUpDown.Location" type="System.Drawing.Point, System.Drawing">
-    <value>331, 217</value>
+    <value>331, 307</value>
   </data>
   <data name="WorkingChartIntervalUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 4, 3, 4</value>
@@ -328,10 +379,10 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;WorkingChartIntervalUpDown.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>3</value>
   </data>
   <data name="IntervalsKUpDown.Location" type="System.Drawing.Point, System.Drawing">
-    <value>331, 392</value>
+    <value>331, 482</value>
   </data>
   <data name="IntervalsKUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 4, 3, 4</value>
@@ -352,10 +403,10 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;IntervalsKUpDown.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>4</value>
   </data>
   <data name="SynchronizeCounterLimitUpDown.Location" type="System.Drawing.Point, System.Drawing">
-    <value>331, 191</value>
+    <value>331, 281</value>
   </data>
   <data name="SynchronizeCounterLimitUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 4, 3, 4</value>
@@ -376,10 +427,10 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;SynchronizeCounterLimitUpDown.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>5</value>
   </data>
   <data name="AbonentsKUpDown.Location" type="System.Drawing.Point, System.Drawing">
-    <value>331, 337</value>
+    <value>331, 427</value>
   </data>
   <data name="AbonentsKUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 4, 3, 4</value>
@@ -400,10 +451,10 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;AbonentsKUpDown.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>6</value>
   </data>
   <data name="MinutesToAwaitAfterEndUpDown.Location" type="System.Drawing.Point, System.Drawing">
-    <value>331, 462</value>
+    <value>331, 552</value>
   </data>
   <data name="MinutesToAwaitAfterEndUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 4, 3, 4</value>
@@ -424,10 +475,10 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;MinutesToAwaitAfterEndUpDown.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>7</value>
   </data>
   <data name="CopyCounterLimitUpDown.Location" type="System.Drawing.Point, System.Drawing">
-    <value>331, 165</value>
+    <value>331, 255</value>
   </data>
   <data name="CopyCounterLimitUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 4, 3, 4</value>
@@ -448,10 +499,10 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;CopyCounterLimitUpDown.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>8</value>
   </data>
   <data name="UpdateCounterLimitUpDown.Location" type="System.Drawing.Point, System.Drawing">
-    <value>331, 139</value>
+    <value>331, 229</value>
   </data>
   <data name="UpdateCounterLimitUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 4, 3, 4</value>
@@ -472,10 +523,10 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;UpdateCounterLimitUpDown.ZOrder" xml:space="preserve">
-    <value>8</value>
+    <value>10</value>
   </data>
   <data name="CopyPercentTrasholdUpDown.Location" type="System.Drawing.Point, System.Drawing">
-    <value>331, 295</value>
+    <value>331, 385</value>
   </data>
   <data name="CopyPercentTrasholdUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 4, 3, 4</value>
@@ -496,10 +547,10 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;CopyPercentTrasholdUpDown.ZOrder" xml:space="preserve">
-    <value>10</value>
+    <value>12</value>
   </data>
   <data name="CopyLengthTrasholdUpDown.Location" type="System.Drawing.Point, System.Drawing">
-    <value>331, 269</value>
+    <value>331, 359</value>
   </data>
   <data name="CopyLengthTrasholdUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 4, 3, 4</value>
@@ -520,13 +571,13 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;CopyLengthTrasholdUpDown.ZOrder" xml:space="preserve">
-    <value>12</value>
+    <value>14</value>
   </data>
   <data name="CopyPercentTrashold.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="CopyPercentTrashold.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 298</value>
+    <value>7, 388</value>
   </data>
   <data name="CopyPercentTrashold.Size" type="System.Drawing.Size, System.Drawing">
     <value>151, 13</value>
@@ -547,13 +598,13 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;CopyPercentTrashold.ZOrder" xml:space="preserve">
-    <value>14</value>
+    <value>16</value>
   </data>
   <data name="CopyLengthTrashold.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="CopyLengthTrashold.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 272</value>
+    <value>7, 362</value>
   </data>
   <data name="CopyLengthTrashold.Size" type="System.Drawing.Size, System.Drawing">
     <value>136, 13</value>
@@ -574,10 +625,10 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;CopyLengthTrashold.ZOrder" xml:space="preserve">
-    <value>15</value>
+    <value>17</value>
   </data>
   <data name="EmptySeansesTrasholdUpDown.Location" type="System.Drawing.Point, System.Drawing">
-    <value>331, 243</value>
+    <value>331, 333</value>
   </data>
   <data name="EmptySeansesTrasholdUpDown.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 4, 3, 4</value>
@@ -598,13 +649,13 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;EmptySeansesTrasholdUpDown.ZOrder" xml:space="preserve">
-    <value>16</value>
+    <value>18</value>
   </data>
   <data name="EmptySeansesTrashold.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="EmptySeansesTrashold.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 246</value>
+    <value>7, 336</value>
   </data>
   <data name="EmptySeansesTrashold.Size" type="System.Drawing.Size, System.Drawing">
     <value>118, 13</value>
@@ -625,13 +676,13 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;EmptySeansesTrashold.ZOrder" xml:space="preserve">
-    <value>17</value>
+    <value>19</value>
   </data>
   <data name="HideEmptySeanses.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="HideEmptySeanses.Location" type="System.Drawing.Point, System.Drawing">
-    <value>10, 490</value>
+    <value>10, 580</value>
   </data>
   <data name="HideEmptySeanses.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 4, 3, 4</value>
@@ -655,7 +706,7 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;HideEmptySeanses.ZOrder" xml:space="preserve">
-    <value>18</value>
+    <value>20</value>
   </data>
   <data name="VenturFileExplore.Location" type="System.Drawing.Point, System.Drawing">
     <value>331, 113</value>
@@ -682,7 +733,7 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;VenturFileExplore.ZOrder" xml:space="preserve">
-    <value>19</value>
+    <value>21</value>
   </data>
   <data name="InitialDestPathExplore.Location" type="System.Drawing.Point, System.Drawing">
     <value>331, 74</value>
@@ -709,7 +760,7 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;InitialDestPathExplore.ZOrder" xml:space="preserve">
-    <value>20</value>
+    <value>22</value>
   </data>
   <data name="InitialSeansesPathExplore.Location" type="System.Drawing.Point, System.Drawing">
     <value>331, 35</value>
@@ -736,13 +787,13 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;InitialSeansesPathExplore.ZOrder" xml:space="preserve">
-    <value>21</value>
+    <value>23</value>
   </data>
   <data name="WorkingChartInterval.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="WorkingChartInterval.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 220</value>
+    <value>7, 310</value>
   </data>
   <data name="WorkingChartInterval.Size" type="System.Drawing.Size, System.Drawing">
     <value>107, 13</value>
@@ -763,13 +814,13 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;WorkingChartInterval.ZOrder" xml:space="preserve">
-    <value>22</value>
+    <value>24</value>
   </data>
   <data name="SynchronizeCounterLimit.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="SynchronizeCounterLimit.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 194</value>
+    <value>7, 284</value>
   </data>
   <data name="SynchronizeCounterLimit.Size" type="System.Drawing.Size, System.Drawing">
     <value>123, 13</value>
@@ -790,13 +841,13 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;SynchronizeCounterLimit.ZOrder" xml:space="preserve">
-    <value>23</value>
+    <value>25</value>
   </data>
   <data name="CopyCounterLimit.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="CopyCounterLimit.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 168</value>
+    <value>7, 258</value>
   </data>
   <data name="CopyCounterLimit.Size" type="System.Drawing.Size, System.Drawing">
     <value>89, 13</value>
@@ -817,13 +868,13 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;CopyCounterLimit.ZOrder" xml:space="preserve">
-    <value>24</value>
+    <value>26</value>
   </data>
   <data name="UpdateCounterLimit.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="UpdateCounterLimit.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 142</value>
+    <value>7, 232</value>
   </data>
   <data name="UpdateCounterLimit.Size" type="System.Drawing.Size, System.Drawing">
     <value>100, 13</value>
@@ -844,31 +895,7 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;UpdateCounterLimit.ZOrder" xml:space="preserve">
-    <value>25</value>
-  </data>
-  <data name="VenturFileTextBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>10, 113</value>
-  </data>
-  <data name="VenturFileTextBox.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 4, 3, 4</value>
-  </data>
-  <data name="VenturFileTextBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>315, 20</value>
-  </data>
-  <data name="VenturFileTextBox.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
-  </data>
-  <data name="&gt;&gt;VenturFileTextBox.Name" xml:space="preserve">
-    <value>VenturFileTextBox</value>
-  </data>
-  <data name="&gt;&gt;VenturFileTextBox.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;VenturFileTextBox.Parent" xml:space="preserve">
-    <value>groupBox2</value>
-  </data>
-  <data name="&gt;&gt;VenturFileTextBox.ZOrder" xml:space="preserve">
-    <value>26</value>
+    <value>27</value>
   </data>
   <data name="VenturFile.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -895,7 +922,7 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;VenturFile.ZOrder" xml:space="preserve">
-    <value>27</value>
+    <value>28</value>
   </data>
   <data name="InitialDestPathTextBox.Location" type="System.Drawing.Point, System.Drawing">
     <value>10, 74</value>
@@ -919,7 +946,7 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;InitialDestPathTextBox.ZOrder" xml:space="preserve">
-    <value>28</value>
+    <value>29</value>
   </data>
   <data name="InitialDestPath.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -946,7 +973,7 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;InitialDestPath.ZOrder" xml:space="preserve">
-    <value>29</value>
+    <value>30</value>
   </data>
   <data name="InitialSeansesPathTextBox.Location" type="System.Drawing.Point, System.Drawing">
     <value>10, 35</value>
@@ -970,7 +997,7 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;InitialSeansesPathTextBox.ZOrder" xml:space="preserve">
-    <value>30</value>
+    <value>31</value>
   </data>
   <data name="InitialSeansesPath.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -997,7 +1024,7 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;InitialSeansesPath.ZOrder" xml:space="preserve">
-    <value>31</value>
+    <value>32</value>
   </data>
   <data name="groupBox2.Location" type="System.Drawing.Point, System.Drawing">
     <value>12, 12</value>
@@ -1009,7 +1036,7 @@
     <value>3, 4, 3, 4</value>
   </data>
   <data name="groupBox2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>420, 519</value>
+    <value>420, 607</value>
   </data>
   <data name="groupBox2.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -1036,7 +1063,7 @@
     <value>6, 13</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>445, 572</value>
+    <value>444, 662</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

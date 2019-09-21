@@ -56,7 +56,7 @@ namespace Link11Checker
 
                 settings.InitialSeansesPath = "";
                 settings.InitialDestPath = "";
-                settings.VenturFile = "";
+                settings.LastFiles = new List<string>();
                 settings.UpdateCounterLimit = 1;
                 settings.CopyCounterLimit = 180;
                 settings.SynchronizeCounterLimit = 5;

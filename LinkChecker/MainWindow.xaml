@@ -71,9 +71,9 @@
                 <ColumnDefinition Width="30*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="31*"></RowDefinition>
-                <RowDefinition Height="29*"></RowDefinition>
-                <RowDefinition Height="40*"></RowDefinition>
+                <RowDefinition Height="55*"></RowDefinition>
+                <RowDefinition Height="45*"></RowDefinition>
+                <RowDefinition Height="220"></RowDefinition>
             </Grid.RowDefinitions>
 
             <DataGrid VirtualizingPanel.IsVirtualizing="True" 

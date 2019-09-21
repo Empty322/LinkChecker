@@ -329,7 +329,7 @@ namespace Link11Checker.ViewModels
 
             AddSeansesFromVentur = new RelayCommand(async () =>
             {
-                await seanseManager.AddSeansesFromVentursFileAsync(IoCContainer.Settings.VenturFile);
+                await seanseManager.AddSeansesFromVentursFileAsync(IoCContainer.Settings.LastFiles);
             });
 
             AddAllSeanses = new RelayCommand(async () =>
@@ -384,7 +384,7 @@ namespace Link11Checker.ViewModels
                 await seanseManager.UpdateSeansesAsync();
             });
 
-            OpenSettings = new RelayCommand(() =>
+            OpenSettings = new RelayCommand(async () =>
             {
                 SettingsForm sf = new SettingsForm(logger);
                 sf.ShowDialog();
@@ -392,10 +392,7 @@ namespace Link11Checker.ViewModels
                 seanseManager.SetConfiguration(IoCContainer.Settings.Configuration);
                 window.workingChart.ChartAreas[0].AxisX.Interval = IoCContainer.Settings.WorkingChartInterval;
                 window.workingChart.Invalidate();
-                if (!UpdateTimerOn)
-                {
-                    seanseManager.UpdateSeanses();
-                }
+                await seanseManager.UpdateSeansesAsync();
             });
 
             About = new RelayCommand(() => {
@@ -541,7 +538,6 @@ namespace Link11Checker.ViewModels
             string msg = string.Format("Линк {0} {1} преходит в активный режим.", seanse.Freq, seanse.Mode);
             if (NotifyWhenStartActive)
             {
-                window.Focus();
                 MessageBox.Show(msg, "Переход в активный", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             logger.LogMessage(msg, LogLevel.Info);
@@ -552,7 +548,6 @@ namespace Link11Checker.ViewModels
             string msg = string.Format("Линк {0} {1} вышел из активного режима " + IoCContainer.Settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode);
             if (NotifyWhenEndActive)
             {
-                window.Focus();
                 MessageBox.Show(msg, "Выход из активного режима", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             logger.LogMessage(msg, LogLevel.Info);
@@ -563,7 +558,6 @@ namespace Link11Checker.ViewModels
             string msg = string.Format("Линк {0} {1} начинает свою работу.", seanse.Freq, seanse.Mode);
             if (NotifyWhenStartWorking)
             {
-                window.Focus();
                 MessageBox.Show(msg, "Начало работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             logger.LogMessage(msg, LogLevel.Info);
@@ -574,7 +568,6 @@ namespace Link11Checker.ViewModels
             string msg = string.Format("Линк {0} {1} окончил свою работу " + IoCContainer.Settings.Configuration.MinutesToAwaitAfterEnd + " минут назад.", seanse.Freq, seanse.Mode);
             if (NotifyWhenEndWorking)
             {
-                window.Focus();
                 MessageBox.Show(msg, "Окончание работы", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             logger.LogMessage(msg, LogLevel.Info);

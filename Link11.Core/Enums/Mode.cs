@@ -8,7 +8,7 @@ namespace Link11.Core.Enums
 {
     public enum Mode
     {
-        Unknown = 0,
+        Unknown = 200,
         Clew = 200,
         Slew = 400,
     }

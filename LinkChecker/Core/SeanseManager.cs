@@ -87,30 +87,36 @@ namespace Link11Checker.Core
             return await addingTask;
         }
 
-        public void AddSeansesFromVentursFile(string file)
+        public void AddSeansesFromVentursFile(List<string> files)
         {
             lock (Seanses) {
-                List<Channel> channels = GetChannelsFromVentursFile(file);
                 LoadingStarted.Invoke(this);
-                Parallel.ForEach(channels, channelInfo =>
+                foreach (string file in files)
                 {
-                    Seanse currentSeanse = Seanses.FirstOrDefault(x => x.Directory.FullName.ToLower() == channelInfo.Directory.ToLower());
-                    if (currentSeanse == null)
+                    List<Channel> channels = GetChannelsFromVentursFile(file);
+                    Parallel.ForEach(channels, channelInfo =>
                     {
-                        LoadSeanse(channelInfo.Directory);
-                    }
-                    if (currentSeanse != null)
-                    {
-                        currentSeanse.ChannelInfo = channelInfo;
-                    }
-                });
+                        string pathPartToPaste = Path.GetDirectoryName(file);
+                        string pathPartToDelete = channelInfo.Directory.Substring(0, channelInfo.Directory.IndexOf("riClient")+8);
+                        string channelDirectory = channelInfo.Directory.Replace(pathPartToDelete, pathPartToPaste).ToLower();
+                        Seanse currentSeanse = Seanses.FirstOrDefault(x => x.Directory.FullName.ToLower() == channelDirectory);
+                        if (currentSeanse == null)
+                        {
+                            LoadSeanse(channelDirectory);
+                        }
+                        if (currentSeanse != null)
+                        {
+                            currentSeanse.ChannelInfo = channelInfo;
+                        }
+                    });
+                }
                 LoadingEnded(this);
             }
         }
 
-        public async Task AddSeansesFromVentursFileAsync(string file)
+        public async Task AddSeansesFromVentursFileAsync(List<string> files)
         {
-            Task addingTask = Task.Run(() => AddSeansesFromVentursFile(file));
+            Task addingTask = Task.Run(() => AddSeansesFromVentursFile(files));
             await addingTask;
         }
 
@@ -172,14 +178,23 @@ namespace Link11Checker.Core
         {
             Task removingTask = Task.Run(() => RemoveAllSeanses());
             await removingTask;
-        }  
+        }
 
-        private void RemoveExcessSeanses()
+        private void RemoveExcessSeanses(List<string> files)
         {
             lock (Seanses)
             {
-                List<Channel> channels = GetChannelsFromVentursFile(IoCContainer.Settings.VenturFile);
-                string[] ventursDirs = channels.Where(x => x.Trakt == "slew" || x.Trakt == "link11").Select(x => x.Directory.ToLower()).ToArray();
+                // Пути из файла last.lf
+                List<string> ventursDirs = new List<string>();
+                foreach (string file in files)
+                {
+                    List<Channel> channels = GetChannelsFromVentursFile(file);
+                    string pathPartToPaste = Path.GetDirectoryName(file);
+                    string pathPartToDelete = channels[0].Directory.Substring(0, channels[0].Directory.IndexOf("riClient") + 8);
+                    string channelDirectory = channels[0].Directory.Replace(pathPartToDelete, pathPartToPaste).ToLower();
+                    ventursDirs.AddRange(channels.Where(x => x.Trakt == "slew" || x.Trakt == "link11").Select(x => x.Directory.Replace(pathPartToDelete, pathPartToPaste).ToLower()).ToList());
+                }
+                // Список сеансов, не содержащихся в last.lf
                 List<Seanse> seansesToRemove = new List<Seanse>();
                 foreach (Seanse seanse in Seanses)
                 {
@@ -198,9 +213,9 @@ namespace Link11Checker.Core
             }
         }
 
-        public async Task RemoveExcessSeansesAsync()
+        public async Task RemoveExcessSeansesAsync(List<string> files)
         {
-            Task removingTask = Task.Run(() => RemoveExcessSeanses());
+            Task removingTask = Task.Run(() => RemoveExcessSeanses(files));
             await removingTask;
         }  
 
@@ -371,8 +386,8 @@ namespace Link11Checker.Core
                 {
                     try
                     {
-                        await RemoveExcessSeansesAsync();
-                        await AddSeansesFromVentursFileAsync(IoCContainer.Settings.VenturFile);
+                        await RemoveExcessSeansesAsync(IoCContainer.Settings.LastFiles);
+                        await AddSeansesFromVentursFileAsync(IoCContainer.Settings.LastFiles);
                     }
                     catch (Exception e)
                     {

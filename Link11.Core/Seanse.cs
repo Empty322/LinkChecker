@@ -696,6 +696,12 @@ namespace Link11.Core
 
         public void SetConfuguration(Configuration config)
         {
+            // Если изменено значение усреднения расстройки
+            if (this.config.SmoothValue != config.SmoothValue)
+            {
+                // Перерасчитать единицы расстройки для графика
+                TuningChartUnits = GetTuningChartUnits(config.SmoothValue);
+            }
             // Установить конфигурацию
             this.config = config;
         }
@@ -717,7 +723,12 @@ namespace Link11.Core
                     allLogFileContent = fs.ReadToEnd();
                 }
                 // Попробовать парсить allLog.txt
-                parser.ParseAllLog(allLogFileContent, out freq, out mode);
+                float outFreq;
+                Mode outMode;
+                parser.ParseAllLog(allLogFileContent, out outFreq, out outMode);
+
+                Freq = outFreq;
+                Mode = outMode;
             }
             catch (FileNotFoundException)
             {
