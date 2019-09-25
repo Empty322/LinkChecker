@@ -89,7 +89,6 @@ namespace Link11Checker.Core
 
         public void AddSeansesFromVentursFile(List<string> files)
         {
-            lock (Seanses) {
                 LoadingStarted.Invoke(this);
                 foreach (string file in files)
                 {
@@ -102,7 +101,10 @@ namespace Link11Checker.Core
                         Seanse currentSeanse = Seanses.FirstOrDefault(x => x.Directory.FullName.ToLower() == channelDirectory);
                         if (currentSeanse == null)
                         {
-                            LoadSeanse(channelDirectory);
+                            lock (Seanses)
+                            {
+                                LoadSeanse(channelDirectory);
+                            }
                         }
                         if (currentSeanse != null)
                         {
@@ -111,7 +113,6 @@ namespace Link11Checker.Core
                     });
                 }
                 LoadingEnded(this);
-            }
         }
 
         public async Task AddSeansesFromVentursFileAsync(List<string> files)

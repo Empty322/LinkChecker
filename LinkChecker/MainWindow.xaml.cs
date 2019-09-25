@@ -74,5 +74,12 @@ namespace Link11Checker
             InitializeComponent();
             DataContext = new WindowViewModel(this, new SeanseManager(new Parser(), logger), logger);
         }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show("Закрыть программу?", "Выход", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result != MessageBoxResult.Yes)
+                e.Cancel = true;
+        }
     }
 }

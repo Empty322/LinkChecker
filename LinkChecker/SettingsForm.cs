@@ -73,14 +73,13 @@ namespace Link11Checker
         }
 
         private void OkBtn_Click(object sender, EventArgs e)
-        {
-            if (SaveSettings())
-                this.Close();
+        {            
+            SaveSettings();
+            this.Close();
         }
 
-        private bool SaveSettings()
+        private void SaveSettings()
         {
-            bool result = false;
             try
             {
                 Settings newSettings = new Settings();
@@ -111,20 +110,12 @@ namespace Link11Checker
 
                 string settingsFile = JsonConvert.SerializeObject(newSettings);
                 File.WriteAllText("settings.json", settingsFile, Encoding.Default);
-
-                DialogResult dialogResult = MessageBox.Show("Применить настройки?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (dialogResult == DialogResult.Yes)
-                {
-                    IoCContainer.Settings = newSettings;
-                    result = true;
-                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Исключение", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 logger.LogMessage(ex.Message, LogLevel.Error);
             }
-            return result;
         }
 
         private void InitialSeansesPathExplore_Click(object sender, EventArgs e)

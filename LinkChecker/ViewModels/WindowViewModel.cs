@@ -384,7 +384,7 @@ namespace Link11Checker.ViewModels
                 await seanseManager.UpdateSeansesAsync();
             });
 
-            OpenSettings = new RelayCommand(async () =>
+            OpenSettings = new RelayCommand(() =>
             {
                 SettingsForm sf = new SettingsForm(logger);
                 sf.ShowDialog();
@@ -392,7 +392,6 @@ namespace Link11Checker.ViewModels
                 seanseManager.SetConfiguration(IoCContainer.Settings.Configuration);
                 window.workingChart.ChartAreas[0].AxisX.Interval = IoCContainer.Settings.WorkingChartInterval;
                 window.workingChart.Invalidate();
-                await seanseManager.UpdateSeansesAsync();
             });
 
             About = new RelayCommand(() => {

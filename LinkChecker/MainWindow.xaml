@@ -4,7 +4,7 @@
         xmlns:charting="clr-namespace:System.Windows.Forms.DataVisualization.Charting;assembly=System.Windows.Forms.DataVisualization"
         xmlns:winforms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         Title="Link11Checker" MinHeight="600" MinWidth="950" 
-        Icon="Resources/btnSonogr.png" Height="710" Width="950">
+        Icon="Resources/btnSonogr.png" Height="710" Width="950" Closing="Window_Closing">
     <DockPanel>
         <Menu DockPanel.Dock="Top" VerticalAlignment="Top" Grid.Row="0" Grid.ColumnSpan="2">
             <MenuItem Header="Сеанс">
@@ -107,7 +107,7 @@
                     <DataGridTextColumn Header="Кол. корреспондентов" Binding="{Binding AbonentsCount, Mode=OneWay}" Width="60"></DataGridTextColumn>
                     <DataGridTextColumn Header="Интервалы" Binding="{Binding Intervals, Mode=OneWay}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Процент приема" Binding="{Binding PercentReceiving, StringFormat={}{0}%, Mode=OneWay}" Width="40"></DataGridTextColumn>
-                    <DataGridTextColumn Header="Примечание" Binding="{Binding Remark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="60"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Примечание" Binding="{Binding Remark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*"></DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>
             <TabControl x:Name="tc" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5" DataContext="{Binding SelectedSeanse}">
