@@ -86,29 +86,15 @@
                       Margin="5" 
                       CanUserAddRows="False" CanUserDeleteRows="False">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn>
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Ellipse Stroke="Black" Fill="{Binding DirectoryExists, Converter={StaticResource BoolToColorConverter}}" Height="12" Width="12">
-                                    <Ellipse.ToolTip>
-                                        <StackPanel>
-                                            <TextBlock Text="{Binding LastUpdate, StringFormat={}Последнее обновление: {0}, Converter={StaticResource DateTimeToShortTimeStringConverter}}"></TextBlock>
-                                            <TextBlock Text="{Binding LastCopy, StringFormat={}Последнее копирование: {0}, Converter={StaticResource DateTimeToShortTimeStringConverter}}"></TextBlock>
-                                        </StackPanel>
-                                    </Ellipse.ToolTip>
-                                </Ellipse>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Частота" Binding="{Binding Freq, Mode=OneWay}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Режим" Binding="{Binding Mode, Mode=OneWay}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Макс." Binding="{Binding MaxSize, Mode=OneWay}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Средн." Binding="{Binding AverageSize, Mode=OneWay}"></DataGridTextColumn>
-                    <DataGridTextColumn Header="Кол. корреспондентов" Binding="{Binding AbonentsCount, Mode=OneWay}" Width="60"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Кол. корреспондентов" Binding="{Binding Abonents.Count, Mode=OneWay}" Width="60"></DataGridTextColumn>
                     <DataGridTextColumn Header="Интервалы" Binding="{Binding Intervals, Mode=OneWay}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Процент приема" Binding="{Binding PercentReceiving, StringFormat={}{0}%, Mode=OneWay}" Width="40"></DataGridTextColumn>
                     <DataGridTextColumn Header="Примечание" Binding="{Binding Remark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*"></DataGridTextColumn>
-                </DataGrid.Columns>
+                </DataGrid.Columns>                               
             </DataGrid>
             <TabControl x:Name="tc" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5" DataContext="{Binding SelectedSeanse}">
                 <TabItem Header="График расстройки">
@@ -147,7 +133,7 @@
                         <GridView>
                             <GridView.Columns>
                                 <GridViewColumn Header="Корреспондент" Width="68" DisplayMemberBinding="{Binding Name}" />
-                                <GridViewColumn Header="Количество" Width="68" DisplayMemberBinding="{Binding Count}" />
+                                <GridViewColumn Header="Общий объем" Width="68" DisplayMemberBinding="{Binding Size}" />
                             </GridView.Columns>
                         </GridView>
                     </ListView.View>

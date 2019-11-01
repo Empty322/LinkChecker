@@ -36,6 +36,8 @@
             this.IntervalsK = new System.Windows.Forms.Label();
             this.AbonentsK = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.RemoveLastFileBtn = new System.Windows.Forms.Button();
+            this.LastFilesListBox = new System.Windows.Forms.ListBox();
             this.SmoothValueUpDown = new System.Windows.Forms.NumericUpDown();
             this.WorkingChartIntervalUpDown = new System.Windows.Forms.NumericUpDown();
             this.IntervalsKUpDown = new System.Windows.Forms.NumericUpDown();
@@ -63,8 +65,6 @@
             this.InitialDestPath = new System.Windows.Forms.Label();
             this.InitialSeansesPathTextBox = new System.Windows.Forms.TextBox();
             this.InitialSeansesPath = new System.Windows.Forms.Label();
-            this.LastFilesListBox = new System.Windows.Forms.ListBox();
-            this.RemoveLastFileBtn = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SmoothValueUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.WorkingChartIntervalUpDown)).BeginInit();
@@ -153,6 +153,19 @@
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.TabStop = false;
             // 
+            // RemoveLastFileBtn
+            // 
+            resources.ApplyResources(this.RemoveLastFileBtn, "RemoveLastFileBtn");
+            this.RemoveLastFileBtn.Name = "RemoveLastFileBtn";
+            this.RemoveLastFileBtn.UseVisualStyleBackColor = true;
+            this.RemoveLastFileBtn.Click += new System.EventHandler(this.RemoveLastFileBtn_Click);
+            // 
+            // LastFilesListBox
+            // 
+            this.LastFilesListBox.FormattingEnabled = true;
+            resources.ApplyResources(this.LastFilesListBox, "LastFilesListBox");
+            this.LastFilesListBox.Name = "LastFilesListBox";
+            // 
             // SmoothValueUpDown
             // 
             resources.ApplyResources(this.SmoothValueUpDown, "SmoothValueUpDown");
@@ -196,16 +209,6 @@
             // IntervalsKUpDown
             // 
             resources.ApplyResources(this.IntervalsKUpDown, "IntervalsKUpDown");
-            this.IntervalsKUpDown.Maximum = new decimal(new int[] {
-            1316134911,
-            2328,
-            0,
-            0});
-            this.IntervalsKUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             this.IntervalsKUpDown.Name = "IntervalsKUpDown";
             this.IntervalsKUpDown.Value = new decimal(new int[] {
             5,
@@ -236,16 +239,6 @@
             // AbonentsKUpDown
             // 
             resources.ApplyResources(this.AbonentsKUpDown, "AbonentsKUpDown");
-            this.AbonentsKUpDown.Maximum = new decimal(new int[] {
-            1316134911,
-            2328,
-            0,
-            0});
-            this.AbonentsKUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             this.AbonentsKUpDown.Name = "AbonentsKUpDown";
             this.AbonentsKUpDown.Value = new decimal(new int[] {
             5,
@@ -424,19 +417,6 @@
             // 
             resources.ApplyResources(this.InitialSeansesPath, "InitialSeansesPath");
             this.InitialSeansesPath.Name = "InitialSeansesPath";
-            // 
-            // LastFilesListBox
-            // 
-            this.LastFilesListBox.FormattingEnabled = true;
-            resources.ApplyResources(this.LastFilesListBox, "LastFilesListBox");
-            this.LastFilesListBox.Name = "LastFilesListBox";
-            // 
-            // RemoveLastFileBtn
-            // 
-            resources.ApplyResources(this.RemoveLastFileBtn, "RemoveLastFileBtn");
-            this.RemoveLastFileBtn.Name = "RemoveLastFileBtn";
-            this.RemoveLastFileBtn.UseVisualStyleBackColor = true;
-            this.RemoveLastFileBtn.Click += new System.EventHandler(this.RemoveLastFileBtn_Click);
             // 
             // SettingsForm
             // 

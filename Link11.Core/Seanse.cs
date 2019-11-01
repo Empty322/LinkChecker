@@ -123,18 +123,6 @@ namespace Link11.Core
                 OnPropertyChanged("AverageSizeInBytes");
             }
         }
-        public int AbonentsCount
-        {
-            get
-            {
-                return abonentsCount;
-            }
-            set
-            {
-                abonentsCount = value;
-                OnPropertyChanged("AbonentsCount");
-            }
-        }
         public string Intervals
         {
             get
@@ -375,8 +363,7 @@ namespace Link11.Core
                 ActiveEntries = newActiveEntries;
 
                 // Получить абонентов
-                Abonents = GetAbonentsInfo();
-                AbonentsCount = GetActualAbonentsCount(Abonents);
+                Abonents = GetAbonents(signalEntries.First().Time, signalEntries.Last().Time, config.AbonentsK);
 
                 // Установить время начала
                 StartWorkingTime = signalEntries.First().Time;
@@ -522,60 +509,79 @@ namespace Link11.Core
             }
         }
 
-        public int GetActualAbonentsCount(List<AbonentInfo> abonents)
+        public List<AbonentInfo> GetAbonents()
         {
-            int resCount = 0;
-            if (abonents.Count() > 0)
+            return GetAbonents(signalEntries.First().Time, signalEntries.Last().Time, 0);
+        }
+
+        public List<AbonentInfo> GetAbonents(DateTime start, DateTime end, double abonentsK)
+        {
+            List<AbonentInfo> abonents = new List<AbonentInfo>();
+            List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && x.Type != EntryType.Error).ToList();
+            if (!CurrentEntries.Any())
             {
-                int max = abonents.Max(x => x.Count);
-                int i = 0;
-                while (i < abonents.Count)
-                {
-                    if (abonents[i].Count > max * config.AbonentsK)
-                        resCount++;
-                    i++;
-                }
+                return abonents;
             }
-            return resCount;
-        }
 
-        public List<int> GetAbonents()
-        {
-            List<int> abonents = new List<int>();
-            if (signalEntries.Count != 0)
-                abonents = GetAbonents(signalEntries.First().Time, signalEntries.Last().Time, 0);
-            return abonents;
-        }
-
-        public List<int> GetAbonents(DateTime start, DateTime end, double abonentsK)
-        {
-            List<int> abonents = new List<int>();
-            if (signalEntries.Count != 0)
+            for (int index = 0; index < signalEntries.Count; index++)
             {
-                Dictionary<int, int> abonentsEntries = new Dictionary<int, int>();
-
-                List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && x.Type != EntryType.Error).ToList();
-                if (CurrentEntries.Count == 0)
-                    return new List<int>();
-                abonents = CurrentEntries.Where(x => x.Abonent.HasValue).Select(x => x.Abonent.Value).Distinct().ToList();
-                foreach (int abonent in abonents)
+                SignalEntry currentEnrty = signalEntries[index];
+                if (currentEnrty.Type == EntryType.Message)
                 {
-                    int count = CurrentEntries.Where(x => x.Abonent == abonent).Count();
-                    abonentsEntries.Add(abonent, count);
+                    AbonentInfo current = abonents.FirstOrDefault(x => x.Name == currentEnrty.Abonent.Value);
+                    if (current != null) {
+                        current.Size += currentEnrty.Size;
+                    }
+                    else {
+                        AbonentInfo newAbonent = new AbonentInfo(currentEnrty.Abonent.Value);
+                        newAbonent.Size = currentEnrty.Abonent.Value;
+                        abonents.Add(newAbonent);
+                    }
                 }
-                if (abonentsEntries.Count() > 0)
+                else if (currentEnrty.Type == EntryType.Answer)
                 {
-                    int max = abonentsEntries.Max(x => x.Value);
-                    foreach (var abonent in abonentsEntries)
+                    for (int offset = 1; offset <= index; offset++)
                     {
-                        if (abonent.Value < max * abonentsK)
+                        currentEnrty = signalEntries[index - offset];
+                        if (signalEntries[index - offset].Type == EntryType.Answer)
                         {
-                            abonents.Remove(abonent.Key);
+                            continue;
+                        }
+                        else
+                        {
+                            if (currentEnrty.Type == EntryType.Call)
+                            {
+                                AbonentInfo current = abonents.FirstOrDefault(x => x.Name == currentEnrty.Abonent.Value);
+                                if (current != null) {
+                                    current.Size += currentEnrty.Size;
+                                }
+                                else {
+                                    AbonentInfo newAbonent = new AbonentInfo(currentEnrty.Abonent.Value);
+                                    newAbonent.Size = currentEnrty.Abonent.Value;
+                                    abonents.Add(newAbonent);
+                                }
+                            }
                         }
                     }
                 }
             }
-            return abonents;
+
+            if (abonents.Count() > 0)
+            {
+                int max = abonents.Max(x => x.Size);
+                AbonentInfo[] aboInfos = new AbonentInfo[abonents.Count];
+                abonents.CopyTo(aboInfos, 0);
+                foreach (var abonent in aboInfos)
+                {
+                    if (abonent.Size < max * abonentsK)
+                    {
+                        abonents.Remove(abonent);
+                    }
+                    Dictionary<int, int> abonentIntervals = GetIntervals(start, end, abonent.Name);
+                    abonent.UpdateIntervals(abonentIntervals);
+                }
+            }
+            return abonents.OrderByDescending(info => info.Size).ToList();
         }
 
         public List<int> GetAbonentsWithInterval(int interval, float intervalsK, double abonentsK)
@@ -587,60 +593,59 @@ namespace Link11.Core
 
         public List<int> GetAbonentsWithInterval(DateTime start, DateTime end, int interval, double intervalsK, double abonentsK)
         {
-            List<int> abonents = GetAbonents(start, end, abonentsK);
+            List<int> abonents = GetAbonents(start, end, abonentsK).Select(info => info.Name).ToList();
             return GetAbonentsWithInterval(start, end, abonents, interval, intervalsK);
         }
 
         public List<int> GetAbonentsWithInterval(DateTime start, DateTime end, List<int> abonents, int interval, double intervalsK)
         {
             List<int> result = new List<int>();
-            if (signalEntries.Count != 0)
+            if (!signalEntries.Any())
             {
-                List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && x.Type != EntryType.Error && x.Ninterval != 0).ToList();
-                CurrentEntries = CurrentEntries.Where(x => x.Abonent.HasValue && abonents.Contains(x.Abonent.Value)).ToList();
+                return result;
+            }
+            List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && x.Type != EntryType.Error && x.Ninterval != 0).ToList();
+            CurrentEntries = CurrentEntries.Where(x => x.Abonent.HasValue && abonents.Contains(x.Abonent.Value)).ToList();
 
-                Dictionary<int, int> intervalCount = new Dictionary<int, int>();
-                foreach (int abonent in abonents)
-                {
-                    List<int> intervals = CurrentEntries.Where(x => x.Abonent == abonent && x.Ninterval != 0).Select(x => x.Ninterval).ToList();
-                    int count = intervals.Where(x => x == interval).Count();
-                    intervals = intervals.Where(x => x != interval).ToList();
-                    if (count > intervals.Count() * intervalsK)
-                        result.Add(abonent);
-                }
+            Dictionary<int, int> intervalCount = new Dictionary<int, int>();
+            foreach (int abonent in abonents)
+            {
+                List<int> intervals = CurrentEntries.Where(x => x.Abonent == abonent && x.Ninterval != 0).Select(x => x.Ninterval).ToList();
+                int count = intervals.Where(x => x == interval).Count();
+                intervals = intervals.Where(x => x != interval).ToList();
+                if (count > intervals.Count() * intervalsK)
+                    result.Add(abonent);
             }
             return result;
         }
 
         public Dictionary<int, int> GetIntervals(params int[] abonents)
         {
-            Dictionary<int, int> intervals = new Dictionary<int, int>();
-            if (signalEntries.Any())
-                intervals = GetIntervals(signalEntries.First().Time, signalEntries.Last().Time, abonents);
-            return intervals;
+            return GetIntervals(signalEntries.First().Time, signalEntries.Last().Time, abonents);
         }
 
         public Dictionary<int, int> GetIntervals(DateTime start, DateTime end, params int[] abonents)
         {
             Dictionary<int, int> intervalEntries = new Dictionary<int, int>();
-            if (signalEntries.Count != 0)
+            if (!signalEntries.Any())
             {
-                List<SignalEntry> currentEntries;
-                if (abonents.Any())
-                    currentEntries = signalEntries.Where(x => x.Type != EntryType.Error && x.Ninterval != 0 && (x.Abonent.HasValue ? abonents.Contains(x.Abonent.Value) : false)).ToList();
-                else
-                    currentEntries = signalEntries.Where(x => x.Type != EntryType.Error && x.Ninterval != 0).ToList();
+                return intervalEntries;
+            }
+            List<SignalEntry> currentEntries;
+            if (abonents.Any())
+                currentEntries = signalEntries.Where(x => x.Type != EntryType.Error && x.Ninterval != 0 && (x.Abonent.HasValue ? abonents.Contains(x.Abonent.Value) : false)).ToList();
+            else
+                currentEntries = signalEntries.Where(x => x.Type != EntryType.Error && x.Ninterval != 0).ToList();
 
-                if (currentEntries.Count != 0)
+            if (currentEntries.Any())
+            {
+                List<int> intervals = currentEntries.Select(x => x.Ninterval).Distinct().ToList();
+                intervals.Sort();
+
+                foreach (int interval in intervals)
                 {
-                    List<int> intervals = currentEntries.Select(x => x.Ninterval).Distinct().ToList();
-                    intervals.Sort();
-
-                    foreach (int interval in intervals)
-                    {
-                        int count = currentEntries.Where(x => x.Ninterval == interval).Count();
-                        intervalEntries.Add(interval, count);
-                    }
+                    int count = currentEntries.Where(x => x.Ninterval == interval).Count();
+                    intervalEntries.Add(interval, count);
                 }
             }
             return intervalEntries;
@@ -648,16 +653,13 @@ namespace Link11.Core
 
         public int GetMaxInFrames()
         {
-            int maxInFrames = 0;
-            if (signalEntries.Count != 0)
-                maxInFrames = GetMaxInFrames(signalEntries.First().Time, signalEntries.Last().Time);
-            return maxInFrames;
+            return GetMaxInFrames(signalEntries.First().Time, signalEntries.Last().Time);
         }
 
         public int GetMaxInFrames(DateTime start, DateTime end)
         {
             int maxInFrames = 0;
-            if (signalEntries.Count != 0)
+            if (signalEntries.Any())
             {
                 List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && x.Type != EntryType.Error).ToList();
                 int[] sizeWihoutErrors = CurrentEntries.Select(x => x.Size - x.Errors).ToArray();
@@ -672,16 +674,13 @@ namespace Link11.Core
 
         public float GetAverageSizeInFrames()
         {
-            float avgInFrames = 0;
-            if (signalEntries.Count != 0)
-                avgInFrames = GetAverageSizeInFrames(signalEntries.First().Time, signalEntries.Last().Time);
-            return avgInFrames;
+            return GetAverageSizeInFrames(signalEntries.First().Time, signalEntries.Last().Time);
         }
 
         public float GetAverageSizeInFrames(DateTime start, DateTime end)
         {
             float avgInFrames = 0;
-            if (signalEntries.Count != 0)
+            if (signalEntries.Any())
             {
                 List<SignalEntry> CurrentEntries = signalEntries.Where(x => x.Time >= start && x.Time < end && (x.Type == EntryType.Message || x.Type == EntryType.Answer)).ToList();
                 int[] sizeWihoutErrors = CurrentEntries.Select(x => x.Size - x.Errors).ToArray();
@@ -778,33 +777,10 @@ namespace Link11.Core
             signalEntries = parser.ParseLog(lines);
         }
 
-        private List<AbonentInfo> GetAbonentsInfo()
-        {
-            List<AbonentInfo> abonetnsInfo = new List<AbonentInfo>();
-            if (signalEntries.Any())
-                abonetnsInfo = GetAbonentsInfo(signalEntries.First().Time, signalEntries.Last().Time);
-            return abonetnsInfo;
-        }
-
-        private List<AbonentInfo> GetAbonentsInfo(DateTime start, DateTime end)
-        {
-            List<AbonentInfo> result = new List<AbonentInfo>();
-            List<int> abonents = GetAbonents();
-            foreach (int abonent in abonents)
-            {
-                Dictionary<int, int> abonentIntervals = GetIntervals(start, end, abonent);
-                AbonentInfo info = new AbonentInfo(abonent);
-                info.Count = signalEntries.Where(e => e.Abonent.HasValue && e.Abonent.Value == abonent).Count();
-                info.UpdateIntervals(abonentIntervals);
-                result.Add(info);
-            }
-            return result.OrderByDescending(x => x.Count).ToList();
-        }
-
         private SeanseState GetState() {
             SeanseState result = SeanseState.WorkingLevel0;
 
-            if (signalEntries.Count != 0)
+            if (signalEntries.Any())
             {
                 List<SignalEntry> lastEntries = signalEntries.Where(x => 
                     (DateTime.Now - delay - new TimeSpan(0, 3, 0)) < x.Time && 
@@ -860,55 +836,57 @@ namespace Link11.Core
         {
             float avgTuning = signalEntries.Select(x => x.Tuning).Average();
             List<TuningChartUnit> units = new List<TuningChartUnit>();
-            if (signalEntries.Count != 0)
+            if (!signalEntries.Any())
             {
-                List<SignalEntry>.Enumerator enumerator = signalEntries.GetEnumerator();
-                List<SignalEntry> valuesToSmooth = new List<SignalEntry>();
-                int counter = 0;
-                while (enumerator.MoveNext() || valuesToSmooth.Any())
-                {
-                    if (enumerator.Current != null && counter < counterMax)
-                    {
-                        valuesToSmooth.Add(enumerator.Current);
-                        counter++;
-                    }
-                    else if (counter >= counterMax || enumerator.Current == null)
-                    {
-                        TuningChartUnit unit = new TuningChartUnit();
-                        for (int i = 0; i < valuesToSmooth.Count; i++)
-                            if (valuesToSmooth[i].Tuning > (avgTuning + 50) || valuesToSmooth[i].Tuning < (avgTuning - 50))
-                                valuesToSmooth[i].Tuning = avgTuning;
-                        unit.Tuning = valuesToSmooth.Select(x => x.Tuning).Average();
-                        unit.Time = valuesToSmooth.First().Time;
-                        units.Add(unit);
-                        valuesToSmooth.Clear();
-                        counter = 0;
-                    }
-                }
-                enumerator.Dispose();
+                return units;
             }
+            List<SignalEntry>.Enumerator enumerator = signalEntries.GetEnumerator();
+            List<SignalEntry> valuesToSmooth = new List<SignalEntry>();
+            int counter = 0;
+            while (enumerator.MoveNext() || valuesToSmooth.Any())
+            {
+                if (enumerator.Current != null && counter < counterMax)
+                {
+                    valuesToSmooth.Add(enumerator.Current);
+                    counter++;
+                }
+                else if (counter >= counterMax || enumerator.Current == null)
+                {
+                    TuningChartUnit unit = new TuningChartUnit();
+                    for (int i = 0; i < valuesToSmooth.Count; i++)
+                        if (valuesToSmooth[i].Tuning > (avgTuning + 50) || valuesToSmooth[i].Tuning < (avgTuning - 50))
+                            valuesToSmooth[i].Tuning = avgTuning;
+                    unit.Tuning = valuesToSmooth.Select(x => x.Tuning).Average();
+                    unit.Time = valuesToSmooth.First().Time;
+                    units.Add(unit);
+                    valuesToSmooth.Clear();
+                    counter = 0;
+                }
+            }
+            enumerator.Dispose();
             return units;
         }
 
         private List<SizeChartUnit> GetSizeChartUnits() {
             List<SizeChartUnit> units = new List<SizeChartUnit>();
-            if (signalEntries.Count != 0)
+            if (!signalEntries.Any())
             {
-                foreach (SignalEntry entry in signalEntries)
+                return units;
+            }
+            foreach (SignalEntry entry in signalEntries)
+            {
+                SizeChartUnit unit = new SizeChartUnit();
+                unit.Time = entry.Time;
+                if (entry.Type != EntryType.Error)
                 {
-                    SizeChartUnit unit = new SizeChartUnit();
-                    unit.Time = entry.Time;
-                    if (entry.Type != EntryType.Error)
-                    {
-                        int actualSize = entry.Size - entry.Errors;
-                        unit.Size = actualSize < 0 ? 0 : actualSize;
-                    }
-                    else
-                    {
-                        unit.Size = 0;
-                    }
-                    units.Add(unit);
+                    int actualSize = entry.Size - entry.Errors;
+                    unit.Size = actualSize < 0 ? 0 : actualSize;
                 }
+                else
+                {
+                    unit.Size = 0;
+                }
+                units.Add(unit);
             }
             return units;
         }

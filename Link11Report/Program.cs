@@ -14,9 +14,10 @@ namespace Link11Report
     class Program
     {
         private static ILogger logger;
-        public static bool LoadConfiguration(string path, out Configuration config)
+        public static bool LoadConfiguration(out Configuration config)
         {
             config = new Configuration();
+            var a = Directory.GetCurrentDirectory();
             if (File.Exists("settings.json"))
             {
                 try
@@ -47,7 +48,7 @@ namespace Link11Report
             }
 
             Configuration config = new Configuration();
-            if (!LoadConfiguration("settings.txt", out config))
+            if (!LoadConfiguration(out config))
             {
                 return;
             }

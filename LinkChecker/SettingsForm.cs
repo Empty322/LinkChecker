@@ -45,7 +45,7 @@ namespace Link11Checker
 
             InitialSeansesPathTextBox.Text = IoCContainer.Settings.InitialSeansesPath;
             InitialDestPathTextBox.Text = IoCContainer.Settings.InitialDestPath;
-            foreach (string file in IoCContainer.Settings.LastFiles) 
+            foreach (string file in IoCContainer.Settings.LastFiles)
             {
                 LastFilesListBox.Items.Add(file);
             }
@@ -108,8 +108,11 @@ namespace Link11Checker
                 newSettings.SynchronizeCounterLimit = (int)SynchronizeCounterLimitUpDown.Value;
                 newSettings.WorkingChartInterval = (int)WorkingChartIntervalUpDown.Value;
 
+
                 string settingsFile = JsonConvert.SerializeObject(newSettings);
                 File.WriteAllText("settings.json", settingsFile, Encoding.Default);
+
+                IoCContainer.Settings = newSettings;
             }
             catch (Exception ex)
             {

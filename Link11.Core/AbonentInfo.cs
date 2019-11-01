@@ -14,27 +14,42 @@ namespace Link11.Core
         public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
 
         public int Name { get; private set; }
-        public int Count
+        public int Calls
         {
             get
             {
-                return count;
+                return calls;
             }
             set
             {
-                count = value;
-                OnPropertyChanged("Count");
+                calls = value;
+                OnPropertyChanged("Calls");
             }
         }
+        public int Size
+        {
+            get
+            {
+                return size;
+            }
+            set
+            {
+                size = value;
+                OnPropertyChanged("Size");
+            }
+        }
+
         public List<Interval> Intervals { get; private set; }
 
-        private int count;
+        private int calls;
+        private int size;
 
         public AbonentInfo(int name)
         {
             this.Intervals = new List<Interval>();
             this.Name = name;
-            this.count = 0;
+            this.calls = 0;
+            this.size = 0;
         }
 
         public void UpdateIntervals(Dictionary<int, int> inAbonentIntervals)
@@ -58,7 +73,7 @@ namespace Link11.Core
 
         public int CompareTo(AbonentInfo other)
         {
-            return this.Count - other.Count;
+            return this.Size - other.Size;
         }
     }
 

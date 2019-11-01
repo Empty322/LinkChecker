@@ -12,7 +12,7 @@
                         <TextBlock.Text>
                             <MultiBinding StringFormat="{}{0} ({1})">
                                 <Binding Path="Name"></Binding>
-                                <Binding Path="Count"></Binding>
+                                <Binding Path="Size"></Binding>
                             </MultiBinding>
                         </TextBlock.Text>
                     </TextBlock>
